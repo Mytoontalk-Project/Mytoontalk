@@ -15,8 +15,12 @@ export default function DrawingPage() {
         </Text>
       </View>
       <View style={styles.bodyContainer}>
-        <DrawingBoard />
-        <WorkingTool />
+        <View style={{ width: "75%" }}>
+          <DrawingBoard />
+        </View>
+        <View style={{ flex: 1 }}>
+          <WorkingTool />
+        </View>
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.pageMoveButton}>

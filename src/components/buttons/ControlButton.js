@@ -4,7 +4,7 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 export default function ControlButton({ label }) {
   return (
     <View style={styles.container}>
-      <Pressable style={styles.button} onPress={() => alert("button")}>
+      <Pressable style={styles.button}>
         <Text style={styles.buttonLabel}>{label}</Text>
       </Pressable>
     </View>

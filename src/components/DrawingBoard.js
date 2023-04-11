@@ -7,7 +7,7 @@ export default function DrawingBoard() {
 
 const styles = StyleSheet.create({
   container: {
-    width: "74%",
+    flex: 1,
     backgroundColor: "#ffffff",
   },
 });
