@@ -3,6 +3,7 @@ import { StyleSheet, View, FlatList } from "react-native";
 
 import Comic from "./Comic";
 import ControlButton from "./buttons/ControlButton";
+import Empty from "./Empty";
 
 const data = [
   { id: "1", name: "Comic 1" },
@@ -29,17 +30,22 @@ function ItemSeparator() {
 export default function OpenComic() {
   return (
     <View style={styles.container}>
-      <FlatList
-        data={data}
-        numColumns={numColumns}
-        renderItem={({ item }) => (
-          <View style={{ flex: 1 / numColumns }}>
-            <Comic label={item.name} />
-          </View>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-        ItemSeparatorComponent={ItemSeparator}
-      />
+      {data.length === 0 ? (
+        <Empty />
+      ) : (
+        <FlatList
+          data={data}
+          numColumns={numColumns}
+          renderItem={({ item }) => (
+            <View style={{ flex: 1 / numColumns }}>
+              <Comic label={item.name} />
+            </View>
+          )}
+          keyExtractor={(item) => item.id.toString()}
+          ItemSeparatorComponent={ItemSeparator}
+        />
+      )}
+
       <View style={styles.button}>
         <ControlButton label="생성" />
         <ControlButton label="삭제" />
