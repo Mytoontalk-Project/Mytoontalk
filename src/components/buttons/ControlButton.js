@@ -8,7 +8,9 @@ export default function ControlButton({ label, onPress, currentModal }) {
         style={styles.button}
         onPress={() => {
           onPress();
-          currentModal(label);
+          if (currentModal) {
+            currentModal(label);
+          }
         }}
       >
         <Text style={styles.buttonLabel}>{label}</Text>
