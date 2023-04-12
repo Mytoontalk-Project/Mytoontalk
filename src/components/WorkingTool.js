@@ -2,7 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-export default function WorkingTool() {
+export default function WorkingTool({ isShowListeModal }) {
   return (
     <View style={styles.container}>
       <View style={styles.icons}>
@@ -57,7 +57,7 @@ export default function WorkingTool() {
             />
           </Svg>
         </Pressable>
-        <Pressable name="audiolist">
+        <Pressable name="audiolist" onPress={isShowListeModal}>
           <Svg width={80} height={80} viewBox="0 0 576 512">
             <Path
               d="M0 96C0 60.7 28.7 32 64 32H512c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM128 288a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm32-128a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM128 384a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm96-248c-13.3 0-24 10.7-24 24s10.7 24 24 24H448c13.3 0 24-10.7 24-24s-10.7-24-24-24H224zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H448c13.3 0 24-10.7 24-24s-10.7-24-24-24H224zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H448c13.3 0 24-10.7 24-24s-10.7-24-24-24H224z"

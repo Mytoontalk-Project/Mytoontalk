@@ -30,21 +30,26 @@ function ItemSeparator() {
 export default function OpenComic({ isShowTitleModal, currentModal }) {
   return (
     <View style={styles.container}>
-      {data.length === 0 ? (
-        <Empty />
-      ) : (
-        <FlatList
-          data={data}
-          numColumns={numColumns}
-          renderItem={({ item }) => (
-            <View style={{ flex: 1 / numColumns }}>
-              <Comic label={item.name} />
-            </View>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          ItemSeparatorComponent={ItemSeparator}
-        />
-      )}
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        {data.length === 0 ? (
+          <Empty />
+        ) : (
+          <FlatList
+            data={data}
+            style={{
+              marginBottom: "5%",
+            }}
+            numColumns={numColumns}
+            renderItem={({ item }) => (
+              <View style={{ flex: 1 / numColumns, margin: 10 }}>
+                <Comic label={item.name} />
+              </View>
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            ItemSeparatorComponent={ItemSeparator}
+          />
+        )}
+      </View>
       <View style={styles.button}>
         <ControlButton
           label="생성"
@@ -64,12 +69,11 @@ export default function OpenComic({ isShowTitleModal, currentModal }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
     padding: 50,
     backgroundColor: "#DBE2EF",
+    justifyContent: "center",
   },
   button: {
-    marginTop: 30,
     flexDirection: "row",
     gap: 20,
     justifyContent: "flex-end",

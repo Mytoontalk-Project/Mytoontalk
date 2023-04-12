@@ -91,15 +91,7 @@ export default function MainPage() {
               </View>
               <Pressable
                 onPress={() => setIsShowTitleModal(false)}
-                style={{
-                  position: "absolute",
-                  zIndex: 1,
-                  top: 30,
-                  right: 25,
-                  borderRadius: 50,
-                  backgroundColor: "#DBE2EF",
-                  padding: 5,
-                }}
+                style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
                   <Path
@@ -122,8 +114,9 @@ export default function MainPage() {
           </View>
         </Modal>
       )}
-      <Header />
+      <Header style={{ flex: 1 }} />
       <OpenComic
+        style={{ flex: 1 }}
         isShowTitleModal={toggleModal}
         currentModal={handleCurrentModal}
       />

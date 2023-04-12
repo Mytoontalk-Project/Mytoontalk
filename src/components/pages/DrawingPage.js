@@ -1,14 +1,94 @@
-import React from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import React, { useState } from "react";
+import {
+  Modal,
+  Alert,
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  FlatList,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 import DrawingBoard from "../DrawingBoard";
 import WorkingTool from "../WorkingTool";
 import ControlButton from "../buttons/ControlButton";
+import AudioButton from "../buttons/AudioButton";
 
 export default function DrawingPage() {
+  const [isShowListeModal, setIsShowListModal] = useState(false);
+
+  const data = [
+    { id: "1", name: "Audio" },
+    { id: "2", name: "Audio" },
+    { id: "3", name: "Audio" },
+    { id: "4", name: "Audio" },
+    { id: "5", name: "Audio" },
+    { id: "6", name: "Audio" },
+    { id: "7", name: "Audio" },
+    { id: "8", name: "Audio" },
+    { id: "9", name: "Audio" },
+    { id: "10", name: "Audio" },
+    { id: "11", name: "Audio" },
+    { id: "12", name: "Audio" },
+    { id: "13", name: "Audio" },
+    { id: "14", name: "Audio" },
+  ];
+  const numColumns = 5;
+
+  const toggleModal = () => {
+    setIsShowListModal(true);
+  };
+
   return (
     <View style={styles.container}>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={isShowListeModal}
+        onRequestClose={() => {
+          Alert.alert("closed.");
+          setIsShowListModal(!isShowListeModal);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <View style={[styles.titlebox, styles.mainColor]}>
+              <Text style={styles.titleStyle}>녹음 리스트</Text>
+            </View>
+            <Pressable
+              onPress={() => setIsShowListModal(false)}
+              style={styles.closeButton}
+            >
+              <Svg width={30} height={30} viewBox="0 0 384 512">
+                <Path
+                  d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                  fill="#000"
+                />
+              </Svg>
+            </Pressable>
+            <View style={[styles.audioList, styles.mainColor]}>
+              <FlatList
+                data={data}
+                numColumns={numColumns}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      flex: 1 / numColumns,
+                    }}
+                  >
+                    <AudioButton
+                      label={item.id}
+                      onPress={() => alert("삭제")}
+                    />
+                  </View>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.header}>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
           오늘의 집
@@ -19,7 +99,7 @@ export default function DrawingPage() {
           <DrawingBoard />
         </View>
         <View style={{ flex: 1 / 4 }}>
-          <WorkingTool />
+          <WorkingTool isShowListeModal={toggleModal} />
         </View>
       </View>
       <View style={styles.footerContainer}>
@@ -92,5 +172,55 @@ const styles = StyleSheet.create({
   },
   icon: {
     flex: 1 / 15,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    left: "15%",
+  },
+  modalView: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    width: "50%",
+    height: "40%",
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    zIndex: 1,
+    top: 30,
+    right: 25,
+    borderRadius: 50,
+    backgroundColor: "#DBE2EF",
+    padding: 5,
+  },
+  titlebox: {
+    borderRadius: 20,
+    padding: 15,
+    width: 300,
+    marginBottom: 20,
+  },
+  mainColor: {
+    backgroundColor: "#DBE2EF",
+  },
+  audioList: {
+    flex: 1,
+    borderRadius: 20,
+    width: "100%",
+    justifyContent: "center",
+  },
+  titleStyle: {
+    fontWeight: "bold",
+    fontSize: 30,
+    textAlign: "center",
   },
 });

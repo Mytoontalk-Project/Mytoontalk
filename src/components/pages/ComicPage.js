@@ -80,12 +80,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#DBE2EF",
   },
   bodyContainer: {
-    borderWidth: 1,
     flex: 1,
     flexDirection: "row",
   },
   header: {
-    borderWidth: 1,
     flex: 1 / 7,
     width: "79%",
     height: 80,
@@ -104,7 +102,6 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   toolbox: {
-    borderWidth: 1,
     flex: 1,
     alignItems: "center",
     justifyContent: "space-between",
