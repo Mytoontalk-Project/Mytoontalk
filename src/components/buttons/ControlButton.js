@@ -1,10 +1,16 @@
 import React from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 
-export default function ControlButton({ label }) {
+export default function ControlButton({ label, onPress, currentModal }) {
   return (
     <View style={styles.container}>
-      <Pressable style={styles.button}>
+      <Pressable
+        style={styles.button}
+        onPress={() => {
+          onPress();
+          currentModal(label);
+        }}
+      >
         <Text style={styles.buttonLabel}>{label}</Text>
       </Pressable>
     </View>
@@ -27,7 +33,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonLabel: {
+    fontWeight: "bold",
     fontSize: 25,
-    color: "#000000",
   },
 });

@@ -27,7 +27,7 @@ function ItemSeparator() {
   return <View style={{ height: 20 }} />;
 }
 
-export default function OpenComic() {
+export default function OpenComic({ isShowTitleModal, currentModal }) {
   return (
     <View style={styles.container}>
       {data.length === 0 ? (
@@ -45,10 +45,17 @@ export default function OpenComic() {
           ItemSeparatorComponent={ItemSeparator}
         />
       )}
-
       <View style={styles.button}>
-        <ControlButton label="생성" />
-        <ControlButton label="삭제" />
+        <ControlButton
+          label="생성"
+          onPress={isShowTitleModal}
+          currentModal={currentModal}
+        />
+        <ControlButton
+          label="삭제"
+          onPress={isShowTitleModal}
+          currentModal={currentModal}
+        />
       </View>
     </View>
   );
