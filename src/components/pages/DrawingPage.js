@@ -16,7 +16,8 @@ import ControlButton from "../buttons/ControlButton";
 import AudioButton from "../buttons/AudioButton";
 
 export default function DrawingPage() {
-  const [isShowListeModal, setIsShowListModal] = useState(false);
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [currentModal, setCurrentModal] = useState(null);
 
   const data = [
     { id: "1", name: "Audio" },
@@ -37,58 +38,107 @@ export default function DrawingPage() {
   const numColumns = 5;
 
   const toggleModal = () => {
-    setIsShowListModal(true);
+    setIsShowModal(true);
+  };
+
+  const handleCurrentModal = (modal) => {
+    setCurrentModal(modal);
   };
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="fade"
-        transparent
-        visible={isShowListeModal}
-        onRequestClose={() => {
-          Alert.alert("closed.");
-          setIsShowListModal(!isShowListeModal);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <View style={[styles.titlebox, styles.mainColor]}>
-              <Text style={styles.titleStyle}>녹음 리스트</Text>
-            </View>
-            <Pressable
-              onPress={() => setIsShowListModal(false)}
-              style={styles.closeButton}
-            >
-              <Svg width={30} height={30} viewBox="0 0 384 512">
-                <Path
-                  d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                  fill="#000"
+      {currentModal === "list" ? (
+        <Modal
+          animationType="fade"
+          transparent
+          visible={isShowModal}
+          onRequestClose={() => {
+            Alert.alert("closed.");
+            setIsShowModal(!setIsShowModal);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={[styles.listbox, styles.mainColor]}>
+                <Text style={styles.titleStyle}>녹음 리스트</Text>
+              </View>
+              <Pressable
+                onPress={() => setIsShowModal(false)}
+                style={styles.closeButton}
+              >
+                <Svg width={30} height={30} viewBox="0 0 384 512">
+                  <Path
+                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                    fill="#000"
+                  />
+                </Svg>
+              </Pressable>
+              <View style={[styles.audioList, styles.mainColor]}>
+                <FlatList
+                  data={data}
+                  numColumns={numColumns}
+                  renderItem={({ item }) => (
+                    <View
+                      style={{
+                        flex: 1 / numColumns,
+                      }}
+                    >
+                      <AudioButton
+                        label={item.id}
+                        onPress={() => alert("삭제")}
+                      />
+                    </View>
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
                 />
-              </Svg>
-            </Pressable>
-            <View style={[styles.audioList, styles.mainColor]}>
-              <FlatList
-                data={data}
-                numColumns={numColumns}
-                renderItem={({ item }) => (
-                  <View
-                    style={{
-                      flex: 1 / numColumns,
-                    }}
-                  >
-                    <AudioButton
-                      label={item.id}
-                      onPress={() => alert("삭제")}
-                    />
-                  </View>
-                )}
-                keyExtractor={(item) => item.id.toString()}
-              />
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      ) : (
+        <Modal
+          animationType="fade"
+          transparent
+          visible={isShowModal}
+          onRequestClose={() => {
+            Alert.alert("closed.");
+            setIsShowModal(!isShowModal);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <View style={[styles.backbox, styles.mainColor]}>
+                <Text style={styles.titleStyle}>나가기</Text>
+              </View>
+              <Pressable
+                onPress={() => setIsShowModal(false)}
+                style={styles.closeButton}
+              >
+                <Svg width={30} height={30} viewBox="0 0 384 512">
+                  <Path
+                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                    fill="#000"
+                  />
+                </Svg>
+              </Pressable>
+              <View style={[styles.mainColor, styles.input]}>
+                <Text style={styles.inputStyle}>
+                  지금까지의 내용은 저장되지 않습니다.{"\n"}정말 나가시겠습니까?
+                </Text>
+              </View>
+              <Pressable
+                style={[styles.button, styles.mainColor]}
+                onPress={() => {
+                  setIsShowModal(!isShowModal);
+                  alert("home으로 이동");
+                }}
+              >
+                <Text style={styles.textStyle}>홈</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      )}
       <View style={styles.header}>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
           오늘의 집
@@ -99,7 +149,10 @@ export default function DrawingPage() {
           <DrawingBoard />
         </View>
         <View style={{ flex: 1 / 4 }}>
-          <WorkingTool isShowListeModal={toggleModal} />
+          <WorkingTool
+            isShowModal={toggleModal}
+            currentModal={handleCurrentModal}
+          />
         </View>
       </View>
       <View style={styles.footerContainer}>
@@ -192,6 +245,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 4,
     elevation: 5,
+    gap: 20,
     alignItems: "center",
   },
   closeButton: {
@@ -203,11 +257,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#DBE2EF",
     padding: 5,
   },
-  titlebox: {
+  listbox: {
     borderRadius: 20,
     padding: 15,
     width: 300,
-    marginBottom: 20,
+  },
+  backbox: {
+    borderRadius: 20,
+    padding: 15,
+    width: 300,
   },
   mainColor: {
     backgroundColor: "#DBE2EF",
@@ -222,5 +280,31 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     textAlign: "center",
+  },
+  textStyle: {
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 25,
+  },
+  input: {
+    flex: 1,
+    borderRadius: 20,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    padding: 20,
+    paddingTop: 20,
+  },
+  inputStyle: {
+    fontSize: 30,
+    textAlign: "center",
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    width: 80,
+    height: 50,
+    justifyContent: "center",
   },
 });
