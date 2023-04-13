@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Modal,
   Alert,
@@ -16,12 +17,14 @@ import WorkingTool from "../components/WorkingTool";
 import ControlButton from "../components/buttons/ControlButton";
 import AudioButton from "../components/buttons/AudioButton";
 import ManualModal from "../components/ManualModal";
-import { colorList } from "../constants/color";
+import COLORLIST from "../constants/color";
+import { setColor } from "../store/feature/drawingBoardSlice";
 
 export default function DrawingPage() {
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
 
+  const dispatch = useDispatch();
   const data = [
     { id: "1", name: "Audio" },
     { id: "2", name: "Audio" },
@@ -94,10 +97,10 @@ export default function DrawingPage() {
                       style={{
                         borderWidth: 1,
                         borderRadius: "50%",
-                        width: "12%",
+                        width: "14%",
                         aspectRatio: 1,
-                        marginHorizontal: 15,
-                        marginVertical: 8,
+                        marginHorizontal: 7,
+                        marginVertical: 11,
                         backgroundColor: "#ffffff",
                       }}
                     >
@@ -175,9 +178,9 @@ export default function DrawingPage() {
           <View style={styles.colors}>
             <TouchableWithoutFeedback>
               <FlatList
-                data={colorList}
+                data={COLORLIST}
                 renderItem={({ item }) => (
-                  <View
+                  <Pressable
                     style={{
                       backgroundColor: item,
                       borderWidth: 1,
@@ -185,6 +188,7 @@ export default function DrawingPage() {
                       width: "16.66%",
                       aspectRatio: 1,
                     }}
+                    onPress={() => dispatch(setColor(item))}
                   />
                 )}
                 numColumns={6}
