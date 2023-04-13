@@ -94,10 +94,10 @@ export default function DrawingPage() {
                       style={{
                         borderWidth: 1,
                         borderRadius: "50%",
-                        width: "12%",
+                        width: "14%",
                         aspectRatio: 1,
-                        marginHorizontal: 15,
-                        marginVertical: 8,
+                        marginHorizontal: 7,
+                        marginVertical: 11,
                         backgroundColor: "#ffffff",
                       }}
                     >
