@@ -1,4 +1,4 @@
-export const colorList = [
+const COLORLIST = [
   "#FFFFFF",
   "#FFFFF0",
   "#FFFFE0",
@@ -138,3 +138,5 @@ export const colorList = [
   "#000080",
   "#000000",
 ];
+
+export default COLORLIST;

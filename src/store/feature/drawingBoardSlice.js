@@ -4,22 +4,12 @@ const initialState = {
   currentPage: 1,
   currentTool: "pen",
   pen: {
-    color: "black",
-    width: 4,
-    opacity: 1,
-  },
-  brush: {
-    color: "black",
-    width: 4,
-    opacity: 1,
-  },
-  paint: {
-    color: "black",
+    color: "#000000",
     width: 4,
     opacity: 1,
   },
   eraser: {
-    color: "black",
+    color: "#ffffff",
     width: 4,
     opacity: 1,
   },
@@ -50,9 +40,12 @@ export const drawingBoardSlice = createSlice({
   reducers: {
     setColor: (state, action) => {
       state.color = action.payload;
-    }
-  }
+    },
+  },
 });
 
-export const {setColor} = drawingBoardSlice.actions;
+export const { setColor } = drawingBoardSlice.actions;
+
+export const selectColor = (state) => state.drawingBoard.color;
+
 export default drawingBoardSlice.reducer;
