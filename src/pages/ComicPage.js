@@ -2,8 +2,8 @@ import React from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-import DrawingBoard from "../DrawingBoard";
-import ControlButton from "../buttons/ControlButton";
+import DrawingBoard from "../components/DrawingBoard";
+import ControlButton from "../components/buttons/ControlButton";
 
 export default function ComicPage() {
   const view = "preview";

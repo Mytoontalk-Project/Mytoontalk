@@ -7,13 +7,16 @@ import {
   Text,
   Pressable,
   FlatList,
+  TouchableWithoutFeedback,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-import DrawingBoard from "../DrawingBoard";
-import WorkingTool from "../WorkingTool";
-import ControlButton from "../buttons/ControlButton";
-import AudioButton from "../buttons/AudioButton";
+import DrawingBoard from "../components/DrawingBoard";
+import WorkingTool from "../components/WorkingTool";
+import ControlButton from "../components/buttons/ControlButton";
+import AudioButton from "../components/buttons/AudioButton";
+import ManualModal from "../components/ManualModal";
+import { colorList } from "../constants/color";
 
 export default function DrawingPage() {
   const [isShowModal, setIsShowModal] = useState(false);
@@ -35,7 +38,6 @@ export default function DrawingPage() {
     { id: "13", name: "Audio" },
     { id: "14", name: "Audio" },
   ];
-  const numColumns = 5;
 
   const toggleModal = () => {
     setIsShowModal(true);
@@ -47,6 +49,17 @@ export default function DrawingPage() {
 
   return (
     <View style={styles.container}>
+      <ManualModal
+        title="녹음"
+        description={`녹음 버튼을 누르면 바로 녹음이 시작됩니다.${"\n"}재녹음을 원하시면 녹음 버튼을 다시 눌러주세요.`}
+        setCurrentModal={handleCurrentModal}
+      />
+      {currentModal === "next" && (
+        <ManualModal
+          title="나가기"
+          description={`홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`}
+        />
+      )}
       {currentModal === "list" ? (
         <Modal
           animationType="fade"
@@ -76,11 +89,16 @@ export default function DrawingPage() {
               <View style={[styles.audioList, styles.mainColor]}>
                 <FlatList
                   data={data}
-                  numColumns={numColumns}
                   renderItem={({ item }) => (
                     <View
                       style={{
-                        flex: 1 / numColumns,
+                        borderWidth: 1,
+                        borderRadius: "50%",
+                        width: "12%",
+                        aspectRatio: 1,
+                        marginHorizontal: 15,
+                        marginVertical: 8,
+                        backgroundColor: "#ffffff",
                       }}
                     >
                       <AudioButton
@@ -89,13 +107,14 @@ export default function DrawingPage() {
                       />
                     </View>
                   )}
-                  keyExtractor={(item) => item.id.toString()}
+                  numColumns={6}
+                  keyExtractor={(item, index) => index.toString()}
                 />
               </View>
             </View>
           </View>
         </Modal>
-      ) : (
+      ) : currentModal === "home" ? (
         <Modal
           animationType="fade"
           transparent
@@ -136,6 +155,42 @@ export default function DrawingPage() {
                 <Text style={styles.textStyle}>홈</Text>
               </Pressable>
             </View>
+          </View>
+        </Modal>
+      ) : (
+        <Modal
+          animationType="slide"
+          transparent
+          visible={isShowModal}
+          onRequestClose={() => {
+            Alert.alert("closed.");
+            setIsShowModal(!isShowModal);
+          }}
+        >
+          <TouchableWithoutFeedback onPress={() => setIsShowModal(false)}>
+            <View style={styles.colorModal}>
+              <View style={{ flex: 1 }}></View>
+            </View>
+          </TouchableWithoutFeedback>
+          <View style={styles.colors}>
+            <TouchableWithoutFeedback>
+              <FlatList
+                data={colorList}
+                renderItem={({ item }) => (
+                  <View
+                    style={{
+                      backgroundColor: item,
+                      borderWidth: 1,
+                      borderRadius: "50%",
+                      width: "16.66%",
+                      aspectRatio: 1,
+                    }}
+                  />
+                )}
+                numColumns={6}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </TouchableWithoutFeedback>
           </View>
         </Modal>
       )}
@@ -183,7 +238,7 @@ export default function DrawingPage() {
           </Pressable>
         </View>
         <View>
-          <ControlButton label="완성" />
+          <ControlButton label="완성" onPress={() => console.log("hoe")} />
         </View>
       </View>
     </View>
@@ -191,6 +246,29 @@ export default function DrawingPage() {
 }
 
 const styles = StyleSheet.create({
+  colorModal: {
+    flex: 1,
+  },
+  colors: {
+    position: "absolute",
+    borderRadius: 20,
+    top: "20%",
+    width: "20%",
+    height: "60%",
+    right: "22%",
+    backgroundColor: "#DBE2EF",
+    flexWrap: "wrap",
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 5,
+  },
   container: {
     flex: 1,
     padding: 50,
@@ -230,6 +308,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     left: "15%",
+  },
+  manualView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
   modalView: {
     backgroundColor: "#ffffff",
@@ -298,6 +382,7 @@ const styles = StyleSheet.create({
   inputStyle: {
     fontSize: 30,
     textAlign: "center",
+    lineHeight: 50,
   },
   button: {
     borderRadius: 20,

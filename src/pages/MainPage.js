@@ -9,10 +9,10 @@ import {
   TextInput,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import ControlButton from "../buttons/ControlButton";
 
-import Header from "../Header";
-import OpenComic from "../OpenComic";
+import ControlButton from "../components/buttons/ControlButton";
+import Header from "../components/Header";
+import OpenComic from "../components/OpenComic";
 
 export default function MainPage() {
   const [isShowTitleModal, setIsShowTitleModal] = useState(false);

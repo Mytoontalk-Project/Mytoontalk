@@ -15,6 +15,7 @@ module.exports = {
     quotes: ["error", "double"],
     semi: ["warn", "always"],
     "import/no-extraneous-dependencies": "off",
+    "import/prefer-default-export": "off",
     "react/style-prop-object": "off",
     "react/prop-types": "off",
     "no-param-reassign": "off",
@@ -24,5 +25,6 @@ module.exports = {
     "react/self-closing-comp": "off",
     "react/jsx-filename-extension": ["warn", { extensions: [".js"] }],
     "react-hooks/exhaustive-deps": "off",
+    "no-nested-ternary": "off",
   },
 };

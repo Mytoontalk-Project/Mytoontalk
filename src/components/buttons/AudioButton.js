@@ -13,13 +13,7 @@ export default function AudioButton({ label, onPress }) {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 50,
-    backgroundColor: "#ffffff",
-    marginHorizontal: 20,
-    marginVertical: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    height: 85,
+    flex: 1,
   },
   button: {
     borderRadius: 10,

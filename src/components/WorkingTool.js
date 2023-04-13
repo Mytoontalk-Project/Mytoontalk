@@ -22,7 +22,14 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             />
           </Svg>
         </Pressable>
-        <Pressable name="color" style={styles.color}></Pressable>
+        <Pressable
+          name="color"
+          style={styles.color}
+          onPress={() => {
+            isShowModal();
+            currentModal("color");
+          }}
+        ></Pressable>
         <Pressable
           name="home"
           onPress={() => {
