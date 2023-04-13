@@ -27,28 +27,40 @@ function ItemSeparator() {
   return <View style={{ height: 20 }} />;
 }
 
-export default function OpenComic() {
+export default function OpenComic({ isShowModal, currentModal }) {
   return (
     <View style={styles.container}>
-      {data.length === 0 ? (
-        <Empty />
-      ) : (
-        <FlatList
-          data={data}
-          numColumns={numColumns}
-          renderItem={({ item }) => (
-            <View style={{ flex: 1 / numColumns }}>
-              <Comic label={item.name} />
-            </View>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-          ItemSeparatorComponent={ItemSeparator}
-        />
-      )}
-
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        {data.length === 0 ? (
+          <Empty />
+        ) : (
+          <FlatList
+            data={data}
+            style={{
+              marginBottom: "5%",
+            }}
+            numColumns={numColumns}
+            renderItem={({ item }) => (
+              <View style={{ flex: 1 / numColumns, margin: 10 }}>
+                <Comic label={item.name} />
+              </View>
+            )}
+            keyExtractor={(item) => item.id.toString()}
+            ItemSeparatorComponent={ItemSeparator}
+          />
+        )}
+      </View>
       <View style={styles.button}>
-        <ControlButton label="생성" />
-        <ControlButton label="삭제" />
+        <ControlButton
+          label="생성"
+          onPress={isShowModal}
+          currentModal={currentModal}
+        />
+        <ControlButton
+          label="삭제"
+          onPress={isShowModal}
+          currentModal={currentModal}
+        />
       </View>
     </View>
   );
@@ -57,12 +69,11 @@ export default function OpenComic() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
     padding: 50,
     backgroundColor: "#DBE2EF",
+    justifyContent: "center",
   },
   button: {
-    marginTop: 30,
     flexDirection: "row",
     gap: 20,
     justifyContent: "flex-end",

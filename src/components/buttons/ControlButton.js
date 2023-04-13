@@ -1,13 +1,21 @@
 import React from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
-export default function ControlButton({ label }) {
+export default function ControlButton({ label, onPress, currentModal }) {
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.button}>
+    <TouchableOpacity style={styles.container}>
+      <View
+        style={styles.button}
+        onPress={() => {
+          onPress();
+          if (currentModal) {
+            currentModal(label);
+          }
+        }}
+      >
         <Text style={styles.buttonLabel}>{label}</Text>
-      </Pressable>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -27,7 +35,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonLabel: {
+    fontWeight: "bold",
     fontSize: 25,
-    color: "#000000",
   },
 });

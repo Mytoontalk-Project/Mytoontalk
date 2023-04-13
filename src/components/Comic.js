@@ -6,7 +6,9 @@ export default function Comic({ label }) {
     <View style={styles.container}>
       <Pressable style={styles.comicContainer} onPress={() => alert("comic")}>
         <Image style={styles.image} />
-        <Text style={styles.label}>{label}</Text>
+        <Text numberOfLines={2} style={styles.label}>
+          {label}
+        </Text>
       </Pressable>
     </View>
   );
@@ -15,14 +17,12 @@ export default function Comic({ label }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: 200,
-    height: 230,
+    height: 300,
     marginBottom: 20,
   },
   comicContainer: {
-    width: 200,
-    height: 180,
-    borderWidth: 2,
+    height: 220,
+    borderWidth: 1,
     alignItems: "center",
     borderRadius: 10,
   },
@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   label: {
-    fontSize: 20,
+    fontSize: 25,
     margin: 10,
+    textAlign: "center",
   },
 });
