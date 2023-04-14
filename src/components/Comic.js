@@ -17,11 +17,11 @@ export default function Comic({ label }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: 300,
-    marginBottom: 20,
+    marginBottom: 10,
+    height: 255,
   },
   comicContainer: {
-    height: 220,
+    height: 180,
     borderWidth: 1,
     alignItems: "center",
     borderRadius: 10,

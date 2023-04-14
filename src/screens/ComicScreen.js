@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 import DrawingBoard from "../components/DrawingBoard";
 import ControlButton from "../components/buttons/ControlButton";
 
-export default function ComicPage() {
-  const view = "preview";
-  const label = "저장";
+export default function ComicScreen({ navigation }) {
+  const [view, setView] = useState("preview");
 
   return (
     <View style={styles.container}>
@@ -19,32 +18,48 @@ export default function ComicPage() {
       <View style={styles.bodyContainer}>
         {view === "preview" ? (
           <View style={styles.comicbox}>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
           </View>
         ) : (
           <View style={styles.comicbox}>
             <View
-              style={{ width: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
             <View
-              style={{ vwidth: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
             <View
-              style={{ width: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
             <View
-              style={{ width: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
           </View>
         )}
@@ -64,8 +79,20 @@ export default function ComicPage() {
             </Svg>
           </Pressable>
           <View style={{ flexDirection: "row", gap: 20 }}>
-            {view === "preview" ? <ControlButton label="수정" /> : null}
-            <ControlButton label={label} />
+            {view === "preview" ? (
+              <>
+                <ControlButton
+                  label="수정"
+                  onPress={() => navigation.navigate("Drawing")}
+                />
+                <ControlButton label="저장" onPress={() => setView("comic")} />
+              </>
+            ) : (
+              <ControlButton
+                label="나가기"
+                onPress={() => navigation.navigate("Home")}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -99,7 +126,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
-    gap: 20,
+    gap: 10,
   },
   toolbox: {
     flex: 1,

@@ -21,11 +21,7 @@ const data = [
   { id: "13", name: "Comic 13" },
   { id: "14", name: "Comic 14" },
 ];
-const numColumns = 4;
-
-function ItemSeparator() {
-  return <View style={{ height: 20 }} />;
-}
+const numColumn = 4;
 
 export default function OpenComic({ isShowModal, currentModal }) {
   return (
@@ -36,17 +32,13 @@ export default function OpenComic({ isShowModal, currentModal }) {
         ) : (
           <FlatList
             data={data}
-            style={{
-              marginBottom: "5%",
-            }}
-            numColumns={numColumns}
+            numColumns={numColumn}
             renderItem={({ item }) => (
-              <View style={{ flex: 1 / numColumns, margin: 10 }}>
+              <View style={{ flex: 1 / numColumn, marginHorizontal: 10 }}>
                 <Comic label={item.name} />
               </View>
             )}
             keyExtractor={(item) => item.id.toString()}
-            ItemSeparatorComponent={ItemSeparator}
           />
         )}
       </View>
@@ -71,11 +63,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 50,
     backgroundColor: "#DBE2EF",
-    justifyContent: "center",
   },
   button: {
     flexDirection: "row",
     gap: 20,
+    marginRight: 10,
+    marginTop: 20,
     justifyContent: "flex-end",
   },
 });

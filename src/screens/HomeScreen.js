@@ -14,13 +14,13 @@ import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 
-export default function MainPage() {
-  const [isShowTitleModal, setIsShowTitleModal] = useState(false);
+export default function HomeScreen({ navigation }) {
+  const [isShowModal, setIsShoweModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
   const [title, setTitle] = useState("");
 
   const toggleModal = () => {
-    setIsShowTitleModal(true);
+    setIsShoweModal(true);
   };
 
   const handleCurrentModal = (modal) => {
@@ -33,10 +33,10 @@ export default function MainPage() {
         <Modal
           animationType="fade"
           transparent
-          visible={isShowTitleModal}
+          visible={isShowModal}
           onRequestClose={() => {
             Alert.alert("closed.");
-            setIsShowTitleModal(!isShowTitleModal);
+            setIsShoweModal(!isShowModal);
           }}
         >
           <View style={styles.centeredView}>
@@ -45,7 +45,7 @@ export default function MainPage() {
                 <Text style={styles.titleStyle}>제목</Text>
               </View>
               <Pressable
-                onPress={() => setIsShowTitleModal(false)}
+                onPress={() => setIsShoweModal(false)}
                 style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
@@ -65,8 +65,8 @@ export default function MainPage() {
               <Pressable
                 style={[styles.button, styles.mainColor]}
                 onPress={() => {
-                  setIsShowTitleModal(!isShowTitleModal);
-                  alert("drawingpage로 이동");
+                  setIsShoweModal(!isShowModal);
+                  navigation.navigate("Drawing");
                 }}
               >
                 <Text style={styles.textStyle}>생성</Text>
@@ -78,10 +78,10 @@ export default function MainPage() {
         <Modal
           animationType="fade"
           transparent
-          visible={isShowTitleModal}
+          visible={isShowModal}
           onRequestClose={() => {
             Alert.alert("closed.");
-            setIsShowTitleModal(!isShowTitleModal);
+            setIsShoweModal(!isShowModal);
           }}
         >
           <View style={styles.centeredView}>
@@ -90,7 +90,7 @@ export default function MainPage() {
                 <Text style={styles.titleStyle}>네컷만화 리스트</Text>
               </View>
               <Pressable
-                onPress={() => setIsShowTitleModal(false)}
+                onPress={() => setIsShoweModal(false)}
                 style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
@@ -117,7 +117,7 @@ export default function MainPage() {
       <Header style={{ flex: 1 }} />
       <OpenComic
         style={{ flex: 1 }}
-        isShowTitleModal={toggleModal}
+        isShowModal={toggleModal}
         currentModal={handleCurrentModal}
       />
     </View>

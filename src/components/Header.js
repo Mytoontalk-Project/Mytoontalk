@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingLeft: 50,
     paddingBottom: 20,
+    backgroundColor: "#ffffff",
   },
   label: {
     fontSize: 40,

@@ -20,7 +20,7 @@ import ManualModal from "../components/ManualModal";
 import COLORLIST from "../constants/color";
 import { setColor } from "../store/feature/drawingBoardSlice";
 
-export default function DrawingPage() {
+export default function DrawingScreen({ navigation }) {
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
 
@@ -152,7 +152,7 @@ export default function DrawingPage() {
                 style={[styles.button, styles.mainColor]}
                 onPress={() => {
                   setIsShowModal(!isShowModal);
-                  alert("home으로 이동");
+                  navigation.navigate("Home");
                 }}
               >
                 <Text style={styles.textStyle}>홈</Text>
@@ -242,7 +242,10 @@ export default function DrawingPage() {
           </Pressable>
         </View>
         <View>
-          <ControlButton label="완성" onPress={() => console.log("hoe")} />
+          <ControlButton
+            label="완성"
+            onPress={() => navigation.navigate("Comic")}
+          />
         </View>
       </View>
     </View>
@@ -259,7 +262,7 @@ const styles = StyleSheet.create({
     top: "20%",
     width: "20%",
     height: "60%",
-    right: "22%",
+    right: "22.25%",
     backgroundColor: "#DBE2EF",
     flexWrap: "wrap",
     paddingHorizontal: 10,

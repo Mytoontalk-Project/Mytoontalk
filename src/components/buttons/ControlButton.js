@@ -1,10 +1,15 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 
 export default function ControlButton({ label, onPress, currentModal }) {
   return (
     <TouchableOpacity style={styles.container}>
-      <View
+      <Pressable
         style={styles.button}
         onPress={() => {
           onPress();
@@ -14,7 +19,7 @@ export default function ControlButton({ label, onPress, currentModal }) {
         }}
       >
         <Text style={styles.buttonLabel}>{label}</Text>
-      </View>
+      </Pressable>
     </TouchableOpacity>
   );
 }
