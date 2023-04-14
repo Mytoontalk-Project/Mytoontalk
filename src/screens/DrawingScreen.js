@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     top: "20%",
     width: "20%",
     height: "60%",
-    right: "22%",
+    right: "22.25%",
     backgroundColor: "#DBE2EF",
     flexWrap: "wrap",
     paddingHorizontal: 10,

@@ -18,32 +18,48 @@ export default function ComicScreen({ navigation }) {
       <View style={styles.bodyContainer}>
         {view === "preview" ? (
           <View style={styles.comicbox}>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
-            <View style={{ width: 500, height: 350 }}>
+            <View style={{ width: "48%", height: "48%" }}>
               <DrawingBoard />
             </View>
           </View>
         ) : (
           <View style={styles.comicbox}>
             <View
-              style={{ width: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
             <View
-              style={{ vwidth: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
             <View
-              style={{ width: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
             <View
-              style={{ width: 500, height: 350, backgroundColor: "#ffffff" }}
+              style={{
+                width: "48%",
+                height: "48%",
+                backgroundColor: "#ffffff",
+              }}
             ></View>
           </View>
         )}
@@ -110,7 +126,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     alignContent: "center",
     justifyContent: "center",
-    gap: 20,
+    gap: 10,
   },
   toolbox: {
     flex: 1,
