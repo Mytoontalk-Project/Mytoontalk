@@ -5,9 +5,12 @@ import { useSelector } from "react-redux";
 
 import { selectColor } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
+import { selectRecordings } from "../store/feature/audioSlice";
 
 export default function WorkingTool({ isShowModal, currentModal }) {
   const currentColor = useSelector(selectColor);
+  const recordings = useSelector(selectRecordings);
+  const currentrecording = recordings[recordings.length - 1];
 
   return (
     <View style={styles.container}>
@@ -61,7 +64,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             <Path d={ICONPATH.ERASER} fill={ICONCOLOR} />
           </Svg>
         </Pressable>
-        <Pressable name="sound">
+        <Pressable name="sound" onPress={() => currentrecording.sound.replayAsync()}>
           <Svg width={70} height={70} viewBox="0 0 640 512">
             <Path d={ICONPATH.SOUND} fill={ICONCOLOR} />
           </Svg>

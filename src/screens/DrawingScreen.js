@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Modal,
   Alert,
@@ -9,8 +9,10 @@ import {
   Pressable,
   FlatList,
   TouchableWithoutFeedback,
+  Button,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { Audio } from "expo-av";
 
 import DrawingBoard from "../components/DrawingBoard";
 import WorkingTool from "../components/WorkingTool";
@@ -20,28 +22,20 @@ import ManualModal from "../components/ManualModal";
 import COLORLIST from "../constants/color";
 import { setColor } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
+import {
+  setRecording,
+  setMessage,
+  selectRecording,
+  selectRecordings,
+  setRecordings,
+} from "../store/feature/audioSlice";
 
 export default function DrawingScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
-
-  const dispatch = useDispatch();
-  const data = [
-    { id: "1", name: "Audio" },
-    { id: "2", name: "Audio" },
-    { id: "3", name: "Audio" },
-    { id: "4", name: "Audio" },
-    { id: "5", name: "Audio" },
-    { id: "6", name: "Audio" },
-    { id: "7", name: "Audio" },
-    { id: "8", name: "Audio" },
-    { id: "9", name: "Audio" },
-    { id: "10", name: "Audio" },
-    { id: "11", name: "Audio" },
-    { id: "12", name: "Audio" },
-    { id: "13", name: "Audio" },
-    { id: "14", name: "Audio" },
-  ];
+  const recording = useSelector(selectRecording);
+  const recordings = useSelector(selectRecordings);
 
   const toggleModal = () => {
     setIsShowModal(true);
@@ -49,6 +43,46 @@ export default function DrawingScreen({ navigation }) {
 
   const handleCurrentModal = (modal) => {
     setCurrentModal(modal);
+  };
+
+  const startRecording = async () => {
+    try {
+      const permission = await Audio.requestPermissionsAsync();
+
+      if (permission.status === "granted") {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
+        });
+
+        const { recording } = await Audio.Recording.createAsync(
+          Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+        );
+
+        dispatch(setRecording(recording));
+      } else {
+        dispatch(
+          setMessage("앱에서 마이크에 액세스할 수 있는 권한을 부여하십시오."),
+        );
+      }
+    } catch (err) {
+      console.error("녹음을 시작하지 못했습니다", err);
+    }
+  };
+
+  const stopRecording = async () => {
+    dispatch(setRecording(undefined));
+
+    await recording.stopAndUnloadAsync();
+
+    const updatedRecordings = [...recordings];
+    const { sound } = await recording.createNewLoadedSoundAsync();
+    updatedRecordings.push({
+      sound,
+      file: recording.getURI(),
+    });
+
+    dispatch(setRecordings(updatedRecordings));
   };
 
   return (
@@ -89,8 +123,8 @@ export default function DrawingScreen({ navigation }) {
               </Pressable>
               <View style={[styles.audioList, styles.mainColor]}>
                 <FlatList
-                  data={data}
-                  renderItem={({ item }) => (
+                  data={recordings}
+                  renderItem={({ item, index }) => (
                     <View
                       style={{
                         borderWidth: 1,
@@ -103,13 +137,13 @@ export default function DrawingScreen({ navigation }) {
                       }}
                     >
                       <AudioButton
-                        label={item.id}
-                        onPress={() => alert("삭제")}
+                        label={index + 1}
+                        onPress={() => item.sound.replayAsync()}
                       />
                     </View>
                   )}
                   numColumns={6}
-                  keyExtractor={(item, index) => index.toString()}
+                  keyExtractor={(recordingLine, index) => index.toString()}
                 />
               </View>
             </View>
@@ -216,10 +250,19 @@ export default function DrawingScreen({ navigation }) {
               <Path d={ICONPATH.ARROW_LEFT} fill={ICONCOLOR} />
             </Svg>
           </Pressable>
-          <Pressable style={styles.icon} onPress={() => alert("audio")}>
-            <Svg width="auto" height="100%" viewBox="0 0 640 512">
-              <Path d={ICONPATH.AUDIO_OFF} fill={ICONCOLOR} />
-            </Svg>
+          <Pressable
+            style={styles.icon}
+            onPress={recording ? stopRecording : startRecording}
+          >
+            {recording ? (
+              <Svg width="auto" height="100%" viewBox="0 0 640 512">
+                <Path d={ICONPATH.AUDIO_ON} fill={ICONCOLOR} />
+              </Svg>
+            ) : (
+              <Svg width="auto" height="100%" viewBox="0 0 640 512">
+                <Path d={ICONPATH.AUDIO_OFF} fill={ICONCOLOR} />
+              </Svg>
+            )}
           </Pressable>
           <Pressable style={styles.icon} onPress={() => alert("next")}>
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
