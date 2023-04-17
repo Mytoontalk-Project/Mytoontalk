@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  title: "",
   currentPage: 1,
   currentTool: "pen",
   pen: {
@@ -41,11 +42,15 @@ export const drawingBoardSlice = createSlice({
     setColor: (state, action) => {
       state.color = action.payload;
     },
+    setTitle: (state, action) => {
+      state.title = action.payload;
+    }
   },
 });
 
-export const { setColor } = drawingBoardSlice.actions;
+export const { setColor, setTitle } = drawingBoardSlice.actions;
 
 export const selectColor = (state) => state.drawingBoard.color;
+export const selectTitle = (state) => state.drawingBoard.title;
 
 export default drawingBoardSlice.reducer;

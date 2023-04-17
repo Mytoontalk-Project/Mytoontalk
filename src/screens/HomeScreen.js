@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Alert,
   Modal,
@@ -14,11 +15,13 @@ import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
+import { setTitle } from "../store/feature/drawingBoardSlice";
 
 export default function HomeScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [isShowModal, setIsShoweModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
-  const [title, setTitle] = useState("");
+  const [input, setInput] = useState("");
 
   const toggleModal = () => {
     setIsShoweModal(true);
@@ -54,8 +57,8 @@ export default function HomeScreen({ navigation }) {
                 </Svg>
               </Pressable>
               <TextInput
-                value={title}
-                onChangeText={(title) => setTitle(title)}
+                value={input}
+                onChangeText={(input) => setInput(input)}
                 placeholder="제목을 입력해주세요."
                 multiline
                 style={[styles.mainColor, styles.input]}
@@ -64,6 +67,8 @@ export default function HomeScreen({ navigation }) {
                 style={[styles.button, styles.mainColor]}
                 onPress={() => {
                   setIsShoweModal(!isShowModal);
+                  dispatch(setTitle(input));
+                  setInput("");
                   navigation.navigate("Drawing");
                 }}
               >

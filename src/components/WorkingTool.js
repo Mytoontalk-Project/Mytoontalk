@@ -10,7 +10,7 @@ import { selectRecordings } from "../store/feature/audioSlice";
 export default function WorkingTool({ isShowModal, currentModal }) {
   const currentColor = useSelector(selectColor);
   const recordings = useSelector(selectRecordings);
-  const currentrecording = recordings[recordings.length - 1];
+  const currentRecording = recordings[recordings.length - 1];
 
   return (
     <View style={styles.container}>
@@ -64,7 +64,12 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             <Path d={ICONPATH.ERASER} fill={ICONCOLOR} />
           </Svg>
         </Pressable>
-        <Pressable name="sound" onPress={() => currentrecording.sound.replayAsync()}>
+        <Pressable
+          name="sound"
+          onPress={() => {
+            currentRecording?.sound.replayAsync();
+          }}
+        >
           <Svg width={70} height={70} viewBox="0 0 640 512">
             <Path d={ICONPATH.SOUND} fill={ICONCOLOR} />
           </Svg>

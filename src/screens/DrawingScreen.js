@@ -9,7 +9,7 @@ import {
   Pressable,
   FlatList,
   TouchableWithoutFeedback,
-  Button,
+  TextInput,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { Audio } from "expo-av";
@@ -20,20 +20,22 @@ import ControlButton from "../components/buttons/ControlButton";
 import AudioButton from "../components/buttons/AudioButton";
 import ManualModal from "../components/ManualModal";
 import COLORLIST from "../constants/color";
-import { setColor } from "../store/feature/drawingBoardSlice";
+import { setColor, selectTitle } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
   setRecording,
   setMessage,
+  setRecordings,
   selectRecording,
   selectRecordings,
-  setRecordings,
 } from "../store/feature/audioSlice";
 
 export default function DrawingScreen({ navigation }) {
   const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
+  const title = useSelector(selectTitle);
+  const [input, setInput] = useState(title);
   const recording = useSelector(selectRecording);
   const recordings = useSelector(selectRecordings);
 
@@ -228,9 +230,14 @@ export default function DrawingScreen({ navigation }) {
         </Modal>
       )}
       <View style={styles.header}>
-        <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
-          오늘의 집
-        </Text>
+        <TextInput
+          value={input}
+          onChangeText={(input) => setInput(input)}
+          placeholder="제목을 입력해주세요."
+          style={styles.title}
+          adjustsFontSizeToFit
+          numberOfLines={1}
+        />
       </View>
       <View style={styles.bodyContainer}>
         <View style={{ flex: 1 }}>
