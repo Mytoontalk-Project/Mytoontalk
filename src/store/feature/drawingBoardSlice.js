@@ -48,16 +48,20 @@ export const drawingBoardSlice = createSlice({
     setTitle: (state, action) => {
       state.title = action.payload;
     },
-    setPage: (state, action) => {
+    setCurrentPage: (state, action) => {
       state.currentPage = action.payload;
     },
     setCurrentTool: (state, action) => {
       state.currentTool = action.payload;
     },
+    /* setPage: (state, action) => {
+      state.page = action.payload;
+    } */
   },
 });
 
 export const {
+  setCurrentPage,
   setTitle,
   setPenColor,
   setPenWidth,
@@ -72,5 +76,6 @@ export const selectEraserWidth = (state) => state.drawingBoard.eraser.width;
 export const selectTitle = (state) => state.drawingBoard.title;
 export const selectCurrentPage = (state) => state.drawingBoard.currentPage;
 export const selectCurrentTool = (state) => state.drawingBoard.currentTool;
+export const selectPage = (state) => state.drawingBoard.page;
 
 export default drawingBoardSlice.reducer;

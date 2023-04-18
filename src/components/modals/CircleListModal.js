@@ -9,17 +9,19 @@ import {
   Pressable,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 import AudioButton from "../buttons/AudioButton";
 import { selectRecordings } from "../../store/feature/audioSlice";
+import { setCurrentTool } from "../../store/feature/drawingBoardSlice";
 
 export default function CircleListModal({
   title,
   isShowModal,
   setIsShowModal,
 }) {
+  const dispatch = useDispatch();
   const recordings = useSelector(selectRecordings);
 
   return (
@@ -38,11 +40,14 @@ export default function CircleListModal({
             <Text style={styles.titleStyle}>{title}</Text>
           </View>
           <Pressable
-            onPress={() => setIsShowModal(false)}
+            onPress={() => {
+              setIsShowModal(false);
+              dispatch(setCurrentTool("pen"));
+            }}
             style={styles.closeButton}
           >
             <Svg width={30} height={30} viewBox="0 0 384 512">
-              <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
+              <Path d={ICONPATH.XMARK} fill={ICONCOLOR.general} />
             </Svg>
           </Pressable>
           <View style={[styles.audioList, styles.mainColor]}>

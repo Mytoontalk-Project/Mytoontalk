@@ -15,7 +15,7 @@ import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { setTitle } from "../store/feature/drawingBoardSlice";
+import { setCurrentTool, setTitle } from "../store/feature/drawingBoardSlice";
 import { setRecordings } from "../store/feature/audioSlice";
 
 export default function HomeScreen({ navigation }) {
@@ -54,7 +54,7 @@ export default function HomeScreen({ navigation }) {
                 style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
-                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
+                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR.general} />
                 </Svg>
               </Pressable>
               <TextInput
@@ -71,6 +71,7 @@ export default function HomeScreen({ navigation }) {
                   dispatch(setTitle(input));
                   setInput("");
                   dispatch(setRecordings([]));
+                  dispatch(setCurrentTool(null));
                   navigation.navigate("Drawing");
                 }}
               >

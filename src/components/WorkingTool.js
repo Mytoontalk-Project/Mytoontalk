@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
+  selectCurrentTool,
   selectPenColor,
   setCurrentTool,
 } from "../store/feature/drawingBoardSlice";
@@ -15,6 +16,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
   const penColor = useSelector(selectPenColor);
   const recordings = useSelector(selectRecordings);
   const currentRecording = recordings[recordings.length - 1];
+  const currentTool = useSelector(selectCurrentTool);
 
   return (
     <View style={styles.container}>
@@ -22,25 +24,38 @@ export default function WorkingTool({ isShowModal, currentModal }) {
         <Pressable
           name="pen"
           onPress={() => {
+            currentModal("width");
+            dispatch(setCurrentTool("pen"));
+          }}
+          onLongPress={() => {
             isShowModal();
             currentModal("width");
             dispatch(setCurrentTool("pen"));
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 512 512">
-            <Path d={ICONPATH.PENCIL} fill={ICONCOLOR} />
+            <Path
+              d={ICONPATH.PENCIL}
+              fill={currentTool === "pen" ? ICONCOLOR.pen : ICONCOLOR.general}
+            />
           </Svg>
         </Pressable>
         <Pressable
           name="color"
           onPress={() => {
             isShowModal();
+            dispatch(setCurrentTool("pen"));
             currentModal("color");
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 512 512">
-            <Path d={ICONPATH.PALETTE} fill={ICONCOLOR} />
+            <Path d={ICONPATH.PALETTE} fill={ICONCOLOR.general} />
             <View width={30} height={30} style={colorStyle(penColor).color} />
+          </Svg>
+        </Pressable>
+        <Pressable name="undo">
+          <Svg width={70} height={70} viewBox="0 0 512 512">
+            <Path d={ICONPATH.UNDO} fill={ICONCOLOR.general} />
           </Svg>
         </Pressable>
         <Pressable
@@ -48,10 +63,14 @@ export default function WorkingTool({ isShowModal, currentModal }) {
           onPress={() => {
             isShowModal();
             currentModal("home");
+            dispatch(setCurrentTool("home"));
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 512 512">
-            <Path d={ICONPATH.BACK} fill={ICONCOLOR} />
+            <Path
+              d={ICONPATH.BACK}
+              fill={currentTool === "home" ? ICONCOLOR.home : ICONCOLOR.general}
+            />
           </Svg>
         </Pressable>
       </View>
@@ -59,34 +78,60 @@ export default function WorkingTool({ isShowModal, currentModal }) {
         <Pressable
           name="eraser"
           onPress={() => {
+            currentModal("width");
+            dispatch(setCurrentTool("eraser"));
+          }}
+          onLongPress={() => {
             isShowModal();
             currentModal("width");
             dispatch(setCurrentTool("eraser"));
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 576 512">
-            <Path d={ICONPATH.ERASER} fill={ICONCOLOR} />
+            <Path
+              d={ICONPATH.ERASER}
+              fill={
+                currentTool === "eraser" ? ICONCOLOR.eraser : ICONCOLOR.general
+              }
+            />
           </Svg>
         </Pressable>
         <Pressable
           name="sound"
           onPress={() => {
             currentRecording?.sound.replayAsync();
+            dispatch(setCurrentTool("sound"));
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 640 512">
-            <Path d={ICONPATH.SOUND} fill={ICONCOLOR} />
+            <Path
+              d={ICONPATH.SOUND}
+              fill={
+                currentTool === "sound" ? ICONCOLOR.sound : ICONCOLOR.general
+              }
+            />
+          </Svg>
+        </Pressable>
+        <Pressable name="redo">
+          <Svg width={70} height={70} viewBox="0 0 512 512">
+            <Path d={ICONPATH.REDO} fill={ICONCOLOR.general} />
           </Svg>
         </Pressable>
         <Pressable
-          name="audiolist"
+          name="audioList"
           onPress={() => {
             isShowModal();
             currentModal("list");
+            dispatch(setCurrentTool("audioList"));
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 576 512">
-            <Path d={ICONPATH.LIST} fill={ICONCOLOR} />
+            <Path
+              d={ICONPATH.LIST}
+              fill={
+                currentTool === "audioList" ? ICONCOLOR.list : ICONCOLOR.general
+              }
+            />
           </Svg>
         </Pressable>
       </View>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { Canvas, Path } from "@shopify/react-native-skia";
 import {
@@ -9,9 +9,11 @@ import {
 import { useSelector } from "react-redux";
 
 import {
+  selectCurrentPage,
   selectCurrentTool,
   selectEraserColor,
   selectEraserWidth,
+  selectPage,
   selectPenColor,
   selectPenWidth,
 } from "../store/feature/drawingBoardSlice";
@@ -23,6 +25,8 @@ export default function DrawingBoard() {
   const penWidth = useSelector(selectPenWidth);
   const eraserColor = useSelector(selectEraserColor);
   const eraserWidth = useSelector(selectEraserWidth);
+  const currentPage = useSelector(selectCurrentPage);
+  const page = useSelector(selectPage)[currentPage];
 
   const pan = Gesture.Pan()
     .onStart((g) => {

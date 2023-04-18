@@ -13,6 +13,7 @@ import {
   selectTitle,
   selectCurrentPage,
   setTitle,
+  setCurrentPage,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -144,9 +145,17 @@ export default function DrawingScreen({ navigation }) {
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.pageMoveButton}>
-          <Pressable style={styles.icon}>
+          <Pressable
+            style={styles.icon}
+            onPress={() =>
+              page > 1 ? dispatch(setCurrentPage(page - 1)) : null
+            }
+          >
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
-              <Path d={ICONPATH.ARROW_LEFT} fill={ICONCOLOR} />
+              <Path
+                d={ICONPATH.ARROW_LEFT}
+                fill={page === 1 ? ICONCOLOR.main : ICONCOLOR.general}
+              />
             </Svg>
           </Pressable>
           <Pressable
@@ -174,9 +183,17 @@ export default function DrawingScreen({ navigation }) {
               />
             )}
           </Pressable>
-          <Pressable style={styles.icon}>
+          <Pressable
+            style={styles.icon}
+            onPress={() =>
+              page < 4 ? dispatch(setCurrentPage(page + 1)) : null
+            }
+          >
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
-              <Path d={ICONPATH.ARROW_RIGHT} fill={ICONCOLOR} />
+              <Path
+                d={ICONPATH.ARROW_RIGHT}
+                fill={page === 4 ? ICONCOLOR.main : ICONCOLOR.general}
+              />
             </Svg>
           </Pressable>
         </View>

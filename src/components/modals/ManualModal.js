@@ -39,7 +39,7 @@ export default function ManualModal({ title, description, setCurrentModal }) {
             style={styles.closeButton}
           >
             <Svg width={30} height={30} viewBox="0 0 384 512">
-              <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
+              <Path d={ICONPATH.XMARK} fill={ICONCOLOR.general} />
             </Svg>
           </TouchableOpacity>
           <View style={[styles.mainColor, styles.input]}>

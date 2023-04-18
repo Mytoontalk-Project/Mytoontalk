@@ -1,8 +1,10 @@
 import React from "react";
 import { Modal, Alert, StyleSheet, View, Text, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { useDispatch } from "react-redux";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
+import { setCurrentTool } from "../../store/feature/drawingBoardSlice";
 
 export default function GeneralModal({
   title,
@@ -12,6 +14,8 @@ export default function GeneralModal({
   navigation,
   buttonText,
 }) {
+  const dispatch = useDispatch();
+
   return (
     <Modal
       animationType="fade"
@@ -28,11 +32,14 @@ export default function GeneralModal({
             <Text style={styles.titleStyle}>{title}</Text>
           </View>
           <Pressable
-            onPress={() => setIsShowModal(false)}
+            onPress={() => {
+              setIsShowModal(false);
+              dispatch(setCurrentTool("pen"));
+            }}
             style={styles.closeButton}
           >
             <Svg width={30} height={30} viewBox="0 0 384 512">
-              <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
+              <Path d={ICONPATH.XMARK} fill={ICONCOLOR.general} />
             </Svg>
           </Pressable>
           <View style={[styles.mainColor, styles.description]}>

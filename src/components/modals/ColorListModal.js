@@ -37,7 +37,6 @@ export default function ColorListModal({ isShowModal, setIsShowModal }) {
                 style={{
                   backgroundColor: item,
                   borderWidth: 1,
-                  borderRadius: "50%",
                   width: "16.66%",
                   aspectRatio: 1,
                 }}
