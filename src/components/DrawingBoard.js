@@ -8,19 +8,37 @@ import {
 } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 
-import { selectColor } from "../store/feature/drawingBoardSlice";
+import {
+  selectCurrentTool,
+  selectEraserColor,
+  selectEraserWidth,
+  selectPenColor,
+  selectPenWidth,
+} from "../store/feature/drawingBoardSlice";
 
 export default function DrawingBoard() {
   const [paths, setPaths] = useState([]);
-  const currentColor = useSelector(selectColor);
+  const currentTool = useSelector(selectCurrentTool);
+  const penColor = useSelector(selectPenColor);
+  const penWidth = useSelector(selectPenWidth);
+  const eraserColor = useSelector(selectEraserColor);
+  const eraserWidth = useSelector(selectEraserWidth);
 
   const pan = Gesture.Pan()
     .onStart((g) => {
       const newPaths = [...paths];
+      const { currentColor, currentWidth } =
+        currentTool === "pen"
+          ? { currentColor: penColor, currentWidth: penWidth }
+          : { currentColor: eraserColor, currentWidth: eraserWidth };
+
       newPaths[paths.length] = {
+        id: Date.now(),
         segments: [],
         color: currentColor,
+        penWidth: currentWidth,
       };
+
       newPaths[paths.length].segments.push(`M ${g.x} ${g.y}`);
       setPaths(newPaths);
     })
@@ -34,16 +52,15 @@ export default function DrawingBoard() {
     })
     .minDistance(1);
 
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={pan}>
         <Canvas style={styles.canvas}>
-          {paths.map((p, index) => (
+          {paths.map((p) => (
             <Path
-              key={index}
+              key={p.id}
               path={p.segments.join(" ")}
-              strokeWidth={5}
+              strokeWidth={p.penWidth}
               style="stroke"
               strokeJoin="round"
               strokeCap="round"
@@ -62,6 +79,5 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: "#ffffff",
-    borderWidth: 1,
   },
 });

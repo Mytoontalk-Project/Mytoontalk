@@ -1,26 +1,19 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Modal,
-  Alert,
-  StyleSheet,
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  TouchableWithoutFeedback,
-  TextInput,
-} from "react-native";
+import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { Audio } from "expo-av";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 import DrawingBoard from "../components/DrawingBoard";
 import WorkingTool from "../components/WorkingTool";
 import ControlButton from "../components/buttons/ControlButton";
-import AudioButton from "../components/buttons/AudioButton";
-import ManualModal from "../components/ManualModal";
-import COLORLIST from "../constants/color";
-import { setColor, selectTitle } from "../store/feature/drawingBoardSlice";
+import ManualModal from "../components/modals/ManualModal";
+import {
+  selectTitle,
+  selectCurrentPage,
+  setTitle,
+} from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
   setRecording,
@@ -29,6 +22,10 @@ import {
   selectRecording,
   selectRecordings,
 } from "../store/feature/audioSlice";
+import CircleListModal from "../components/modals/CircleListModal";
+import GeneralModal from "../components/modals/GeneralModal";
+import ColorListModal from "../components/modals/ColorListModal";
+import WidthModal from "../components/modals/WidthModal";
 
 export default function DrawingScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -38,6 +35,7 @@ export default function DrawingScreen({ navigation }) {
   const [input, setInput] = useState(title);
   const recording = useSelector(selectRecording);
   const recordings = useSelector(selectRecordings);
+  const page = useSelector(selectCurrentPage);
 
   const toggleModal = () => {
     setIsShowModal(true);
@@ -97,142 +95,36 @@ export default function DrawingScreen({ navigation }) {
       {currentModal === "next" && (
         <ManualModal
           title="나가기"
-          description={`홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`}
+          description={`홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우에는${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`}
         />
       )}
       {currentModal === "list" ? (
-        <Modal
-          animationType="fade"
-          transparent
-          visible={isShowModal}
-          onRequestClose={() => {
-            Alert.alert("closed.");
-            setIsShowModal(!setIsShowModal);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={[styles.listbox, styles.mainColor]}>
-                <Text style={styles.titleStyle}>녹음 리스트</Text>
-              </View>
-              <Pressable
-                onPress={() => setIsShowModal(false)}
-                style={styles.closeButton}
-              >
-                <Svg width={30} height={30} viewBox="0 0 384 512">
-                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
-                </Svg>
-              </Pressable>
-              <View style={[styles.audioList, styles.mainColor]}>
-                <FlatList
-                  data={recordings}
-                  renderItem={({ item, index }) => (
-                    <View
-                      style={{
-                        borderWidth: 1,
-                        borderRadius: "50%",
-                        width: "14%",
-                        aspectRatio: 1,
-                        marginHorizontal: 7,
-                        marginVertical: 11,
-                        backgroundColor: "#ffffff",
-                      }}
-                    >
-                      <AudioButton
-                        label={index + 1}
-                        onPress={() => item.sound.replayAsync()}
-                      />
-                    </View>
-                  )}
-                  numColumns={6}
-                  keyExtractor={(recordingLine, index) => index.toString()}
-                />
-              </View>
-            </View>
-          </View>
-        </Modal>
+        <CircleListModal
+          title="녹음 목록"
+          isShowModal={isShowModal}
+          setIsShowModal={setIsShowModal}
+        />
       ) : currentModal === "home" ? (
-        <Modal
-          animationType="fade"
-          transparent
-          visible={isShowModal}
-          onRequestClose={() => {
-            Alert.alert("closed.");
-            setIsShowModal(!isShowModal);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={[styles.backbox, styles.mainColor]}>
-                <Text style={styles.titleStyle}>나가기</Text>
-              </View>
-              <Pressable
-                onPress={() => setIsShowModal(false)}
-                style={styles.closeButton}
-              >
-                <Svg width={30} height={30} viewBox="0 0 384 512">
-                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
-                </Svg>
-              </Pressable>
-              <View style={[styles.mainColor, styles.input]}>
-                <Text style={styles.inputStyle}>
-                  지금까지의 내용은 저장되지 않습니다.{"\n"}정말 나가시겠습니까?
-                </Text>
-              </View>
-              <Pressable
-                style={[styles.button, styles.mainColor]}
-                onPress={() => {
-                  setIsShowModal(!isShowModal);
-                  navigation.navigate("Home");
-                }}
-              >
-                <Text style={styles.textStyle}>홈</Text>
-              </Pressable>
-            </View>
-          </View>
-        </Modal>
+        <GeneralModal
+          title="나가기"
+          description={`지금까지의 내용은 저장되지 않습니다.${"\n"}정말 나가시겠습니까?`}
+          isShowModal={isShowModal}
+          setIsShowModal={setIsShowModal}
+          buttonText="홈"
+          navigation={navigation}
+        />
+      ) : currentModal === "color" ? (
+        <ColorListModal
+          isShowModal={isShowModal}
+          setIsShowModal={setIsShowModal}
+        />
       ) : (
-        <Modal
-          animationType="slide"
-          transparent
-          visible={isShowModal}
-          onRequestClose={() => {
-            Alert.alert("closed.");
-            setIsShowModal(!isShowModal);
-          }}
-        >
-          <TouchableWithoutFeedback onPress={() => setIsShowModal(false)}>
-            <View style={styles.colorModal}>
-              <View style={{ flex: 1 }}></View>
-            </View>
-          </TouchableWithoutFeedback>
-          <View style={styles.colors}>
-            <TouchableWithoutFeedback>
-              <FlatList
-                data={COLORLIST}
-                renderItem={({ item }) => (
-                  <Pressable
-                    style={{
-                      backgroundColor: item,
-                      borderWidth: 1,
-                      borderRadius: "50%",
-                      width: "16.66%",
-                      aspectRatio: 1,
-                    }}
-                    onPress={() => dispatch(setColor(item))}
-                  />
-                )}
-                numColumns={6}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </TouchableWithoutFeedback>
-          </View>
-        </Modal>
+        <WidthModal isShowModal={isShowModal} setIsShowModal={setIsShowModal} />
       )}
       <View style={styles.header}>
         <TextInput
           value={input}
-          onChangeText={(input) => setInput(input)}
+          onChangeText={(text) => setInput(text)}
           placeholder="제목을 입력해주세요."
           style={styles.title}
           adjustsFontSizeToFit
@@ -252,7 +144,7 @@ export default function DrawingScreen({ navigation }) {
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.pageMoveButton}>
-          <Pressable style={styles.icon} onPress={() => alert("prev")}>
+          <Pressable style={styles.icon}>
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
               <Path d={ICONPATH.ARROW_LEFT} fill={ICONCOLOR} />
             </Svg>
@@ -262,25 +154,48 @@ export default function DrawingScreen({ navigation }) {
             onPress={recording ? stopRecording : startRecording}
           >
             {recording ? (
-              <Svg width="auto" height="100%" viewBox="0 0 640 512">
-                <Path d={ICONPATH.AUDIO_ON} fill={ICONCOLOR} />
-              </Svg>
+              <>
+                <MaterialCommunityIcons
+                  name="microphone"
+                  size={57}
+                  color="black"
+                />
+                <View
+                  width={15}
+                  height={15}
+                  style={audioStyle("#FF0000").color}
+                />
+              </>
             ) : (
-              <Svg width="auto" height="100%" viewBox="0 0 640 512">
-                <Path d={ICONPATH.AUDIO_OFF} fill={ICONCOLOR} />
-              </Svg>
+              <MaterialCommunityIcons
+                name="microphone-off"
+                size={57}
+                color="black"
+              />
             )}
           </Pressable>
-          <Pressable style={styles.icon} onPress={() => alert("next")}>
+          <Pressable style={styles.icon}>
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
               <Path d={ICONPATH.ARROW_RIGHT} fill={ICONCOLOR} />
             </Svg>
           </Pressable>
         </View>
-        <View>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <View style={styles.page}>
+            <Text style={{ fontSize: 40, textAlign: "center" }}>{page}</Text>
+          </View>
           <ControlButton
             label="완성"
-            onPress={() => navigation.navigate("Comic")}
+            onPress={() => {
+              dispatch(setTitle(input));
+              navigation.navigate("Comic");
+            }}
           />
         </View>
       </View>
@@ -289,28 +204,10 @@ export default function DrawingScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  colorModal: {
-    flex: 1,
-  },
-  colors: {
-    position: "absolute",
-    borderRadius: 20,
-    top: "20%",
-    width: "20%",
-    height: "60%",
-    right: "22.25%",
-    backgroundColor: "#DBE2EF",
-    flexWrap: "wrap",
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
+  page: {
+    borderRadius: "50%",
+    width: 50,
+    backgroundColor: "#ffffff",
   },
   container: {
     flex: 1,
@@ -337,6 +234,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-end",
+    gap: 20,
   },
   pageMoveButton: {
     width: "79%",
@@ -347,92 +245,14 @@ const styles = StyleSheet.create({
   icon: {
     flex: 1 / 15,
   },
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    left: "15%",
-  },
-  manualView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-  },
-  modalView: {
-    backgroundColor: "#ffffff",
-    borderRadius: 20,
-    width: "50%",
-    height: "40%",
-    padding: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 5,
-    gap: 20,
-    alignItems: "center",
-  },
-  closeButton: {
-    position: "absolute",
-    zIndex: 1,
-    top: 30,
-    right: 25,
-    borderRadius: 50,
-    backgroundColor: "#DBE2EF",
-    padding: 5,
-  },
-  listbox: {
-    borderRadius: 20,
-    padding: 15,
-    width: 300,
-  },
-  backbox: {
-    borderRadius: 20,
-    padding: 15,
-    width: 300,
-  },
-  mainColor: {
-    backgroundColor: "#DBE2EF",
-  },
-  audioList: {
-    flex: 1,
-    borderRadius: 20,
-    width: "100%",
-    justifyContent: "center",
-  },
-  titleStyle: {
-    fontWeight: "bold",
-    fontSize: 30,
-    textAlign: "center",
-  },
-  textStyle: {
-    fontWeight: "bold",
-    textAlign: "center",
-    fontSize: 25,
-  },
-  input: {
-    flex: 1,
-    borderRadius: 20,
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    padding: 20,
-    paddingTop: 20,
-  },
-  inputStyle: {
-    fontSize: 30,
-    textAlign: "center",
-    lineHeight: 50,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    width: 80,
-    height: 50,
-    justifyContent: "center",
-  },
 });
+
+const audioStyle = (color) =>
+  StyleSheet.create({
+    color: {
+      position: "absolute",
+      backgroundColor: color,
+      borderRadius: "50%",
+      right: 0,
+    },
+  });

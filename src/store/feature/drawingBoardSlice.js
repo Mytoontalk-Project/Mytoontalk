@@ -5,16 +5,13 @@ const initialState = {
   currentPage: 1,
   currentTool: "pen",
   pen: {
+    width: 3,
     color: "#000000",
-    width: 4,
-    opacity: 1,
   },
   eraser: {
     color: "#ffffff",
-    width: 4,
-    opacity: 1,
+    width: 5,
   },
-  color: "#000000",
   page: {
     1: {
       drawingData: [],
@@ -39,18 +36,41 @@ export const drawingBoardSlice = createSlice({
   name: "drawingBoard",
   initialState,
   reducers: {
-    setColor: (state, action) => {
-      state.color = action.payload;
+    setPenColor: (state, action) => {
+      state.pen.color = action.payload;
+    },
+    setPenWidth: (state, action) => {
+      state.pen.width = action.payload;
+    },
+    setEraserWidth: (state, action) => {
+      state.eraser.width = action.payload;
     },
     setTitle: (state, action) => {
       state.title = action.payload;
-    }
+    },
+    setPage: (state, action) => {
+      state.currentPage = action.payload;
+    },
+    setCurrentTool: (state, action) => {
+      state.currentTool = action.payload;
+    },
   },
 });
 
-export const { setColor, setTitle } = drawingBoardSlice.actions;
+export const {
+  setTitle,
+  setPenColor,
+  setPenWidth,
+  setEraserWidth,
+  setCurrentTool
+} = drawingBoardSlice.actions;
 
-export const selectColor = (state) => state.drawingBoard.color;
+export const selectPenColor = (state) => state.drawingBoard.pen.color;
+export const selectPenWidth = (state) => state.drawingBoard.pen.width;
+export const selectEraserColor = (state) => state.drawingBoard.eraser.color;
+export const selectEraserWidth = (state) => state.drawingBoard.eraser.width;
 export const selectTitle = (state) => state.drawingBoard.title;
+export const selectCurrentPage = (state) => state.drawingBoard.currentPage;
+export const selectCurrentTool = (state) => state.drawingBoard.currentTool;
 
 export default drawingBoardSlice.reducer;

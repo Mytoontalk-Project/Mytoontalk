@@ -1,28 +1,34 @@
 import React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
-import { selectColor } from "../store/feature/drawingBoardSlice";
+import {
+  selectPenColor,
+  setCurrentTool,
+} from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { selectRecordings } from "../store/feature/audioSlice";
 
 export default function WorkingTool({ isShowModal, currentModal }) {
-  const currentColor = useSelector(selectColor);
+  const dispatch = useDispatch();
+  const penColor = useSelector(selectPenColor);
   const recordings = useSelector(selectRecordings);
   const currentRecording = recordings[recordings.length - 1];
 
   return (
     <View style={styles.container}>
       <View style={styles.icons}>
-        <Pressable name="pen">
+        <Pressable
+          name="pen"
+          onPress={() => {
+            isShowModal();
+            currentModal("width");
+            dispatch(setCurrentTool("pen"));
+          }}
+        >
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.PENCIL} fill={ICONCOLOR} />
-          </Svg>
-        </Pressable>
-        <Pressable name="paint">
-          <Svg width={70} height={70} viewBox="0 0 512 512">
-            <Path d={ICONPATH.PAINTBRUSH} fill={ICONCOLOR} />
           </Svg>
         </Pressable>
         <Pressable
@@ -34,11 +40,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
         >
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.PALETTE} fill={ICONCOLOR} />
-            <View
-              width={30}
-              height={30}
-              style={colorStyle(currentColor).color}
-            ></View>
+            <View width={30} height={30} style={colorStyle(penColor).color} />
           </Svg>
         </Pressable>
         <Pressable
@@ -54,12 +56,14 @@ export default function WorkingTool({ isShowModal, currentModal }) {
         </Pressable>
       </View>
       <View style={styles.icons}>
-        <Pressable name="brush">
-          <Svg width={70} height={70} viewBox="0 0 576 512">
-            <Path d={ICONPATH.BRUSH} fill={ICONCOLOR} />
-          </Svg>
-        </Pressable>
-        <Pressable name="eraser">
+        <Pressable
+          name="eraser"
+          onPress={() => {
+            isShowModal();
+            currentModal("width");
+            dispatch(setCurrentTool("eraser"));
+          }}
+        >
           <Svg width={70} height={70} viewBox="0 0 576 512">
             <Path d={ICONPATH.ERASER} fill={ICONCOLOR} />
           </Svg>

@@ -16,6 +16,7 @@ import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { setTitle } from "../store/feature/drawingBoardSlice";
+import { setRecordings } from "../store/feature/audioSlice";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ export default function HomeScreen({ navigation }) {
                   setIsShoweModal(!isShowModal);
                   dispatch(setTitle(input));
                   setInput("");
+                  dispatch(setRecordings([]));
                   navigation.navigate("Drawing");
                 }}
               >

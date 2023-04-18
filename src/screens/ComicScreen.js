@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { useSelector } from "react-redux";
 
 import DrawingBoard from "../components/DrawingBoard";
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
+import { selectTitle } from "../store/feature/drawingBoardSlice";
 
 export default function ComicScreen({ navigation }) {
+  const title = useSelector(selectTitle);
   const [view, setView] = useState("preview");
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
-          제목
+          {title || "제목없음"}
         </Text>
       </View>
       <View style={styles.bodyContainer}>
@@ -73,10 +76,7 @@ export default function ComicScreen({ navigation }) {
             }}
           >
             <Svg width={80} height={80} viewBox="0 0 640 512">
-              <Path
-                d={ICONPATH.SOUND}
-                fill={ICONCOLOR}
-              />
+              <Path d={ICONPATH.SOUND} fill={ICONCOLOR} />
             </Svg>
           </Pressable>
           <View style={{ flexDirection: "row", gap: 20 }}>

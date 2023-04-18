@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { ICONPATH, ICONCOLOR } from "../constants/icon";
+
+import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 
 export default function ManualModal({ title, description, setCurrentModal }) {
   const [isShowModal, setIsShowModal] = useState(true);
@@ -38,10 +39,7 @@ export default function ManualModal({ title, description, setCurrentModal }) {
             style={styles.closeButton}
           >
             <Svg width={30} height={30} viewBox="0 0 384 512">
-              <Path
-                d={ICONPATH.XMARK}
-                fill={ICONCOLOR}
-              />
+              <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
             </Svg>
           </TouchableOpacity>
           <View style={[styles.mainColor, styles.input]}>
@@ -109,7 +107,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   inputStyle: {
-    fontSize: 30,
+    fontSize: 25,
     textAlign: "center",
     lineHeight: 50,
   },
