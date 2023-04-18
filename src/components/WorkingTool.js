@@ -4,6 +4,7 @@ import Svg, { Path } from "react-native-svg";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
+  movePathUndo,
   selectCurrentTool,
   selectPenColor,
   setCurrentTool,
@@ -53,7 +54,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             <View width={30} height={30} style={colorStyle(penColor).color} />
           </Svg>
         </Pressable>
-        <Pressable name="undo">
+        <Pressable name="undo" onPress={() => dispatch(movePathUndo())}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.UNDO} fill={ICONCOLOR.general} />
           </Svg>

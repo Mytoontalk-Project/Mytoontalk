@@ -32,7 +32,7 @@ export default function DrawingBoard() {
 
   useEffect(() => {
     setPaths(pagePaths);
-  }, [currentPage]);
+  }, [currentPage, pagePaths]);
 
   const pan = Gesture.Pan()
     .onStart((g) => {
