@@ -65,10 +65,18 @@ export const drawingBoardSlice = createSlice({
     setPathUndo: (state, action) => {
       const { currentPage, restPaths, lastPath } = action.payload;
       state.page[currentPage].drawingData = restPaths;
-      state.page[currentPage].redo = [
+      state.page[currentPage].redoData = [
+        ...state.page[currentPage].redoData,
+        lastPath,
+      ];
+    },
+    setPathRedo: (state, action) => {
+      const { currentPage, restPaths, lastPath } = action.payload;
+      state.page[currentPage].drawingData = [
         ...state.page[currentPage].drawingData,
         lastPath,
       ];
+      state.page[currentPage].redoData = restPaths;
     },
     createNewCanvas: (state, action) => {
       state.title = action.payload;
@@ -110,6 +118,7 @@ export const {
   setCurrentTool,
   setPagePath,
   setPathUndo,
+  setPathRedo,
 } = drawingBoardSlice.actions;
 
 export const selectPenColor = (state) => state.drawingBoard.pen.color;

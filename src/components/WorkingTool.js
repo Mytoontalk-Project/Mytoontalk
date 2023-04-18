@@ -10,6 +10,7 @@ import {
   setCurrentTool,
   selectPage,
   setPathUndo,
+  setPathRedo,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { selectRecordings } from "../store/feature/audioSlice";
@@ -22,6 +23,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
   const currentTool = useSelector(selectCurrentTool);
   const currentPage = useSelector(selectCurrentPage);
   const pagePaths = useSelector(selectPage)[currentPage].drawingData;
+  const redoPaths = useSelector(selectPage)[currentPage].redoData;
 
   const movePathUndo = () => {
     if (pagePaths.length) {
@@ -29,6 +31,15 @@ export default function WorkingTool({ isShowModal, currentModal }) {
       const restPaths = pagePaths.slice(0, pagePaths.length - 1);
 
       dispatch(setPathUndo({ currentPage, restPaths, lastPath }));
+    }
+  };
+
+  const movePathRedo = () => {
+    if (redoPaths.length) {
+      const lastPath = redoPaths[redoPaths.length - 1];
+      const restPaths = redoPaths.slice(0, redoPaths.length - 1);
+
+      dispatch(setPathRedo({ currentPage, lastPath, restPaths }));
     }
   };
 
@@ -67,7 +78,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             <View width={30} height={30} style={colorStyle(penColor).color} />
           </Svg>
         </Pressable>
-        <Pressable name="undo">
+        <Pressable name="undo" onPress={movePathUndo}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.UNDO} fill={ICONCOLOR.general} />
           </Svg>
@@ -126,7 +137,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             />
           </Svg>
         </Pressable>
-        <Pressable name="redo" onPress={() => dispatch(movePathRedo())}>
+        <Pressable name="redo" onPress={movePathRedo}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.REDO} fill={ICONCOLOR.general} />
           </Svg>
