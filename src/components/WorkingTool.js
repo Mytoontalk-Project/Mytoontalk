@@ -4,9 +4,12 @@ import Svg, { Path } from "react-native-svg";
 import { useSelector, useDispatch } from "react-redux";
 
 import {
+  selectCurrentPage,
   selectCurrentTool,
   selectPenColor,
   setCurrentTool,
+  selectPage,
+  setPathUndo,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { selectRecordings } from "../store/feature/audioSlice";
@@ -17,6 +20,17 @@ export default function WorkingTool({ isShowModal, currentModal }) {
   const recordings = useSelector(selectRecordings);
   const currentRecording = recordings[recordings.length - 1];
   const currentTool = useSelector(selectCurrentTool);
+  const currentPage = useSelector(selectCurrentPage);
+  const pagePaths = useSelector(selectPage)[currentPage].drawingData;
+
+  const movePathUndo = () => {
+    if (pagePaths.length) {
+      const lastPath = pagePaths[pagePaths.length - 1];
+      const restPaths = pagePaths.slice(0, pagePaths.length - 1);
+
+      dispatch(setPathUndo({ currentPage, restPaths, lastPath }));
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -53,7 +67,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             <View width={30} height={30} style={colorStyle(penColor).color} />
           </Svg>
         </Pressable>
-        <Pressable name="undo">
+        <Pressable name="undo" onPress={() => movePathUndo()}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.UNDO} fill={ICONCOLOR.general} />
           </Svg>

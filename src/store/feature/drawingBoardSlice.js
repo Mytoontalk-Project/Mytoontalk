@@ -58,6 +58,14 @@ export const drawingBoardSlice = createSlice({
       const { currentPage, paths } = action.payload;
       state.page[currentPage].drawingData = paths;
     },
+    setPathUndo: (state, action) => {
+      const { currentPage, restPaths, lastPath } = action.payload;
+      state.page[currentPage].drawingData = restPaths;
+      state.page[currentPage].redo = [
+        ...state.page[currentPage].drawingData,
+        lastPath,
+      ];
+    },
     createNewCanvas: (state, action) => {
       state.title = action.payload;
       state.currentPage = 1;
@@ -66,18 +74,22 @@ export const drawingBoardSlice = createSlice({
         1: {
           drawingData: [],
           audioData: [],
+          redoData: [],
         },
         2: {
           drawingData: [],
           audioData: [],
+          redoData: [],
         },
         3: {
           drawingData: [],
           audioData: [],
+          redoData: [],
         },
         4: {
           drawingData: [],
           audioData: [],
+          redoData: [],
         },
       };
     },
@@ -93,6 +105,7 @@ export const {
   setEraserWidth,
   setCurrentTool,
   setPagePath,
+  setPathUndo,
 } = drawingBoardSlice.actions;
 
 export const selectPenColor = (state) => state.drawingBoard.pen.color;
@@ -103,5 +116,4 @@ export const selectTitle = (state) => state.drawingBoard.title;
 export const selectCurrentPage = (state) => state.drawingBoard.currentPage;
 export const selectCurrentTool = (state) => state.drawingBoard.currentTool;
 export const selectPage = (state) => state.drawingBoard.page;
-
 export default drawingBoardSlice.reducer;
