@@ -7,6 +7,7 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
+import uuid from "react-native-uuid";
 
 import {
   selectCurrentPage,
@@ -43,7 +44,6 @@ export default function DrawingBoard() {
           : { currentColor: eraserColor, currentWidth: eraserWidth };
 
       newPaths[paths.length] = {
-        id: Date.now(),
         segments: [],
         color: currentColor,
         penWidth: currentWidth,
@@ -71,7 +71,7 @@ export default function DrawingBoard() {
         <Canvas style={styles.canvas}>
           {paths?.map((p) => (
             <Path
-              key={p.id}
+              key={uuid.v4()}
               path={p.segments.join(" ")}
               strokeWidth={p.penWidth}
               style="stroke"

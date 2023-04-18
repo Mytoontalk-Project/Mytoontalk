@@ -16,18 +16,22 @@ const initialState = {
     1: {
       drawingData: [],
       audioData: [],
+      redoData: [],
     },
     2: {
       drawingData: [],
       audioData: [],
+      redoData: [],
     },
     3: {
       drawingData: [],
       audioData: [],
+      redoData: [],
     },
     4: {
       drawingData: [],
       audioData: [],
+      redoData: [],
     },
   },
 };
@@ -61,10 +65,18 @@ export const drawingBoardSlice = createSlice({
     setPathUndo: (state, action) => {
       const { currentPage, restPaths, lastPath } = action.payload;
       state.page[currentPage].drawingData = restPaths;
-      state.page[currentPage].redo = [
+      state.page[currentPage].redoData = [
+        ...state.page[currentPage].redoData,
+        lastPath,
+      ];
+    },
+    setPathRedo: (state, action) => {
+      const { currentPage, restPaths, lastPath } = action.payload;
+      state.page[currentPage].drawingData = [
         ...state.page[currentPage].drawingData,
         lastPath,
       ];
+      state.page[currentPage].redoData = restPaths;
     },
     createNewCanvas: (state, action) => {
       state.title = action.payload;
@@ -74,22 +86,22 @@ export const drawingBoardSlice = createSlice({
         1: {
           drawingData: [],
           audioData: [],
-          redo: [],
+          redoData: [],
         },
         2: {
           drawingData: [],
           audioData: [],
-          redo: [],
+          redoData: [],
         },
         3: {
           drawingData: [],
           audioData: [],
-          redo: [],
+          redoData: [],
         },
         4: {
           drawingData: [],
           audioData: [],
-          redo: [],
+          redoData: [],
         },
       };
     },
@@ -106,6 +118,7 @@ export const {
   setCurrentTool,
   setPagePath,
   setPathUndo,
+  setPathRedo,
 } = drawingBoardSlice.actions;
 
 export const selectPenColor = (state) => state.drawingBoard.pen.color;
@@ -125,6 +138,17 @@ export const movePathUndo = () => (dispatch, getState) => {
     const restPaths = pagePaths.slice(0, pagePaths.length - 1);
 
     dispatch(setPathUndo({ currentPage, lastPath, restPaths }));
+  }
+};
+export const movePathRedo = () => (dispatch, getState) => {
+  const currentPage = selectCurrentPage(getState());
+  const redoPaths = selectPage(getState())[currentPage].redoData;
+
+  if (redoPaths.length) {
+    const lastPath = redoPaths[redoPaths.length - 1];
+    const restPaths = redoPaths.slice(0, redoPaths.length - 1);
+
+    dispatch(setPathRedo({ currentPage, lastPath, restPaths }));
   }
 };
 export default drawingBoardSlice.reducer;
