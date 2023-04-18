@@ -54,19 +54,45 @@ export const drawingBoardSlice = createSlice({
     setCurrentTool: (state, action) => {
       state.currentTool = action.payload;
     },
-    /* setPage: (state, action) => {
-      state.page = action.payload;
-    } */
+    setPagePath: (state, action) => {
+      const { currentPage, paths } = action.payload;
+      state.page[currentPage].drawingData = paths;
+    },
+    createNewCanvas: (state, action) => {
+      state.title = action.payload;
+      state.currentPage = 1;
+      state.currentTool = null;
+      state.page = {
+        1: {
+          drawingData: [],
+          audioData: [],
+        },
+        2: {
+          drawingData: [],
+          audioData: [],
+        },
+        3: {
+          drawingData: [],
+          audioData: [],
+        },
+        4: {
+          drawingData: [],
+          audioData: [],
+        },
+      };
+    },
   },
 });
 
 export const {
+  createNewCanvas,
   setCurrentPage,
   setTitle,
   setPenColor,
   setPenWidth,
   setEraserWidth,
-  setCurrentTool
+  setCurrentTool,
+  setPagePath,
 } = drawingBoardSlice.actions;
 
 export const selectPenColor = (state) => state.drawingBoard.pen.color;

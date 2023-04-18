@@ -15,7 +15,11 @@ import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { setCurrentTool, setTitle } from "../store/feature/drawingBoardSlice";
+import {
+  createNewCanvas,
+  setCurrentTool,
+  setTitle,
+} from "../store/feature/drawingBoardSlice";
 import { setRecordings } from "../store/feature/audioSlice";
 
 export default function HomeScreen({ navigation }) {
@@ -68,10 +72,9 @@ export default function HomeScreen({ navigation }) {
                 style={[styles.button, styles.mainColor]}
                 onPress={() => {
                   setIsShoweModal(!isShowModal);
-                  dispatch(setTitle(input));
                   setInput("");
                   dispatch(setRecordings([]));
-                  dispatch(setCurrentTool(null));
+                  dispatch(createNewCanvas(input));
                   navigation.navigate("Drawing");
                 }}
               >
