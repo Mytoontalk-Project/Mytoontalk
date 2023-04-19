@@ -17,10 +17,8 @@ import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
   createNewCanvas,
-  setCurrentTool,
-  setTitle,
 } from "../store/feature/drawingBoardSlice";
-import { setRecordings } from "../store/feature/audioSlice";
+import { createNewRecording } from "../store/feature/audioSlice";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -73,8 +71,8 @@ export default function HomeScreen({ navigation }) {
                 onPress={() => {
                   setIsShoweModal(!isShowModal);
                   setInput("");
-                  dispatch(setRecordings([]));
                   dispatch(createNewCanvas(input));
+                  dispatch(createNewRecording());
                   navigation.navigate("Drawing");
                 }}
               >

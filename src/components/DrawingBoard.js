@@ -20,7 +20,7 @@ import {
   setPagePath,
 } from "../store/feature/drawingBoardSlice";
 
-export default function DrawingBoard() {
+export default function DrawingBoard({ canvasRef }) {
   const currentPage = useSelector(selectCurrentPage);
   const pagePaths = useSelector(selectPage)[currentPage].drawingData;
   const [paths, setPaths] = useState(pagePaths);
@@ -68,7 +68,7 @@ export default function DrawingBoard() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={pan}>
-        <Canvas style={styles.canvas}>
+        <Canvas style={styles.canvas} ref={canvasRef}>
           {paths?.map((p) => (
             <Path
               key={uuid.v4()}

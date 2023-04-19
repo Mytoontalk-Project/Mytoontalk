@@ -16,18 +16,22 @@ const initialState = {
     1: {
       drawingData: [],
       redoData: [],
+      imageUrl: "",
     },
     2: {
       drawingData: [],
       redoData: [],
+      imageUrl: "",
     },
     3: {
       drawingData: [],
       redoData: [],
+      imageUrl: "",
     },
     4: {
       drawingData: [],
       redoData: [],
+      imageUrl: "",
     },
   },
 };
@@ -58,6 +62,10 @@ export const drawingBoardSlice = createSlice({
       const { currentPage, paths } = action.payload;
       state.page[currentPage].drawingData = paths;
     },
+    setPageImageUrl: (state, action) => {
+      const { currentPage, imageUrl } = action.payload;
+      state.page[currentPage].imageUrl = imageUrl;
+    },
     setPathUndo: (state, action) => {
       const { currentPage, restPaths, lastPath } = action.payload;
       state.page[currentPage].drawingData = restPaths;
@@ -81,22 +89,18 @@ export const drawingBoardSlice = createSlice({
       state.page = {
         1: {
           drawingData: [],
-          audioData: [],
           redoData: [],
         },
         2: {
           drawingData: [],
-          audioData: [],
           redoData: [],
         },
         3: {
           drawingData: [],
-          audioData: [],
           redoData: [],
         },
         4: {
           drawingData: [],
-          audioData: [],
           redoData: [],
         },
       };
@@ -105,6 +109,7 @@ export const drawingBoardSlice = createSlice({
 });
 
 export const {
+  setPageImageUrl,
   createNewCanvas,
   setCurrentPage,
   setTitle,

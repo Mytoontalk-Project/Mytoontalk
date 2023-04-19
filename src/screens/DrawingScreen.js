@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  Image,
+} from "react-native";
+import { useCanvasRef } from "@shopify/react-native-skia";
 import Svg, { Path } from "react-native-svg";
 import { Audio } from "expo-av";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -14,6 +22,7 @@ import {
   selectCurrentPage,
   setTitle,
   setCurrentPage,
+  setPageImageUrl,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -35,6 +44,7 @@ export default function DrawingScreen({ navigation }) {
   const currentPage = useSelector(selectCurrentPage);
   const [recording, setRecording] = useState(null);
   const pageRecordings = useSelector(selectAudioPage)[currentPage].audioData;
+  const canvasRef = useCanvasRef();
 
   const toggleModal = () => {
     setIsShowModal(true);
@@ -82,6 +92,15 @@ export default function DrawingScreen({ navigation }) {
     });
 
     dispatch(setPageRecordings({ currentPage, updatedRecordings }));
+  };
+
+  const convertingUrl = () => {
+    const image = canvasRef.current?.makeImageSnapshot();
+    if (image) {
+      const base64File = image.encodeToBase64();
+      const imageUrl = `data:image/png;base64,${base64File}`;
+      dispatch(setPageImageUrl({ currentPage, imageUrl }));
+    }
   };
 
   return (
@@ -132,7 +151,7 @@ export default function DrawingScreen({ navigation }) {
       </View>
       <View style={styles.bodyContainer}>
         <View style={{ flex: 1 }}>
-          <DrawingBoard />
+          <DrawingBoard canvasRef={canvasRef} />
         </View>
         <View style={{ flex: 1 / 4 }}>
           <WorkingTool
@@ -145,9 +164,12 @@ export default function DrawingScreen({ navigation }) {
         <View style={styles.pageMoveButton}>
           <Pressable
             style={styles.icon}
-            onPress={() =>
-              currentPage > 1 ? dispatch(setCurrentPage(currentPage - 1)) : null
-            }
+            onPress={() => {
+              if (currentPage > 1) {
+                dispatch(setCurrentPage(currentPage - 1));
+                convertingUrl();
+              }
+            }}
           >
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
               <Path
@@ -183,9 +205,12 @@ export default function DrawingScreen({ navigation }) {
           </Pressable>
           <Pressable
             style={styles.icon}
-            onPress={() =>
-              currentPage < 4 ? dispatch(setCurrentPage(currentPage + 1)) : null
-            }
+            onPress={() => {
+              if (currentPage < 4) {
+                dispatch(setCurrentPage(currentPage + 1));
+                convertingUrl();
+              }
+            }}
           >
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
               <Path
@@ -211,6 +236,7 @@ export default function DrawingScreen({ navigation }) {
             label="완성"
             onPress={() => {
               dispatch(setTitle(input));
+              convertingUrl();
               navigation.navigate("Comic");
             }}
           />

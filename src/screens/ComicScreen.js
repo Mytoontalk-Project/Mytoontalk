@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, Pressable } from "react-native";
+import { StyleSheet, View, Text, Pressable, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector } from "react-redux";
 
-import DrawingBoard from "../components/DrawingBoard";
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { selectTitle } from "../store/feature/drawingBoardSlice";
+import { selectPage, selectTitle } from "../store/feature/drawingBoardSlice";
 
 export default function ComicScreen({ navigation }) {
   const title = useSelector(selectTitle);
   const [view, setView] = useState("preview");
+  const pages = useSelector(selectPage);
 
   return (
     <View style={styles.container}>
@@ -20,53 +20,19 @@ export default function ComicScreen({ navigation }) {
         </Text>
       </View>
       <View style={styles.bodyContainer}>
-        {view === "preview" ? (
-          <View style={styles.comicbox}>
-            <View style={{ width: "48%", height: "48%" }}>
-              <DrawingBoard />
-            </View>
-            <View style={{ width: "48%", height: "48%" }}>
-              <DrawingBoard />
-            </View>
-            <View style={{ width: "48%", height: "48%" }}>
-              <DrawingBoard />
-            </View>
-            <View style={{ width: "48%", height: "48%" }}>
-              <DrawingBoard />
-            </View>
-          </View>
-        ) : (
-          <View style={styles.comicbox}>
-            <View
+        <View style={styles.comicbox}>
+          {Object.keys(pages).map((page) => (
+            <Image
+              key={page}
+              source={{ uri: pages[page].imageUrl }}
               style={{
-                width: "48%",
-                height: "48%",
+                width: "49%",
+                height: "45.5%",
                 backgroundColor: "#ffffff",
               }}
-            ></View>
-            <View
-              style={{
-                width: "48%",
-                height: "48%",
-                backgroundColor: "#ffffff",
-              }}
-            ></View>
-            <View
-              style={{
-                width: "48%",
-                height: "48%",
-                backgroundColor: "#ffffff",
-              }}
-            ></View>
-            <View
-              style={{
-                width: "48%",
-                height: "48%",
-                backgroundColor: "#ffffff",
-              }}
-            ></View>
-          </View>
-        )}
+            />
+          ))}
+        </View>
         <View style={styles.toolbox}>
           <Pressable
             title="audio"
@@ -76,7 +42,7 @@ export default function ComicScreen({ navigation }) {
             }}
           >
             <Svg width={80} height={80} viewBox="0 0 640 512">
-              <Path d={ICONPATH.SOUND} fill={ICONCOLOR} />
+              <Path d={ICONPATH.SOUND} fill={ICONCOLOR.general} />
             </Svg>
           </Pressable>
           <View style={{ flexDirection: "row", gap: 20 }}>
@@ -113,16 +79,18 @@ const styles = StyleSheet.create({
   },
   header: {
     flex: 1 / 7,
-    width: "79%",
+    width: "84%",
     height: 80,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
   },
   title: {
     fontSize: 40,
   },
   comicbox: {
-    width: "79%",
+    borderWidth: 1,
+    width: "84%",
     flexDirection: "row",
     flexWrap: "wrap",
     alignContent: "center",
@@ -130,8 +98,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   toolbox: {
+    borderWidth: 1,
     flex: 1,
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
   },
 });
