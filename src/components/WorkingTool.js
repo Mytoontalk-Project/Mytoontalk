@@ -13,15 +13,15 @@ import {
   setPathRedo,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { selectRecordings } from "../store/feature/audioSlice";
+import { selectAudioPage } from "../store/feature/audioSlice";
 
 export default function WorkingTool({ isShowModal, currentModal }) {
   const dispatch = useDispatch();
   const penColor = useSelector(selectPenColor);
-  const recordings = useSelector(selectRecordings);
+  const currentPage = useSelector(selectCurrentPage);
+  const recordings = useSelector(selectAudioPage)[currentPage].audioData;
   const currentRecording = recordings[recordings.length - 1];
   const currentTool = useSelector(selectCurrentTool);
-  const currentPage = useSelector(selectCurrentPage);
   const pagePaths = useSelector(selectPage)[currentPage].drawingData;
   const redoPaths = useSelector(selectPage)[currentPage].redoData;
 

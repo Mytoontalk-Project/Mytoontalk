@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
 import Svg, { Path } from "react-native-svg";
@@ -17,11 +17,9 @@ import {
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
-  setRecording,
   setMessage,
-  setRecordings,
-  selectRecording,
-  selectRecordings,
+  selectAudioPage,
+  setPageRecordings,
 } from "../store/feature/audioSlice";
 import CircleListModal from "../components/modals/CircleListModal";
 import GeneralModal from "../components/modals/GeneralModal";
@@ -34,9 +32,9 @@ export default function DrawingScreen({ navigation }) {
   const [currentModal, setCurrentModal] = useState(null);
   const title = useSelector(selectTitle);
   const [input, setInput] = useState(title);
-  const recording = useSelector(selectRecording);
-  const recordings = useSelector(selectRecordings);
-  const page = useSelector(selectCurrentPage);
+  const currentPage = useSelector(selectCurrentPage);
+  const [recording, setRecording] = useState(null);
+  const pageRecordings = useSelector(selectAudioPage)[currentPage].audioData;
 
   const toggleModal = () => {
     setIsShowModal(true);
@@ -60,30 +58,30 @@ export default function DrawingScreen({ navigation }) {
           Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
         );
 
-        dispatch(setRecording(recording));
+        setRecording(recording);
       } else {
         dispatch(
           setMessage("앱에서 마이크에 액세스할 수 있는 권한을 부여하십시오."),
         );
       }
     } catch (err) {
-      console.error("녹음을 시작하지 못했습니다", err);
+      alert("녹음을 시작하지 못했습니다");
     }
   };
 
   const stopRecording = async () => {
-    dispatch(setRecording(undefined));
+    setRecording(undefined);
 
     await recording.stopAndUnloadAsync();
 
-    const updatedRecordings = [...recordings];
+    const updatedRecordings = [...pageRecordings];
     const { sound } = await recording.createNewLoadedSoundAsync();
     updatedRecordings.push({
       sound,
       file: recording.getURI(),
     });
 
-    dispatch(setRecordings(updatedRecordings));
+    dispatch(setPageRecordings({ currentPage, updatedRecordings }));
   };
 
   return (
@@ -148,13 +146,13 @@ export default function DrawingScreen({ navigation }) {
           <Pressable
             style={styles.icon}
             onPress={() =>
-              page > 1 ? dispatch(setCurrentPage(page - 1)) : null
+              currentPage > 1 ? dispatch(setCurrentPage(currentPage - 1)) : null
             }
           >
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
               <Path
                 d={ICONPATH.ARROW_LEFT}
-                fill={page === 1 ? ICONCOLOR.main : ICONCOLOR.general}
+                fill={currentPage === 1 ? ICONCOLOR.main : ICONCOLOR.general}
               />
             </Svg>
           </Pressable>
@@ -186,13 +184,13 @@ export default function DrawingScreen({ navigation }) {
           <Pressable
             style={styles.icon}
             onPress={() =>
-              page < 4 ? dispatch(setCurrentPage(page + 1)) : null
+              currentPage < 4 ? dispatch(setCurrentPage(currentPage + 1)) : null
             }
           >
             <Svg width="auto" height="100%" viewBox="0 0 512 512">
               <Path
                 d={ICONPATH.ARROW_RIGHT}
-                fill={page === 4 ? ICONCOLOR.main : ICONCOLOR.general}
+                fill={currentPage === 4 ? ICONCOLOR.main : ICONCOLOR.general}
               />
             </Svg>
           </Pressable>
@@ -205,7 +203,9 @@ export default function DrawingScreen({ navigation }) {
           }}
         >
           <View style={styles.page}>
-            <Text style={{ fontSize: 40, textAlign: "center" }}>{page}</Text>
+            <Text style={{ fontSize: 40, textAlign: "center" }}>
+              {currentPage}
+            </Text>
           </View>
           <ControlButton
             label="완성"

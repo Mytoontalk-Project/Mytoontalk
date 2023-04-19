@@ -13,8 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 import AudioButton from "../buttons/AudioButton";
-import { selectRecordings } from "../../store/feature/audioSlice";
-import { setCurrentTool } from "../../store/feature/drawingBoardSlice";
+import { selectAudioPage } from "../../store/feature/audioSlice";
+import { setCurrentTool, selectCurrentPage } from "../../store/feature/drawingBoardSlice";
 
 export default function CircleListModal({
   title,
@@ -22,7 +22,8 @@ export default function CircleListModal({
   setIsShowModal,
 }) {
   const dispatch = useDispatch();
-  const recordings = useSelector(selectRecordings);
+  const currentPage = useSelector(selectCurrentPage);
+  const recordings = useSelector(selectAudioPage)[currentPage].audioData;
 
   return (
     <Modal

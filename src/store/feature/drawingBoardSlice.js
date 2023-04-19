@@ -15,22 +15,18 @@ const initialState = {
   page: {
     1: {
       drawingData: [],
-      audioData: [],
       redoData: [],
     },
     2: {
       drawingData: [],
-      audioData: [],
       redoData: [],
     },
     3: {
       drawingData: [],
-      audioData: [],
       redoData: [],
     },
     4: {
       drawingData: [],
-      audioData: [],
       redoData: [],
     },
   },
