@@ -85,7 +85,10 @@ export const drawingBoardSlice = createSlice({
     createNewCanvas: (state, action) => {
       state.title = action.payload;
       state.currentPage = 1;
-      state.currentTool = null;
+      state.currentTool = "pen";
+      state.pen.width = 3;
+      state.pen.color = "#000000";
+      state.eraser.width = 5;
       state.page = {
         1: {
           drawingData: [],

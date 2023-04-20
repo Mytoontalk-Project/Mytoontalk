@@ -26,5 +26,8 @@ module.exports = {
     "react/jsx-filename-extension": ["warn", { extensions: [".js"] }],
     "react-hooks/exhaustive-deps": "off",
     "no-nested-ternary": "off",
+    "no-restricted-syntax": "off",
+    "guard-for-in": "off",
+    "no-await-in-loop": "off",
   },
 };

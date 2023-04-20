@@ -85,9 +85,10 @@ export default function DrawingScreen({ navigation }) {
     await recording.stopAndUnloadAsync();
 
     const updatedRecordings = [...pageRecordings];
-    const { sound } = await recording.createNewLoadedSoundAsync();
+    const { sound, status } = await recording.createNewLoadedSoundAsync();
     updatedRecordings.push({
       sound,
+      duration: status.durationMillis,
       file: recording.getURI(),
     });
 
