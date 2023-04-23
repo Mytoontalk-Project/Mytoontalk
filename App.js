@@ -9,6 +9,7 @@ import HomeScreen from "./src/screens/HomeScreen";
 import DrawingScreen from "./src/screens/DrawingScreen";
 import store from "./src/store/configureStore";
 import ComicScreen from "./src/screens/ComicScreen";
+import PreviewScreen from "./src/screens/PreviewScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -24,13 +25,18 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="Comic"
+              component={ComicScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="Drawing"
               component={DrawingScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="Comic"
-              component={ComicScreen}
+              name="Preview"
+              component={PreviewScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

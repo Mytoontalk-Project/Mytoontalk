@@ -4,6 +4,7 @@ const initialState = {
   title: "",
   currentPage: 1,
   currentTool: "pen",
+  restartCount: 0,
   pen: {
     width: 3,
     color: "#000000",
@@ -16,22 +17,22 @@ const initialState = {
     1: {
       drawingData: [],
       redoData: [],
-      imageUrl: "",
+      base64File: "",
     },
     2: {
       drawingData: [],
       redoData: [],
-      imageUrl: "",
+      base64File: "",
     },
     3: {
       drawingData: [],
       redoData: [],
-      imageUrl: "",
+      base64File: "",
     },
     4: {
       drawingData: [],
       redoData: [],
-      imageUrl: "",
+      base64File: "",
     },
   },
 };
@@ -40,6 +41,9 @@ export const drawingBoardSlice = createSlice({
   name: "drawingBoard",
   initialState,
   reducers: {
+    addReStartCount: (state, action) => {
+      state.restartCount += action.payload;
+    },
     setPenColor: (state, action) => {
       state.pen.color = action.payload;
     },
@@ -62,9 +66,9 @@ export const drawingBoardSlice = createSlice({
       const { currentPage, paths } = action.payload;
       state.page[currentPage].drawingData = paths;
     },
-    setPageImageUrl: (state, action) => {
-      const { currentPage, imageUrl } = action.payload;
-      state.page[currentPage].imageUrl = imageUrl;
+    setPageBase64File: (state, action) => {
+      const { currentPage, base64File } = action.payload;
+      state.page[currentPage].base64File = base64File;
     },
     setPathUndo: (state, action) => {
       const { currentPage, restPaths, lastPath } = action.payload;
@@ -112,7 +116,8 @@ export const drawingBoardSlice = createSlice({
 });
 
 export const {
-  setPageImageUrl,
+  addReStartCount,
+  setPageBase64File,
   createNewCanvas,
   setCurrentPage,
   setTitle,
@@ -133,5 +138,6 @@ export const selectTitle = (state) => state.drawingBoard.title;
 export const selectCurrentPage = (state) => state.drawingBoard.currentPage;
 export const selectCurrentTool = (state) => state.drawingBoard.currentTool;
 export const selectPage = (state) => state.drawingBoard.page;
+export const selectRestartCount = (state) => state.drawingBoard.restartCount;
 
 export default drawingBoardSlice.reducer;

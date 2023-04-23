@@ -1,29 +1,59 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, View, FlatList } from "react-native";
+import * as FileSystem from "expo-file-system";
 
 import Comic from "./Comic";
 import ControlButton from "./buttons/ControlButton";
 import Empty from "./Empty";
 
-const data = [
-  { id: "1", name: "Comic 1" },
-  { id: "2", name: "Comic 2" },
-  { id: "3", name: "Comic 3" },
-  { id: "4", name: "Comic 4" },
-  { id: "5", name: "Comic 5" },
-  { id: "6", name: "Comic 6" },
-  { id: "7", name: "Comic 7" },
-  { id: "8", name: "Comic 8" },
-  { id: "9", name: "Comic 9" },
-  { id: "10", name: "Comic 10" },
-  { id: "11", name: "Comic 11" },
-  { id: "12", name: "Comic 12" },
-  { id: "13", name: "Comic 13" },
-  { id: "14", name: "Comic 14" },
-];
-const numColumn = 4;
+export default function OpenComic({ isShowModal, currentModal, navigation }) {
+  const [data, setData] = useState([]);
 
-export default function OpenComic({ isShowModal, currentModal }) {
+  const loadComics = useCallback(async () => {
+    const dirUri = `${FileSystem.documentDirectory}mytoontalk/`;
+    const comicList = await FileSystem.readDirectoryAsync(dirUri);
+
+    const newData = await Promise.all(
+      comicList.map(async (id) => {
+        const comicUri = `${dirUri}${id}/`;
+        const [title, pageInfo, creationTime] = await Promise.all([
+          FileSystem.readAsStringAsync(`${comicUri}title.txt`),
+          FileSystem.getInfoAsync(`${comicUri}pages/1.png`),
+          FileSystem.getInfoAsync(`${comicUri}pages/1.png`, {
+            creationTime: true,
+          }),
+        ]);
+
+        let imageUri = null;
+        if (pageInfo.exists) {
+          const imageBase64 = await FileSystem.readAsStringAsync(
+            `${comicUri}pages/1.png`,
+            { encoding: FileSystem.EncodingType.Base64 },
+          );
+          imageUri = `data:image/png;base64,${imageBase64}`;
+        }
+
+        return {
+          id,
+          title,
+          hasCover: pageInfo.exists,
+          imageUri,
+          creationTime: creationTime.creationTime || null,
+        };
+      }),
+    );
+
+    newData.sort((a, b) => a.creationTime - b.creationTime);
+
+    setData(newData);
+  }, []);
+
+  useEffect(() => {
+    loadComics();
+  }, [loadComics]);
+
+  const numColumn = 4;
+
   return (
     <View style={styles.container}>
       <View style={{ flex: 1, justifyContent: "center" }}>
@@ -35,7 +65,12 @@ export default function OpenComic({ isShowModal, currentModal }) {
             numColumns={numColumn}
             renderItem={({ item }) => (
               <View style={{ flex: 1 / numColumn, marginHorizontal: 10 }}>
-                <Comic label={item.name} />
+                <Comic
+                  id={item.id}
+                  label={item.title}
+                  imageUri={item.imageUri}
+                  navigation={navigation}
+                />
               </View>
             )}
             keyExtractor={(item) => item.id.toString()}

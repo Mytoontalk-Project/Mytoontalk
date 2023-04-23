@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   Alert,
@@ -15,10 +15,9 @@ import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import {
-  createNewCanvas,
-} from "../store/feature/drawingBoardSlice";
+import { createNewCanvas } from "../store/feature/drawingBoardSlice";
 import { createNewRecording } from "../store/feature/audioSlice";
+import { deleteDirectory } from "../utils/fileSystem";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
@@ -32,6 +31,10 @@ export default function HomeScreen({ navigation }) {
 
   const handleCurrentModal = (modal) => {
     setCurrentModal(modal);
+  };
+
+  const handleDeleteDirectory = async (id) => {
+    await deleteDirectory(id);
   };
 
   return (
@@ -61,7 +64,7 @@ export default function HomeScreen({ navigation }) {
               </Pressable>
               <TextInput
                 value={input}
-                onChangeText={(input) => setInput(input)}
+                onChangeText={(text) => setInput(text)}
                 placeholder="제목을 입력해주세요."
                 multiline
                 style={[styles.mainColor, styles.input]}
@@ -101,17 +104,18 @@ export default function HomeScreen({ navigation }) {
                 style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
-                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR} />
+                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR.general} />
                 </Svg>
               </Pressable>
               <View style={[styles.comicList, styles.mainColor]}>
                 <View style={styles.comic}>
                   <Text style={{ fontSize: 25, flex: 1 }}>짱구는 못말려</Text>
-                  <ControlButton label="삭제" onPress={() => alert("삭제")} />
-                </View>
-                <View style={styles.comic}>
-                  <Text style={{ fontSize: 25, flex: 1 }}>오늘의 일기</Text>
-                  <ControlButton label="삭제" onPress={() => alert("삭제")} />
+                  <ControlButton
+                    label="삭제"
+                    onPress={() => {
+                      handleDeleteDirectory();
+                    }}
+                  />
                 </View>
               </View>
             </View>
@@ -123,6 +127,7 @@ export default function HomeScreen({ navigation }) {
         style={{ flex: 1 }}
         isShowModal={toggleModal}
         currentModal={handleCurrentModal}
+        navigation={navigation}
       />
     </View>
   );

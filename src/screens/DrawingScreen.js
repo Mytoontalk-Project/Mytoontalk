@@ -1,13 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  Image,
-} from "react-native";
+import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
 import { useCanvasRef } from "@shopify/react-native-skia";
 import Svg, { Path } from "react-native-svg";
 import { Audio } from "expo-av";
@@ -22,7 +15,7 @@ import {
   selectCurrentPage,
   setTitle,
   setCurrentPage,
-  setPageImageUrl,
+  setPageBase64File,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -99,8 +92,7 @@ export default function DrawingScreen({ navigation }) {
     const image = canvasRef.current?.makeImageSnapshot();
     if (image) {
       const base64File = image.encodeToBase64();
-      const imageUrl = `data:image/png;base64,${base64File}`;
-      dispatch(setPageImageUrl({ currentPage, imageUrl }));
+      dispatch(setPageBase64File({ currentPage, base64File }));
     }
   };
 
@@ -238,7 +230,7 @@ export default function DrawingScreen({ navigation }) {
             onPress={() => {
               dispatch(setTitle(input));
               convertingUrl();
-              navigation.navigate("Comic");
+              navigation.navigate("Preview");
             }}
           />
         </View>

@@ -1,11 +1,23 @@
 import React from "react";
 import { StyleSheet, View, Text, Image, Pressable } from "react-native";
 
-export default function Comic({ label }) {
+export default function Comic({ id, label, imageUri, navigation }) {
   return (
     <View style={styles.container}>
-      <Pressable style={styles.comicContainer} onPress={() => alert("comic")}>
-        <Image style={styles.image} />
+      <Pressable
+        style={styles.comicContainer}
+        onPress={() => {
+          navigation.navigate("Comic", {
+            id,
+          });
+        }}
+      >
+        <Image
+          source={{
+            uri: imageUri,
+          }}
+          style={styles.image}
+        />
         <Text numberOfLines={2} style={styles.label}>
           {label}
         </Text>
@@ -30,6 +42,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 10,
+    backgroundColor: "#ffffff",
   },
   label: {
     fontSize: 25,
