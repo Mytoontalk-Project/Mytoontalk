@@ -9,10 +9,6 @@ import Empty from "./Empty";
 export default function OpenComic({ isShowModal, currentModal, navigation }) {
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    loadComics();
-  }, [loadComics]);
-
   const loadComics = useCallback(async () => {
     const dirUri = `${FileSystem.documentDirectory}mytoontalk/`;
     const comicList = await FileSystem.readDirectoryAsync(dirUri);
@@ -47,10 +43,13 @@ export default function OpenComic({ isShowModal, currentModal, navigation }) {
       }),
     );
 
-    newData.sort((a, b) => a.creationTime - b.creationTime);
-
+    newData.sort();
     setData(newData);
   }, []);
+
+  useEffect(() => {
+    loadComics();
+  }, [loadComics]);
 
   const numColumn = 4;
 

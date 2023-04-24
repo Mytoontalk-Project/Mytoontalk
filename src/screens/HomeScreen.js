@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import {
   Alert,
@@ -8,8 +8,10 @@ import {
   Text,
   Pressable,
   TextInput,
+  FlatList,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import * as FileSystem from "expo-file-system";
 
 import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
@@ -24,6 +26,29 @@ export default function HomeScreen({ navigation }) {
   const [isShowModal, setIsShoweModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
   const [input, setInput] = useState("");
+  const [titleList, setTitleList] = useState([]);
+
+  const readTitleTexts = async () => {
+    try {
+      const mytoontalkDir = `${FileSystem.documentDirectory}mytoontalk/`;
+      const ids = await FileSystem.readDirectoryAsync(mytoontalkDir);
+      const titles = [];
+
+      for (const id of ids) {
+        const titlePath = `${mytoontalkDir}${id}/title.txt`;
+        const titleContent = await FileSystem.readAsStringAsync(titlePath);
+        titles.push(titleContent);
+      }
+
+      setTitleList(titles);
+    } catch (err) {
+      alert("네컷만화 리스트를 읽어올 수 없습니다.");
+    }
+  };
+
+  useEffect(() => {
+    readTitleTexts();
+  }, []);
 
   const toggleModal = () => {
     setIsShoweModal(true);
@@ -33,8 +58,8 @@ export default function HomeScreen({ navigation }) {
     setCurrentModal(modal);
   };
 
-  const handleDeleteDirectory = async () => {
-    await deleteDirectory();
+  const handleDeleteDirectory = async (index) => {
+    await deleteDirectory(index, setTitleList, titleList);
   };
 
   return (
@@ -108,15 +133,21 @@ export default function HomeScreen({ navigation }) {
                 </Svg>
               </Pressable>
               <View style={[styles.comicList, styles.mainColor]}>
-                <View style={styles.comic}>
-                  <Text style={{ fontSize: 25, flex: 1 }}>짱구는 못말려</Text>
-                  <ControlButton
-                    label="삭제"
-                    onPress={() => {
-                      handleDeleteDirectory();
-                    }}
-                  />
-                </View>
+                <FlatList
+                  data={titleList}
+                  renderItem={({ item, index }) => (
+                    <View style={styles.comic}>
+                      <Text style={{ fontSize: 25, flex: 1 }}>{item}</Text>
+                      <ControlButton
+                        label="삭제"
+                        onPress={() => {
+                          handleDeleteDirectory(index);
+                        }}
+                      />
+                    </View>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
               </View>
             </View>
           </View>
