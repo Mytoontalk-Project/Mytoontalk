@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   Alert,
@@ -14,7 +14,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 import AudioButton from "../buttons/AudioButton";
 import { selectAudioPage } from "../../store/feature/audioSlice";
-import { setCurrentTool, selectCurrentPage } from "../../store/feature/drawingBoardSlice";
+import {
+  setCurrentTool,
+  selectCurrentPage,
+} from "../../store/feature/drawingBoardSlice";
 
 export default function CircleListModal({
   title,
@@ -22,8 +25,19 @@ export default function CircleListModal({
   setIsShowModal,
 }) {
   const dispatch = useDispatch();
+  const [playingIndex, setPlayingIndex] = useState(null);
   const currentPage = useSelector(selectCurrentPage);
   const recordings = useSelector(selectAudioPage)[currentPage].audioData;
+
+  const handlePlayAudio = (index, sound) => {
+    sound.replayAsync();
+    setPlayingIndex(index);
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.didJustFinish) {
+        setPlayingIndex(null);
+      }
+    });
+  };
 
   return (
     <Modal
@@ -57,8 +71,9 @@ export default function CircleListModal({
               renderItem={({ item, index }) => (
                 <View
                   style={{
-                    borderWidth: 1,
+                    borderWidth: playingIndex === index ? 2 : 1,
                     borderRadius: "50%",
+                    borderColor: playingIndex === index ? "#77037B" : null,
                     width: "14%",
                     aspectRatio: 1,
                     marginHorizontal: 7,
@@ -68,7 +83,7 @@ export default function CircleListModal({
                 >
                   <AudioButton
                     label={index + 1}
-                    onPress={() => item.sound.replayAsync()}
+                    onPress={() => handlePlayAudio(index, item.sound)}
                   />
                 </View>
               )}

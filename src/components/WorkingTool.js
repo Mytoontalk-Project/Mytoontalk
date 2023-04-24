@@ -123,9 +123,14 @@ export default function WorkingTool({ isShowModal, currentModal }) {
         </Pressable>
         <Pressable
           name="sound"
-          onPress={() => {
-            currentRecording?.sound.replayAsync();
+          onPress={async () => {
             dispatch(setCurrentTool("sound"));
+            await currentRecording?.sound.replayAsync();
+            currentRecording?.sound.setOnPlaybackStatusUpdate((status) => {
+              if (status.didJustFinish) {
+                dispatch(setCurrentTool("pen"));
+              }
+            });
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 640 512">

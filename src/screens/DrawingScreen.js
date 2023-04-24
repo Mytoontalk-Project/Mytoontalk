@@ -19,7 +19,6 @@ import {
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
-  setMessage,
   selectAudioPage,
   setPageRecordings,
 } from "../store/feature/audioSlice";
@@ -63,9 +62,7 @@ export default function DrawingScreen({ navigation }) {
 
         setRecording(recording);
       } else {
-        dispatch(
-          setMessage("앱에서 마이크에 액세스할 수 있는 권한을 부여하십시오."),
-        );
+        alert("앱에서 마이크에 액세스할 수 있는 권한을 부여하십시오.");
       }
     } catch (err) {
       alert("녹음을 시작하지 못했습니다");
@@ -160,6 +157,7 @@ export default function DrawingScreen({ navigation }) {
             onPress={() => {
               if (currentPage > 1) {
                 dispatch(setCurrentPage(currentPage - 1));
+                stopRecording();
                 convertingUrl();
               }
             }}
@@ -201,6 +199,7 @@ export default function DrawingScreen({ navigation }) {
             onPress={() => {
               if (currentPage < 4) {
                 dispatch(setCurrentPage(currentPage + 1));
+                stopRecording();
                 convertingUrl();
               }
             }}
