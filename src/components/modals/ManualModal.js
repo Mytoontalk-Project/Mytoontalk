@@ -11,7 +11,12 @@ import Svg, { Path } from "react-native-svg";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 
-export default function ManualModal({ title, description, setCurrentModal }) {
+export default function ManualModal({
+  title,
+  description,
+  setCurrentModal,
+  nextModal,
+}) {
   const [isShowModal, setIsShowModal] = useState(true);
 
   return (
@@ -33,7 +38,7 @@ export default function ManualModal({ title, description, setCurrentModal }) {
             onPress={() => {
               setIsShowModal(false);
               if (setCurrentModal) {
-                setCurrentModal("next");
+                setCurrentModal(nextModal);
               }
             }}
             style={styles.closeButton}
