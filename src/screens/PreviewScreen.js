@@ -9,7 +9,11 @@ import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { selectPage, selectTitle } from "../store/feature/drawingBoardSlice";
 import { selectAudioPage } from "../store/feature/audioSlice";
-import { saveImageToDirectory, saveToonTalk } from "../utils/fileSystem";
+import {
+  saveAudioToDirectory,
+  saveImageToDirectory,
+  saveTitleToDirectory,
+} from "../utils/fileSystem";
 
 export default function PreviewScreen({ navigation }) {
   const [selectedPage, setSelectedPage] = useState(null);
@@ -21,8 +25,9 @@ export default function PreviewScreen({ navigation }) {
 
   const makedirectoryToFileSystem = async (id) => {
     const displayTitle = title || "제목없음";
-    await saveToonTalk(displayTitle, id);
+    await saveTitleToDirectory(displayTitle, id);
     await saveImageToDirectory(id, pages);
+    await saveAudioToDirectory(id, audioPages);
   };
 
   const handleAudioPress = useCallback(async () => {
@@ -40,7 +45,9 @@ export default function PreviewScreen({ navigation }) {
             setIsPlaying(false);
           }
         });
-        await new Promise((resolve) => setTimeout(resolve, recording.duration));
+        await new Promise((resolve) =>
+          setTimeout(resolve, recording.duration + 1000),
+        );
       }
     }
   }, [audioPages]);

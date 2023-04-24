@@ -33,8 +33,8 @@ export default function HomeScreen({ navigation }) {
     setCurrentModal(modal);
   };
 
-  const handleDeleteDirectory = async (id) => {
-    await deleteDirectory(id);
+  const handleDeleteDirectory = async () => {
+    await deleteDirectory();
   };
 
   return (

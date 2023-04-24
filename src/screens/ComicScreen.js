@@ -1,50 +1,94 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { StyleSheet, View, Text, Pressable, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { selectAudioPage } from "../store/feature/audioSlice";
 
 export default function ComicScreen({ navigation, route }) {
-  const { id, rerender } = route.params;
+  const { id } = route.params;
   const dirUri = `${FileSystem.documentDirectory}mytoontalk/${id}`;
   const [title, setTitle] = useState("");
-  const [pages, setPages] = useState([]);
   const [images, setImages] = useState([]);
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audios, setAudios] = useState([]);
+  const lastRecording = useRef(null);
 
   const loadData = async () => {
-    const [titleContent, pagesList] = await Promise.all([
-      FileSystem.readAsStringAsync(`${dirUri}/title.txt`),
-      FileSystem.readDirectoryAsync(`${dirUri}/pages`),
-    ]);
-    setTitle(titleContent);
-    setPages(pagesList);
+    try {
+      const [titleContent, pagesList] = await Promise.all([
+        FileSystem.readAsStringAsync(`${dirUri}/title.txt`),
+        FileSystem.readDirectoryAsync(`${dirUri}/pages`),
+      ]);
 
-    const pageImages = await Promise.all(
-      pages.map(async (page) => {
-        const pageUri = `${dirUri}/pages/${page}`;
-        const pageInfo = await FileSystem.getInfoAsync(pageUri);
-
-        if (pageInfo.exists) {
-          const imageBase64 = await FileSystem.readAsStringAsync(pageUri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-          return `data:image/png;base64,${imageBase64}`;
-        }
-
-        return null;
-      }),
-    );
-    setImages(pageImages);
+      const imageList = pagesList
+        .filter((page) => page.endsWith(".png"))
+        .sort();
+      const audioList = pagesList
+        .filter((page) => page.endsWith(".wav"))
+        .sort();
+      setTitle(titleContent);
+      setImages(imageList);
+      setAudios(audioList);
+    } catch (err) {
+      alert("오류가 발생하였습니다. 재시도해주세요");
+    }
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  const handleAudioPress = useCallback(async () => {
+    for (const page of audios) {
+      const filterPage = page.slice(0, 1);
+      setSelectedPage(filterPage);
+      if (page) {
+        const sound = new Audio.Sound();
+        await sound.loadAsync({ uri: `file://${dirUri}/pages/${page}` });
+        await sound.replayAsync();
+        const status = await sound.getStatusAsync();
+        const duration = status.durationMillis;
+        setIsPlaying(true);
+        sound.setOnPlaybackStatusUpdate((status) => {
+          if (status.didJustFinish) {
+            setIsPlaying(false);
+          }
+        });
+        await new Promise((resolve) => setTimeout(resolve, duration + 1000));
+      }
+    }
+  }, [audios]);
+
+  const handleImagePress = useCallback(
+    async (page) => {
+      const recording = audios[page - 1];
+      try {
+        if (lastRecording.current) {
+          await lastRecording.current.stopAsync();
+        }
+        if (recording) {
+          const sound = new Audio.Sound();
+          await sound.loadAsync({ uri: `file://${dirUri}/pages/${recording}` });
+          await sound.replayAsync();
+          setIsPlaying(true);
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.didJustFinish) {
+              setIsPlaying(false);
+            }
+          });
+          lastRecording.current = sound;
+        }
+        setSelectedPage(page);
+      } catch (err) {
+        alert("오류가 발생하였습니다. 재시도해주세요");
+      }
+    },
+    [audios],
+  );
 
   return (
     <View style={styles.container}>
@@ -55,18 +99,24 @@ export default function ComicScreen({ navigation, route }) {
       </View>
       <View style={styles.bodyContainer}>
         <View style={styles.comicbox}>
-          {images.map((image) => (
-            <Pressable
-              key={image}
-              // onPress={() => handleImagePress(index)}
-              style={[
-                styles.image,
-                // selectedPage === index && isPlaying && styles.selectedImage,
-              ]}
-            >
-              <Image style={{ flex: 1 }} source={{ uri: image }} />
-            </Pressable>
-          ))}
+          {images.map((image) => {
+            const page = image.slice(0, 1);
+            return (
+              <Pressable
+                key={page}
+                onPress={() => handleImagePress(page)}
+                style={[
+                  styles.image,
+                  selectedPage === page && isPlaying && styles.selectedImage,
+                ]}
+              >
+                <Image
+                  style={{ flex: 1 }}
+                  source={{ uri: `file://${dirUri}/pages/${image}` }}
+                />
+              </Pressable>
+            );
+          })}
         </View>
         <View style={styles.toolbox}>
           <Pressable
@@ -75,7 +125,7 @@ export default function ComicScreen({ navigation, route }) {
               flex: 1,
               justifyContent: "center",
             }}
-            // onPress={handleAudioPress}
+            onPress={handleAudioPress}
           >
             <Svg width={80} height={80} viewBox="0 0 640 512">
               <Path d={ICONPATH.SOUND} fill={ICONCOLOR.general} />
