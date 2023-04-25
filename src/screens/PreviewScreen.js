@@ -40,7 +40,7 @@ export default function PreviewScreen({ navigation }) {
     await saveTitleToDirectory(displayTitle, id);
     await saveImageToDirectory(id, pages);
     await saveAudioToDirectory(id, audioPages);
-    dispatch(pushTitleList(title));
+    dispatch(pushTitleList(displayTitle));
   };
 
   const handleAudioPress = useCallback(async () => {
