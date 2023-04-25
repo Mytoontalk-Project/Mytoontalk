@@ -44,7 +44,7 @@ export default function CircleListModal({
       animationType="fade"
       transparent
       visible={isShowModal}
-      onRequestClose={() => {
+      onRequestClose={async () => {
         Alert.alert("closed.");
         setIsShowModal(!setIsShowModal);
       }}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Alert,
   Modal,
@@ -17,16 +17,67 @@ import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { createNewCanvas } from "../store/feature/drawingBoardSlice";
+import {
+  createNewCanvas,
+  selectTitleList,
+  setTitleList,
+} from "../store/feature/drawingBoardSlice";
 import { createNewRecording } from "../store/feature/audioSlice";
 import { deleteDirectory } from "../utils/fileSystem";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
-  const [isShowModal, setIsShoweModal] = useState(false);
+  const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
   const [input, setInput] = useState("");
-  const [titleList, setTitleList] = useState([]);
+  const titleList = useSelector(selectTitleList);
+  const [fileSystem, setFileSystem] = useState([]);
+
+  const loadComics = useCallback(async () => {
+    const dirUri = `${FileSystem.documentDirectory}mytoontalk/`;
+    const comicList = await FileSystem.readDirectoryAsync(dirUri);
+
+    const newData = await Promise.all(
+      comicList.map(async (id) => {
+        const comicUri = `${dirUri}${id}/`;
+        const [title, pageInfo, creationTime] = await Promise.all([
+          FileSystem.readAsStringAsync(`${comicUri}title.txt`),
+          FileSystem.getInfoAsync(`${comicUri}pages/1.png`),
+          FileSystem.getInfoAsync(`${comicUri}pages/1.png`, {
+            creationTime: true,
+          }),
+        ]);
+
+        let imageUri = null;
+        if (pageInfo.exists) {
+          const imageBase64 = await FileSystem.readAsStringAsync(
+            `${comicUri}pages/1.png`,
+            { encoding: FileSystem.EncodingType.Base64 },
+          );
+          imageUri = `data:image/png;base64,${imageBase64}`;
+        }
+
+        return {
+          id,
+          title,
+          hasCover: pageInfo.exists,
+          imageUri,
+          creationTime: creationTime.creationTime || null,
+        };
+      }),
+    );
+
+    newData.sort(
+      (a, b) =>
+        new Date(a.creationTime).getTime() - new Date(b.creationTime).getTime(),
+    );
+
+    setFileSystem(newData);
+  }, []);
+
+  useEffect(() => {
+    loadComics();
+  }, [titleList]);
 
   const readTitleTexts = async () => {
     try {
@@ -40,7 +91,7 @@ export default function HomeScreen({ navigation }) {
         titles.push(titleContent);
       }
 
-      setTitleList(titles);
+      dispatch(setTitleList(titles));
     } catch (err) {
       alert("네컷만화 리스트를 읽어올 수 없습니다.");
     }
@@ -51,7 +102,7 @@ export default function HomeScreen({ navigation }) {
   }, []);
 
   const toggleModal = () => {
-    setIsShoweModal(true);
+    setIsShowModal(true);
   };
 
   const handleCurrentModal = (modal) => {
@@ -59,7 +110,8 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleDeleteDirectory = async (index) => {
-    await deleteDirectory(index, setTitleList, titleList);
+    const deletedTitleList = await deleteDirectory(index, titleList);
+    dispatch(setTitleList(deletedTitleList));
   };
 
   return (
@@ -71,16 +123,16 @@ export default function HomeScreen({ navigation }) {
           visible={isShowModal}
           onRequestClose={() => {
             Alert.alert("closed.");
-            setIsShoweModal(!isShowModal);
+            setIsShowModal(!isShowModal);
           }}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <View style={[styles.titlebox, styles.mainColor]}>
+              <View style={[styles.titleBox, styles.mainColor]}>
                 <Text style={styles.titleStyle}>제목</Text>
               </View>
               <Pressable
-                onPress={() => setIsShoweModal(false)}
+                onPress={() => setIsShowModal(false)}
                 style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
@@ -97,7 +149,7 @@ export default function HomeScreen({ navigation }) {
               <Pressable
                 style={[styles.button, styles.mainColor]}
                 onPress={() => {
-                  setIsShoweModal(!isShowModal);
+                  setIsShowModal(!isShowModal);
                   setInput("");
                   dispatch(createNewCanvas(input));
                   dispatch(createNewRecording());
@@ -116,16 +168,16 @@ export default function HomeScreen({ navigation }) {
           visible={isShowModal}
           onRequestClose={() => {
             Alert.alert("closed.");
-            setIsShoweModal(!isShowModal);
+            setIsShowModal(!isShowModal);
           }}
         >
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
-              <View style={[styles.titlebox, styles.mainColor]}>
+              <View style={[styles.titleBox, styles.mainColor]}>
                 <Text style={styles.titleStyle}>네컷만화 리스트</Text>
               </View>
               <Pressable
-                onPress={() => setIsShoweModal(false)}
+                onPress={() => setIsShowModal(false)}
                 style={styles.closeButton}
               >
                 <Svg width={30} height={30} viewBox="0 0 384 512">
@@ -159,6 +211,7 @@ export default function HomeScreen({ navigation }) {
         isShowModal={toggleModal}
         currentModal={handleCurrentModal}
         navigation={navigation}
+        loadedComics={fileSystem}
       />
     </View>
   );
@@ -200,7 +253,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#DBE2EF",
     padding: 5,
   },
-  titlebox: {
+  titleBox: {
     borderRadius: 20,
     padding: 15,
     width: 300,

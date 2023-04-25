@@ -38,7 +38,7 @@ export const saveImageToDirectory = async (id, pages) => {
       }
     }
   } catch (err) {
-    alert("파일에 저장할 수 없습니다.");
+    alert("이미지 파일에 저장할 수 없습니다.");
   }
 };
 
@@ -62,19 +62,21 @@ export const saveAudioToDirectory = async (id, pages) => {
       }
     }
   } catch (err) {
-    alert("파일에 저장할 수 없습니다.");
+    alert("오디오 파일에 저장할 수 없습니다.");
   }
 };
 
-export const deleteDirectory = async (index, setTitleList, titleList) => {
+export const deleteDirectory = async (index, titleList) => {
   try {
     const mytoontalkDir = `${FileSystem.documentDirectory}mytoontalk/`;
     const ids = await FileSystem.readDirectoryAsync(mytoontalkDir);
     const dirId = ids[index];
     const dirPath = `${mytoontalkDir}${dirId}/`;
+
     await FileSystem.deleteAsync(dirPath, { idempotent: true });
     const updatedTitles = titleList.filter((_, i) => i !== index);
-    setTitleList(updatedTitles);
+
+    return updatedTitles;
   } catch (err) {
     alert("파일을 삭제할 수 없습니다.");
   }

@@ -58,7 +58,7 @@ export default function ComicScreen({ navigation, route }) {
             setIsPlaying(false);
           }
         });
-        await new Promise((resolve) => setTimeout(resolve, duration + 1000));
+        await new Promise((resolve) => setTimeout(resolve, duration + 500));
       }
     }
   }, [audios]);

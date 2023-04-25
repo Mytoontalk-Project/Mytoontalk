@@ -1,13 +1,24 @@
 import React, { useState, useCallback, useRef } from "react";
-import { StyleSheet, View, Text, Pressable, Image } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Audio } from "expo-av";
 import uuid from "react-native-uuid";
 
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
-import { selectPage, selectTitle } from "../store/feature/drawingBoardSlice";
+import {
+  selectPage,
+  selectTitle,
+  pushTitleList,
+} from "../store/feature/drawingBoardSlice";
 import { selectAudioPage } from "../store/feature/audioSlice";
 import {
   saveAudioToDirectory,
@@ -22,12 +33,14 @@ export default function PreviewScreen({ navigation }) {
   const audioPages = useSelector(selectAudioPage);
   const pages = useSelector(selectPage);
   const lastRecording = useRef(null);
+  const dispatch = useDispatch();
 
   const makedirectoryToFileSystem = async (id) => {
     const displayTitle = title || "제목없음";
     await saveTitleToDirectory(displayTitle, id);
     await saveImageToDirectory(id, pages);
     await saveAudioToDirectory(id, audioPages);
+    dispatch(pushTitleList(title));
   };
 
   const handleAudioPress = useCallback(async () => {
@@ -46,7 +59,7 @@ export default function PreviewScreen({ navigation }) {
           }
         });
         await new Promise((resolve) =>
-          setTimeout(resolve, recording.duration + 1000),
+          setTimeout(resolve, recording.duration + 500),
         );
       }
     }
@@ -56,9 +69,11 @@ export default function PreviewScreen({ navigation }) {
     async (page) => {
       const recordings = audioPages[page].audioData;
       const recording = recordings[recordings.length - 1];
+
       if (lastRecording.current) {
         await lastRecording.current.stopAsync();
       }
+
       if (recording) {
         const sound = new Audio.Sound();
         await sound.loadAsync({ uri: recording.file });
@@ -104,7 +119,7 @@ export default function PreviewScreen({ navigation }) {
           ))}
         </View>
         <View style={styles.toolbox}>
-          <Pressable
+          <TouchableOpacity
             title="audio"
             style={{
               flex: 1,
@@ -115,7 +130,7 @@ export default function PreviewScreen({ navigation }) {
             <Svg width={80} height={80} viewBox="0 0 640 512">
               <Path d={ICONPATH.SOUND} fill={ICONCOLOR.general} />
             </Svg>
-          </Pressable>
+          </TouchableOpacity>
           <View style={{ flexDirection: "row", gap: 10 }}>
             <ControlButton
               label="수정"

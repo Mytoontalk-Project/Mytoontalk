@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -78,11 +78,11 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             <View width={30} height={30} style={colorStyle(penColor).color} />
           </Svg>
         </Pressable>
-        <Pressable name="undo" onPress={movePathUndo}>
+        <TouchableOpacity name="undo" onPress={movePathUndo}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.UNDO} fill={ICONCOLOR.general} />
           </Svg>
-        </Pressable>
+        </TouchableOpacity>
         <Pressable
           name="home"
           onPress={() => {
@@ -124,7 +124,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
         <Pressable
           name="sound"
           onPress={async () => {
-            dispatch(setCurrentTool("sound"));
+            if (currentRecording) dispatch(setCurrentTool("sound"));
             await currentRecording?.sound.replayAsync();
             currentRecording?.sound.setOnPlaybackStatusUpdate((status) => {
               if (status.didJustFinish) {
@@ -142,11 +142,11 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             />
           </Svg>
         </Pressable>
-        <Pressable name="redo" onPress={movePathRedo}>
+        <TouchableOpacity name="redo" onPress={movePathRedo}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.REDO} fill={ICONCOLOR.general} />
           </Svg>
-        </Pressable>
+        </TouchableOpacity>
         <Pressable
           name="audioList"
           onPress={() => {

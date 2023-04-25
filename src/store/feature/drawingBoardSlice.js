@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   title: "",
+  titleList: [],
   currentPage: 1,
   currentTool: "pen",
-  restartCount: 0,
   pen: {
     width: 3,
     color: "#000000",
@@ -41,9 +41,6 @@ export const drawingBoardSlice = createSlice({
   name: "drawingBoard",
   initialState,
   reducers: {
-    addReStartCount: (state, action) => {
-      state.restartCount += action.payload;
-    },
     setPenColor: (state, action) => {
       state.pen.color = action.payload;
     },
@@ -112,11 +109,16 @@ export const drawingBoardSlice = createSlice({
         },
       };
     },
+    setTitleList: (state, action) => {
+      state.titleList = action.payload;
+    },
+    pushTitleList: (state, action) => {
+      state.titleList = [...state.titleList, action.payload];
+    }
   },
 });
 
 export const {
-  addReStartCount,
   setPageBase64File,
   createNewCanvas,
   setCurrentPage,
@@ -128,6 +130,8 @@ export const {
   setPagePath,
   setPathUndo,
   setPathRedo,
+  setTitleList,
+  pushTitleList,
 } = drawingBoardSlice.actions;
 
 export const selectPenColor = (state) => state.drawingBoard.pen.color;
@@ -138,6 +142,6 @@ export const selectTitle = (state) => state.drawingBoard.title;
 export const selectCurrentPage = (state) => state.drawingBoard.currentPage;
 export const selectCurrentTool = (state) => state.drawingBoard.currentTool;
 export const selectPage = (state) => state.drawingBoard.page;
-export const selectRestartCount = (state) => state.drawingBoard.restartCount;
+export const selectTitleList = (state) => state.drawingBoard.titleList;
 
 export default drawingBoardSlice.reducer;

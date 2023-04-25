@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { StyleSheet, View, Text, Pressable, TextInput } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Pressable,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { useCanvasRef } from "@shopify/react-native-skia";
 import Svg, { Path } from "react-native-svg";
 import { Audio } from "expo-av";
@@ -169,12 +176,11 @@ export default function DrawingScreen({ navigation }) {
       </View>
       <View style={styles.footerContainer}>
         <View style={styles.pageMoveButton}>
-          <Pressable
+          <TouchableOpacity
             style={styles.icon}
-            onPress={() => {
+            onPress={async () => {
               if (currentPage > 1) {
                 dispatch(setCurrentPage(currentPage - 1));
-                stopRecording();
                 convertingUrl();
               }
             }}
@@ -185,7 +191,7 @@ export default function DrawingScreen({ navigation }) {
                 fill={currentPage === 1 ? ICONCOLOR.main : ICONCOLOR.general}
               />
             </Svg>
-          </Pressable>
+          </TouchableOpacity>
           <Pressable
             style={styles.icon}
             onPress={recording ? stopRecording : startRecording}
@@ -211,12 +217,11 @@ export default function DrawingScreen({ navigation }) {
               />
             )}
           </Pressable>
-          <Pressable
+          <TouchableOpacity
             style={styles.icon}
-            onPress={() => {
+            onPress={async () => {
               if (currentPage < 4) {
                 dispatch(setCurrentPage(currentPage + 1));
-                stopRecording();
                 convertingUrl();
               }
             }}
@@ -227,7 +232,7 @@ export default function DrawingScreen({ navigation }) {
                 fill={currentPage === 4 ? ICONCOLOR.main : ICONCOLOR.general}
               />
             </Svg>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <View
           style={{
