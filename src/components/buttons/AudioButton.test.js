@@ -6,10 +6,6 @@ describe("AudioButton test", () => {
   const label = "Play";
   const onPressMock = jest.fn();
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("should display the label prop and call onPress prop when the button is pressed", () => {
     const { getByText } = render(
       <AudioButton label={label} onPress={onPressMock} />,

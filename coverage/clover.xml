@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1682499316513" clover="3.2.0">
-  <project timestamp="1682499316514" name="All files">
-    <metrics statements="464" coveredstatements="2" conditionals="110" coveredconditionals="0" methods="142" coveredmethods="1" elements="716" coveredelements="3" complexity="0" loc="464" ncloc="464" packages="9" files="25" classes="25"/>
+<coverage generated="1682512203976" clover="3.2.0">
+  <project timestamp="1682512203976" name="All files">
+    <metrics statements="464" coveredstatements="7" conditionals="110" coveredconditionals="2" methods="142" coveredmethods="3" elements="716" coveredelements="12" complexity="0" loc="464" ncloc="464" packages="9" files="25" classes="25"/>
     <package name="MyToonTalk">
       <metrics statements="4" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="0"/>
       <file name=".eslintrc.js" path="C:\Users\skyai\OneDrive\바탕 화면\부캠갠플\MyToonTalk\.eslintrc.js">
@@ -121,19 +121,19 @@
       </file>
     </package>
     <package name="MyToonTalk.src.components.buttons">
-      <metrics statements="7" coveredstatements="2" conditionals="2" coveredconditionals="0" methods="3" coveredmethods="1"/>
+      <metrics statements="7" coveredstatements="7" conditionals="2" coveredconditionals="2" methods="3" coveredmethods="3"/>
       <file name="AudioButton.js" path="C:\Users\skyai\OneDrive\바탕 화면\부캠갠플\MyToonTalk\src\components\buttons\AudioButton.js">
         <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="5" count="1" type="stmt"/>
         <line num="14" count="1" type="stmt"/>
       </file>
       <file name="ControlButton.js" path="C:\Users\skyai\OneDrive\바탕 화면\부캠갠플\MyToonTalk\src\components\buttons\ControlButton.js">
-        <metrics statements="5" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="5" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
+        <metrics statements="5" coveredstatements="5" conditionals="2" coveredconditionals="2" methods="2" coveredmethods="2"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="9" count="2" type="stmt"/>
+        <line num="10" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
       </file>
     </package>
     <package name="MyToonTalk.src.components.modals">
