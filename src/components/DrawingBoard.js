@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { StyleSheet } from "react-native";
 import { Canvas, Path } from "@shopify/react-native-skia";
 import {
@@ -65,21 +65,27 @@ export default function DrawingBoard({ canvasRef }) {
     })
     .minDistance(1);
 
+  const drawing = useMemo(
+    () =>
+      paths?.map((p, i) => (
+        <Path
+          key={`page${currentPage}${i}path`}
+          path={p.segments.join(" ")}
+          strokeWidth={p.penWidth}
+          style="stroke"
+          strokeJoin="round"
+          strokeCap="round"
+          color={p.color}
+        />
+      )),
+    [paths, currentPage],
+  );
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={pan}>
         <Canvas style={styles.canvas} ref={canvasRef}>
-          {paths?.map((p) => (
-            <Path
-              key={uuid.v4()}
-              path={p.segments.join(" ")}
-              strokeWidth={p.penWidth}
-              style="stroke"
-              strokeJoin="round"
-              strokeCap="round"
-              color={p.color}
-            />
-          ))}
+          {drawing}
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>
