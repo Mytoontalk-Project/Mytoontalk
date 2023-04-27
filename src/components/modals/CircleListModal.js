@@ -55,6 +55,7 @@ export default function CircleListModal({
             <Text style={styles.titleStyle}>{title}</Text>
           </View>
           <Pressable
+            testID="close-button"
             onPress={() => {
               setIsShowModal(false);
               dispatch(setCurrentTool("pen"));

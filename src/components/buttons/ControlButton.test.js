@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import ControlButton from "./ControlButton";
 
-describe("ControlButton", () => {
+describe("ControlButton test", () => {
   it("calls onPress and currentModal functions when button is pressed with label argument", () => {
     const label = "Test Label";
     const onPressMock = jest.fn();
