@@ -14,8 +14,9 @@ import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 export default function ManualModal({
   title,
   description,
-  setCurrentModal,
-  nextModal,
+  setNextModal,
+  setPrevModal,
+  modalIndex,
 }) {
   const [isShowModal, setIsShowModal] = useState(true);
 
@@ -35,12 +36,7 @@ export default function ManualModal({
             <Text style={styles.titleStyle}>{title}</Text>
           </View>
           <TouchableOpacity
-            onPress={() => {
-              setIsShowModal(false);
-              if (setCurrentModal) {
-                setCurrentModal(nextModal);
-              }
-            }}
+            onPress={() => setIsShowModal(false)}
             style={styles.closeButton}
           >
             <Svg width={30} height={30} viewBox="0 0 384 512">
@@ -49,6 +45,22 @@ export default function ManualModal({
           </TouchableOpacity>
           <View style={[styles.mainColor, styles.input]}>
             <Text style={styles.inputStyle}>{description}</Text>
+            {modalIndex > 0 && (
+              <TouchableOpacity
+                onPress={setPrevModal}
+                style={styles.prevButton}
+              >
+                <Text style={styles.buttonText}>이전</Text>
+              </TouchableOpacity>
+            )}
+            {modalIndex < 3 && (
+              <TouchableOpacity
+                onPress={setNextModal}
+                style={styles.nextButton}
+              >
+                <Text style={styles.buttonText}>다음</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
@@ -114,6 +126,31 @@ const styles = StyleSheet.create({
   inputStyle: {
     fontSize: 25,
     textAlign: "center",
-    lineHeight: 50,
+    lineHeight: 45,
+  },
+  nextButton: {
+    width: 55,
+    height: 35,
+    justifyContent: "center",
+    position: "absolute",
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    bottom: 10,
+    right: 10,
+  },
+  prevButton: {
+    width: 55,
+    height: 35,
+    justifyContent: "center",
+    position: "absolute",
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    bottom: 10,
+    left: 10,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

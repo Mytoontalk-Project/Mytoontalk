@@ -38,12 +38,38 @@ export default function DrawingScreen({ navigation }) {
   const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
-  const title = useSelector(selectTitle);
   const [input, setInput] = useState(title);
-  const currentPage = useSelector(selectCurrentPage);
+  const [modalIndex, setModalIndex] = useState(0);
   const [recording, setRecording] = useState(null);
+  const title = useSelector(selectTitle);
+  const currentPage = useSelector(selectCurrentPage);
   const pageRecordings = useSelector(selectAudioPage)[currentPage].audioData;
   const canvasRef = useCanvasRef();
+  const modalContents = [
+    {
+      title: "선 굵기",
+      description: `펜이나 지우개를 꾹~ 누르시면${"\n"}굵기를 조절할 수 있는 창이 나타납니다.`,
+    },
+    {
+      title: "녹음",
+      description: `녹음 버튼을 누르면 바로 녹음이 시작됩니다.${"\n"}재녹음을 원하시면 녹음 버튼을 다시 눌러주세요.`,
+    },
+    {
+      title: "녹음 목록",
+      description: `해당 페이지의 모든 녹음들을 들을 수 있습니다.${"\n"}각 번호를 누르면 녹음이 재생됩니다.`,
+    },
+    {
+      title: "나가기",
+      description: `홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우에는${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`,
+    },
+  ];
+  const handlePrevModal = () => {
+    setModalIndex(modalIndex - 1);
+  };
+
+  const handleNextModal = () => {
+    setModalIndex(modalIndex + 1);
+  };
 
   const toggleModal = () => {
     setIsShowModal(true);
@@ -103,33 +129,12 @@ export default function DrawingScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <ManualModal
-        title="선 굵기"
-        description={`펜이나 지우개를 꾹~ 누르시면${"\n"}굵기를 조절할 수 있는 창이 나타납니다.`}
-        setCurrentModal={handleCurrentModal}
-        nextModal="recording"
+        title={modalContents[modalIndex].title}
+        description={modalContents[modalIndex].description}
+        setNextModal={handleNextModal}
+        setPrevModal={handlePrevModal}
+        modalIndex={modalIndex}
       />
-      {currentModal === "recording" && (
-        <ManualModal
-          title="녹음"
-          description={`녹음 버튼을 누르면 바로 녹음이 시작됩니다.${"\n"}재녹음을 원하시면 녹음 버튼을 다시 눌러주세요.`}
-          setCurrentModal={handleCurrentModal}
-          nextModal="recordingList"
-        />
-      )}
-      {currentModal === "recordingList" && (
-        <ManualModal
-          title="녹음 목록"
-          description={`해당 페이지의 모든 녹음들을 들을 수 있습니다.${"\n"}각 번호를 누르면 녹음이 재생됩니다.`}
-          setCurrentModal={handleCurrentModal}
-          nextModal="next"
-        />
-      )}
-      {currentModal === "next" && (
-        <ManualModal
-          title="나가기"
-          description={`홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우에는${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`}
-        />
-      )}
       {currentModal === "list" ? (
         <CircleListModal
           title="녹음 목록"
