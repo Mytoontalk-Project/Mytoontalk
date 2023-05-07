@@ -26,14 +26,14 @@ export default function ComicDeleteCheckModal({
   comicData,
 }) {
   const dispatch = useDispatch();
+  const [showDeleteComic, setShowDeleteComic] = useState(false);
+  const [selectedComicId, setSelectedComicId] = useState(null);
   const titleList = useSelector(selectTitleList);
-  const handleDeleteDirectory = async (index) => {
-    const deletedTitleList = await deleteDirectory(index, titleList);
+
+  const handleDeleteDirectory = async (id) => {
+    const deletedTitleList = await deleteDirectory(id, titleList);
     dispatch(setTitleList(deletedTitleList));
   };
-
-  const [showDeleteComic, setShowDeleteComic] = useState(false);
-  const [selectedComicIndex, setSelectedComicIndex] = useState(null);
 
   return (
     <Modal
@@ -64,13 +64,13 @@ export default function ComicDeleteCheckModal({
             ) : (
               <FlatList
                 data={comicData}
-                renderItem={({ item, index }) => (
+                renderItem={({ item }) => (
                   <View style={styles.comic}>
                     <Text style={{ fontSize: 25, flex: 1 }}>{item.title}</Text>
                     <ControlButton
                       label="삭제"
                       onPress={() => {
-                        setSelectedComicIndex(index);
+                        setSelectedComicId(item.id);
                         setShowDeleteComic(true);
                       }}
                     />
@@ -108,7 +108,7 @@ export default function ComicDeleteCheckModal({
               <ControlButton
                 label="삭제"
                 onPress={() => {
-                  handleDeleteDirectory(selectedComicIndex);
+                  handleDeleteDirectory(selectedComicId);
                   setShowDeleteComic(false);
                 }}
               />

@@ -15,7 +15,7 @@ import uuid from "react-native-uuid";
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
-  selectPage,
+  selectImagePage,
   selectTitle,
   pushTitleList,
 } from "../store/feature/drawingBoardSlice";
@@ -25,20 +25,49 @@ import {
   saveImageToDirectory,
   saveTitleToDirectory,
 } from "../utils/fileSystem";
+import GeneralModal from "../components/modals/GeneralModal";
 
 export default function PreviewScreen({ navigation }) {
+  const dispatch = useDispatch();
   const [selectedPage, setSelectedPage] = useState(null);
+  const [isShowModal, setIsShowModal] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const title = useSelector(selectTitle);
   const audioPages = useSelector(selectAudioPage);
-  const pages = useSelector(selectPage);
+  const imagePages = useSelector(selectImagePage);
   const lastRecording = useRef(null);
-  const dispatch = useDispatch();
+
+  const [memorySize, setMemorySize] = useState(0);
+  const kilobytes = memorySize / 1024;
+  const megabytes = kilobytes / 1024;
+
+  const checkMemorySize = async () => {
+    let audioTotalSize = 0;
+    let imageTotalSize = 0;
+
+    for (const page in audioPages) {
+      const recordings = audioPages[page].audioData;
+      const recording = recordings[recordings.length - 1];
+      const recordingUri = recording.file;
+      const recordingResponse = await fetch(recordingUri);
+      const recordingBlob = await recordingResponse.blob();
+      audioTotalSize += recordingBlob.size;
+    }
+    for (const page in imagePages) {
+      const image = imagePages[page].base64File;
+      const imageUri = `data:image/png;base64,${image}`;
+      const imageResponse = await fetch(imageUri);
+      const imageBlob = await imageResponse.blob();
+      imageTotalSize += imageBlob.size;
+    }
+    const sizeSum = audioTotalSize + imageTotalSize;
+    setMemorySize(sizeSum);
+  };
 
   const makedirectoryToFileSystem = async (id) => {
     const displayTitle = title || "제목없음";
     await saveTitleToDirectory(displayTitle, id);
-    await saveImageToDirectory(id, pages);
+    await saveImageToDirectory(id, imagePages);
     await saveAudioToDirectory(id, audioPages);
     dispatch(pushTitleList(displayTitle));
   };
@@ -93,6 +122,17 @@ export default function PreviewScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {isShowModal && (
+        <GeneralModal
+          title="주의사항"
+          description={`총 파일 크기는 ${megabytes.toFixed(2,)} MB (${kilobytes.toFixed(2,)} KB) 입니다.${"\n"} 만화를 저장하시겠습니까?`}
+          isShowModal={isShowModal}
+          setIsShowModal={setIsShowModal}
+          buttonText="저장"
+          navigation={navigation}
+          handlePress={() => makedirectoryToFileSystem(uuid.v4())}
+        />
+      )}
       <View style={styles.header}>
         <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
           {title || "제목없음"}
@@ -100,7 +140,7 @@ export default function PreviewScreen({ navigation }) {
       </View>
       <View style={styles.bodyContainer}>
         <View style={styles.comicbox}>
-          {Object.keys(pages).map((page) => (
+          {Object.keys(imagePages).map((page) => (
             <Pressable
               key={page}
               onPress={() => handleImagePress(page)}
@@ -112,7 +152,7 @@ export default function PreviewScreen({ navigation }) {
               <Image
                 style={{ flex: 1 }}
                 source={{
-                  uri: `data:image/png;base64,${pages[page].base64File}`,
+                  uri: `data:image/png;base64,${imagePages[page].base64File}`,
                 }}
               />
             </Pressable>
@@ -139,8 +179,8 @@ export default function PreviewScreen({ navigation }) {
             <ControlButton
               label="저장"
               onPress={() => {
-                navigation.navigate("Home");
-                makedirectoryToFileSystem(uuid.v4());
+                checkMemorySize();
+                setIsShowModal(true);
               }}
             />
           </View>

@@ -23,6 +23,7 @@ import {
   setTitle,
   setCurrentPage,
   setPageBase64File,
+  setCurrentTool,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -61,6 +62,10 @@ export default function DrawingScreen({ navigation }) {
     {
       title: "나가기",
       description: `홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우에는${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`,
+    },
+    {
+      title: "*주의사항*",
+      description: `이 앱은 이미지와 오디오를 사용자의 기기에 저장되어 만화를 저장하였을때 메모리를 사용하게 됩니다.${"\n"}메모리 용량에 주의해주세요!!`,
     },
   ];
   const handlePrevModal = () => {
@@ -149,6 +154,7 @@ export default function DrawingScreen({ navigation }) {
           setIsShowModal={setIsShowModal}
           buttonText="홈"
           navigation={navigation}
+          handlePress={() => dispatch(setCurrentTool("pen"))}
         />
       ) : currentModal === "color" ? (
         <ColorListModal

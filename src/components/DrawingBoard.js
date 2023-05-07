@@ -7,14 +7,13 @@ import {
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
-import uuid from "react-native-uuid";
 
 import {
   selectCurrentPage,
   selectCurrentTool,
   selectEraserColor,
   selectEraserWidth,
-  selectPage,
+  selectImagePage,
   selectPenColor,
   selectPenWidth,
   setPagePath,
@@ -22,7 +21,7 @@ import {
 
 export default function DrawingBoard({ canvasRef }) {
   const currentPage = useSelector(selectCurrentPage);
-  const pagePaths = useSelector(selectPage)[currentPage].drawingData;
+  const pagePaths = useSelector(selectImagePage)[currentPage].drawingData;
   const [paths, setPaths] = useState(pagePaths);
   const dispatch = useDispatch();
   const currentTool = useSelector(selectCurrentTool);

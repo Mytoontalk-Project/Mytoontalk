@@ -3,7 +3,6 @@ import { render, fireEvent } from "@testing-library/react-native";
 import { Provider } from "react-redux";
 import store from "../../store/configureStore";
 import CircleListModal from "./CircleListModal";
-import AudioButton from "../buttons/AudioButton";
 
 describe("CircleListModal test", () => {
   const mockData = {

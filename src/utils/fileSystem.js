@@ -66,15 +66,15 @@ export const saveAudioToDirectory = async (id, pages) => {
   }
 };
 
-export const deleteDirectory = async (index, titleList) => {
+export const deleteDirectory = async (id, titleList) => {
   try {
     const mytoontalkDir = `${FileSystem.documentDirectory}mytoontalk/`;
     const ids = await FileSystem.readDirectoryAsync(mytoontalkDir);
-    const dirId = ids[index];
-    const dirPath = `${mytoontalkDir}${dirId}/`;
+    const idIndex = ids.indexOf(id);
+    const dirPath = `${mytoontalkDir}${id}/`;
 
     await FileSystem.deleteAsync(dirPath, { idempotent: true });
-    const updatedTitles = titleList.filter((_, i) => i !== index);
+    const updatedTitles = titleList.filter((_, i) => i !== idIndex);
 
     return updatedTitles;
   } catch (err) {

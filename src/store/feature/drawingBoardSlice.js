@@ -141,7 +141,7 @@ export const selectEraserWidth = (state) => state.drawingBoard.eraser.width;
 export const selectTitle = (state) => state.drawingBoard.title;
 export const selectCurrentPage = (state) => state.drawingBoard.currentPage;
 export const selectCurrentTool = (state) => state.drawingBoard.currentTool;
-export const selectPage = (state) => state.drawingBoard.page;
+export const selectImagePage = (state) => state.drawingBoard.page;
 export const selectTitleList = (state) => state.drawingBoard.titleList;
 
 export default drawingBoardSlice.reducer;

@@ -1,10 +1,8 @@
 import React from "react";
 import { Modal, Alert, StyleSheet, View, Text, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useDispatch } from "react-redux";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
-import { setCurrentTool } from "../../store/feature/drawingBoardSlice";
 
 export default function GeneralModal({
   title,
@@ -13,8 +11,8 @@ export default function GeneralModal({
   setIsShowModal,
   navigation,
   buttonText,
+  handlePress,
 }) {
-  const dispatch = useDispatch();
 
   return (
     <Modal
@@ -33,8 +31,10 @@ export default function GeneralModal({
           </View>
           <Pressable
             onPress={() => {
-              setIsShowModal(false);
-              dispatch(setCurrentTool("pen"));
+              setIsShowModal(!isShowModal);
+              if (title === "나가기") {
+                handlePress();
+              }
             }}
             style={styles.closeButton}
           >
@@ -49,6 +49,9 @@ export default function GeneralModal({
             style={[styles.button, styles.mainColor]}
             onPress={() => {
               setIsShowModal(!isShowModal);
+              if (title === "주의사항") {
+                handlePress();
+              }
               navigation.navigate("Home");
             }}
           >

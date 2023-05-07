@@ -8,7 +8,7 @@ import {
   selectCurrentTool,
   selectPenColor,
   setCurrentTool,
-  selectPage,
+  selectImagePage,
   setPathUndo,
   setPathRedo,
 } from "../store/feature/drawingBoardSlice";
@@ -22,8 +22,8 @@ export default function WorkingTool({ isShowModal, currentModal }) {
   const recordings = useSelector(selectAudioPage)[currentPage].audioData;
   const currentRecording = recordings[recordings.length - 1];
   const currentTool = useSelector(selectCurrentTool);
-  const pagePaths = useSelector(selectPage)[currentPage].drawingData;
-  const redoPaths = useSelector(selectPage)[currentPage].redoData;
+  const pagePaths = useSelector(selectImagePage)[currentPage].drawingData;
+  const redoPaths = useSelector(selectImagePage)[currentPage].redoData;
 
   const movePathUndo = () => {
     if (pagePaths.length) {

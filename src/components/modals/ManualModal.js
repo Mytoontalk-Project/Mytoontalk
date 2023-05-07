@@ -53,7 +53,7 @@ export default function ManualModal({
                 <Text style={styles.buttonText}>이전</Text>
               </TouchableOpacity>
             )}
-            {modalIndex < 3 && (
+            {modalIndex < 4 && (
               <TouchableOpacity
                 onPress={setNextModal}
                 style={styles.nextButton}
