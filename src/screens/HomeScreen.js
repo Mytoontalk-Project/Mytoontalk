@@ -8,30 +8,27 @@ import {
   Text,
   Pressable,
   TextInput,
-  FlatList,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import * as FileSystem from "expo-file-system";
 
-import ControlButton from "../components/buttons/ControlButton";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
   createNewCanvas,
   selectTitleList,
-  setTitleList,
 } from "../store/feature/drawingBoardSlice";
 import { createNewRecording } from "../store/feature/audioSlice";
-import { deleteDirectory } from "../utils/fileSystem";
+import ComicDeleteCheckModal from "../components/modals/ComicDeleteCheckModal";
 
 export default function HomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
   const [input, setInput] = useState("");
+  const [comicData, setComicData] = useState([]);
   const titleList = useSelector(selectTitleList);
-  const [fileSystem, setFileSystem] = useState([]);
 
   const loadComics = useCallback(async () => {
     const dirUri = `${FileSystem.documentDirectory}mytoontalk/`;
@@ -40,12 +37,9 @@ export default function HomeScreen({ navigation }) {
     const newData = await Promise.all(
       comicList.map(async (id) => {
         const comicUri = `${dirUri}${id}/`;
-        const [title, pageInfo, creationTime] = await Promise.all([
+        const [title, pageInfo] = await Promise.all([
           FileSystem.readAsStringAsync(`${comicUri}title.txt`),
           FileSystem.getInfoAsync(`${comicUri}pages/1.png`),
-          FileSystem.getInfoAsync(`${comicUri}pages/1.png`, {
-            creationTime: true,
-          }),
         ]);
 
         let imageUri = null;
@@ -57,61 +51,48 @@ export default function HomeScreen({ navigation }) {
           imageUri = `data:image/png;base64,${imageBase64}`;
         }
 
+        const idInfo = await FileSystem.getInfoAsync(`${comicUri}`);
+        const { modificationTime } = idInfo;
+
         return {
           id,
           title,
           hasCover: pageInfo.exists,
           imageUri,
-          creationTime: creationTime.creationTime || null,
+          creationTime: modificationTime || null,
         };
       }),
     );
 
-    newData.sort(
-      (a, b) =>
-        new Date(a.creationTime).getTime() - new Date(b.creationTime).getTime(),
-    );
+    newData.sort((a, b) => {
+      if (a.creationTime && b.creationTime) {
+        return (
+          new Date(a.creationTime).getTime() -
+          new Date(b.creationTime).getTime()
+        );
+      }
+      if (!a.creationTime && b.creationTime) {
+        return 1;
+      }
+      if (a.creationTime && !b.creationTime) {
+        return -1;
+      }
+      return 0;
+    });
 
-    setFileSystem(newData);
+    setComicData(newData);
   }, []);
 
   useEffect(() => {
     loadComics();
   }, [titleList]);
 
-  const readTitleTexts = async () => {
-    try {
-      const mytoontalkDir = `${FileSystem.documentDirectory}mytoontalk/`;
-      const ids = await FileSystem.readDirectoryAsync(mytoontalkDir);
-      const titles = [];
-
-      for (const id of ids) {
-        const titlePath = `${mytoontalkDir}${id}/title.txt`;
-        const titleContent = await FileSystem.readAsStringAsync(titlePath);
-        titles.push(titleContent);
-      }
-
-      dispatch(setTitleList(titles));
-    } catch (err) {
-      alert("네컷만화 리스트를 읽어올 수 없습니다.");
-    }
-  };
-
-  useEffect(() => {
-    readTitleTexts();
-  }, []);
-
   const toggleModal = () => {
-    setIsShowModal(true);
+    setIsShowModal(!isShowModal);
   };
 
   const handleCurrentModal = (modal) => {
     setCurrentModal(modal);
-  };
-
-  const handleDeleteDirectory = async (index) => {
-    const deletedTitleList = await deleteDirectory(index, titleList);
-    dispatch(setTitleList(deletedTitleList));
   };
 
   return (
@@ -162,48 +143,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         </Modal>
       ) : (
-        <Modal
-          animationType="fade"
-          transparent
-          visible={isShowModal}
-          onRequestClose={() => {
-            Alert.alert("closed.");
-            setIsShowModal(!isShowModal);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <View style={[styles.titleBox, styles.mainColor]}>
-                <Text style={styles.titleStyle}>네컷만화 리스트</Text>
-              </View>
-              <Pressable
-                onPress={() => setIsShowModal(false)}
-                style={styles.closeButton}
-              >
-                <Svg width={30} height={30} viewBox="0 0 384 512">
-                  <Path d={ICONPATH.XMARK} fill={ICONCOLOR.general} />
-                </Svg>
-              </Pressable>
-              <View style={[styles.comicList, styles.mainColor]}>
-                <FlatList
-                  data={titleList}
-                  renderItem={({ item, index }) => (
-                    <View style={styles.comic}>
-                      <Text style={{ fontSize: 25, flex: 1 }}>{item}</Text>
-                      <ControlButton
-                        label="삭제"
-                        onPress={() => {
-                          handleDeleteDirectory(index);
-                        }}
-                      />
-                    </View>
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </View>
-            </View>
-          </View>
-        </Modal>
+        <ComicDeleteCheckModal isShowModal={isShowModal} setIsShowModal={setIsShowModal} comicData={comicData}/>
       )}
       <Header style={{ flex: 1 }} />
       <OpenComic
@@ -211,7 +151,7 @@ export default function HomeScreen({ navigation }) {
         isShowModal={toggleModal}
         currentModal={handleCurrentModal}
         navigation={navigation}
-        loadedComics={fileSystem}
+        loadedComics={comicData}
       />
     </View>
   );
@@ -269,13 +209,6 @@ const styles = StyleSheet.create({
   mainColor: {
     backgroundColor: "#DBE2EF",
   },
-  comicList: {
-    flex: 1,
-    fontSize: 30,
-    borderRadius: 20,
-    width: "100%",
-    padding: 20,
-  },
   input: {
     flex: 1,
     fontSize: 30,
@@ -295,12 +228,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 30,
     textAlign: "center",
-  },
-  comic: {
-    flexDirection: "row",
-    alignContent: "space-between",
-    gap: 20,
-    marginBottom: 20,
-    alignItems: "center",
   },
 });
