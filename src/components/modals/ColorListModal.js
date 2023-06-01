@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 import {
   Modal,
   Alert,
@@ -10,11 +9,13 @@ import {
   FlatList,
 } from "react-native";
 
-import { setPenColor } from "../../store/feature/drawingBoardSlice";
 import COLORLIST from "../../constants/color";
 
-export default function ColorListModal({ isShowModal, setIsShowModal }) {
-  const dispatch = useDispatch();
+export default function ColorListModal({
+  isShowModal,
+  setIsShowModal,
+  handlePress,
+}) {
   return (
     <Modal
       animationType="slide"
@@ -25,7 +26,10 @@ export default function ColorListModal({ isShowModal, setIsShowModal }) {
         setIsShowModal(!isShowModal);
       }}
     >
-      <TouchableWithoutFeedback onPress={() => setIsShowModal(false)}>
+      <TouchableWithoutFeedback
+        onPress={() => setIsShowModal(false)}
+        accessibilityLabel="modal background"
+      >
         <View style={{ flex: 1 }} />
       </TouchableWithoutFeedback>
       <View style={styles.colors}>
@@ -41,7 +45,7 @@ export default function ColorListModal({ isShowModal, setIsShowModal }) {
                   aspectRatio: 1,
                 }}
                 onPress={() => {
-                  dispatch(setPenColor(item));
+                  handlePress(item);
                   setIsShowModal(false);
                 }}
               />

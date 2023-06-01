@@ -1,6 +1,7 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import { Provider } from "react-redux";
+
 import store from "../../store/configureStore";
 import CircleListModal from "./CircleListModal";
 
@@ -12,7 +13,6 @@ describe("CircleListModal test", () => {
   };
   const mockDispatch = jest.fn();
   const mockUseSelector = jest.fn();
-  const mockHandlePlayAudio = jest.fn();
 
   jest.mock("react-redux", () => ({
     useDispatch: () => mockDispatch,

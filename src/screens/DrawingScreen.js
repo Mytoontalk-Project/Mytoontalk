@@ -24,6 +24,7 @@ import {
   setCurrentPage,
   setPageBase64File,
   setCurrentTool,
+  setPenColor
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -39,10 +40,10 @@ export default function DrawingScreen({ navigation }) {
   const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [currentModal, setCurrentModal] = useState(null);
-  const title = useSelector(selectTitle);
   const [input, setInput] = useState(title);
   const [modalIndex, setModalIndex] = useState(0);
   const [recording, setRecording] = useState(null);
+  const title = useSelector(selectTitle);
   const currentPage = useSelector(selectCurrentPage);
   const pageRecordings = useSelector(selectAudioPage)[currentPage].audioData;
   const canvasRef = useCanvasRef();
@@ -131,6 +132,10 @@ export default function DrawingScreen({ navigation }) {
     }
   };
 
+  const handleColorPress = (item) => {
+    dispatch(setPenColor(item));
+  }
+
   return (
     <View style={styles.container}>
       <ManualModal
@@ -160,6 +165,7 @@ export default function DrawingScreen({ navigation }) {
         <ColorListModal
           isShowModal={isShowModal}
           setIsShowModal={setIsShowModal}
+          handlePress={handleColorPress}
         />
       ) : (
         <WidthModal isShowModal={isShowModal} setIsShowModal={setIsShowModal} />
