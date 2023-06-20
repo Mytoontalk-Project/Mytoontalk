@@ -131,8 +131,8 @@ export default function HomeScreen({ navigation }) {
                 style={[styles.button, styles.mainColor]}
                 onPress={() => {
                   setIsShowModal(!isShowModal);
-                  setInput("");
                   dispatch(createNewCanvas(input));
+                  setInput("");
                   dispatch(createNewRecording());
                   navigation.navigate("Drawing");
                 }}
@@ -143,7 +143,11 @@ export default function HomeScreen({ navigation }) {
           </View>
         </Modal>
       ) : (
-        <ComicDeleteCheckModal isShowModal={isShowModal} setIsShowModal={setIsShowModal} comicData={comicData}/>
+        <ComicDeleteCheckModal
+          isShowModal={isShowModal}
+          setIsShowModal={setIsShowModal}
+          comicData={comicData}
+        />
       )}
       <Header style={{ flex: 1 }} />
       <OpenComic
