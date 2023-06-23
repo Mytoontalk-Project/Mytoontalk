@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet } from "react-native";
 import { Canvas, Path } from "@shopify/react-native-skia";
 import {
@@ -20,10 +20,10 @@ import {
 } from "../store/feature/drawingBoardSlice";
 
 export default function DrawingBoard({ canvasRef }) {
+  const dispatch = useDispatch();
   const currentPage = useSelector(selectCurrentPage);
   const pagePaths = useSelector(selectImagePage)[currentPage].drawingData;
   const [paths, setPaths] = useState(pagePaths);
-  const dispatch = useDispatch();
   const currentTool = useSelector(selectCurrentTool);
   const penColor = useSelector(selectPenColor);
   const penWidth = useSelector(selectPenWidth);
@@ -36,55 +36,50 @@ export default function DrawingBoard({ canvasRef }) {
 
   const pan = Gesture.Pan()
     .onStart((g) => {
-      const newPaths = [...paths];
       const { currentColor, currentWidth } =
         currentTool === "pen"
           ? { currentColor: penColor, currentWidth: penWidth }
           : { currentColor: eraserColor, currentWidth: eraserWidth };
 
-      newPaths[paths.length] = {
-        segments: [],
-        color: currentColor,
-        penWidth: currentWidth,
-      };
-
-      newPaths[paths.length].segments.push(`M ${g.x} ${g.y}`);
-      setPaths(newPaths);
+      setPaths(prevPaths => [
+        ...prevPaths,
+        {
+          segments: [`M ${g.x} ${g.y}`],
+          color: currentColor,
+          penWidth: currentWidth,
+        }
+      ]);
     })
     .onUpdate((g) => {
-      const index = paths.length - 1;
-      const newPaths = [...paths];
-      if (newPaths?.[index]?.segments) {
-        newPaths[index].segments.push(`L ${g.x} ${g.y}`);
-        setPaths(newPaths);
-      }
+      setPaths(prevPaths => {
+        const updatedPaths = [...prevPaths];
+        const lastIndex = updatedPaths.length - 1;
+        if (updatedPaths[lastIndex]?.segments) {
+          updatedPaths[lastIndex].segments.push(`L ${g.x} ${g.y}`);
+        }
+        return updatedPaths;
+      });
     })
     .onEnd(() => {
       dispatch(setPagePath({ currentPage, paths }));
     })
     .minDistance(1);
 
-  const drawing = useMemo(
-    () =>
-      paths?.map((p, i) => (
-        <Path
-          key={`page${currentPage}${i}path`}
-          path={p.segments.join(" ")}
-          strokeWidth={p.penWidth}
-          style="stroke"
-          strokeJoin="round"
-          strokeCap="round"
-          color={p.color}
-        />
-      )),
-    [paths, currentPage],
-  );
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <GestureDetector gesture={pan}>
         <Canvas style={styles.canvas} ref={canvasRef}>
-          {drawing}
+          {paths?.map((p, i) => (
+            <Path
+              key={`page${currentPage}${i}path`}
+              path={p.segments.join(" ")}
+              strokeWidth={p.penWidth}
+              style="stroke"
+              strokeJoin="round"
+              strokeCap="round"
+              color={p.color}
+            />
+          ))}
         </Canvas>
       </GestureDetector>
     </GestureHandlerRootView>
