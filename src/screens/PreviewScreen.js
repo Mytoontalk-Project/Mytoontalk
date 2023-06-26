@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -72,7 +72,7 @@ export default function PreviewScreen({ navigation }) {
     dispatch(pushTitleList(displayTitle));
   };
 
-  const handleAudioPress = useCallback(async () => {
+  const handleAudioPress = async () => {
     for (const page in audioPages) {
       setSelectedPage(page);
       const recordings = audioPages[page].audioData;
@@ -92,40 +92,41 @@ export default function PreviewScreen({ navigation }) {
         );
       }
     }
-  }, [audioPages]);
+  };
 
-  const handleImagePress = useCallback(
-    async (page) => {
-      const recordings = audioPages[page].audioData;
-      const recording = recordings[recordings.length - 1];
+  const handleImagePress = async (page) => {
+    const recordings = audioPages[page].audioData;
+    const recording = recordings[recordings.length - 1];
 
-      if (lastRecording.current) {
-        await lastRecording.current.stopAsync();
-      }
+    if (lastRecording.current) {
+      await lastRecording.current.stopAsync();
+    }
 
-      if (recording) {
-        const sound = new Audio.Sound();
-        await sound.loadAsync({ uri: recording.file });
-        await sound.replayAsync();
-        setIsPlaying(true);
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if (status.didJustFinish) {
-            setIsPlaying(false);
-          }
-        });
-        lastRecording.current = sound;
-      }
-      setSelectedPage(page);
-    },
-    [audioPages],
-  );
+    if (recording) {
+      const sound = new Audio.Sound();
+      await sound.loadAsync({ uri: recording.file });
+      await sound.replayAsync();
+      setIsPlaying(true);
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          setIsPlaying(false);
+        }
+      });
+      lastRecording.current = sound;
+    }
+    setSelectedPage(page);
+  };
 
   return (
     <View style={styles.container}>
       {isShowModal && (
         <GeneralModal
           title="주의사항"
-          description={`총 파일 크기는 ${megabytes.toFixed(2,)} MB (${kilobytes.toFixed(2,)} KB) 입니다.${"\n"} 만화를 저장하시겠습니까?`}
+          description={`총 파일 크기는 ${megabytes.toFixed(
+            2,
+          )} MB (${kilobytes.toFixed(
+            2,
+          )} KB) 입니다.${"\n"} 만화를 저장하시겠습니까?`}
           isShowModal={isShowModal}
           setIsShowModal={setIsShowModal}
           buttonText="저장"
