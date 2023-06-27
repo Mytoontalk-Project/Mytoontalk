@@ -1,21 +1,20 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Pressable, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
+import useAudioPlay from "../hooks/useAudioPaly";
 
 export default function ComicScreen({ navigation, route }) {
   const { id } = route.params;
   const dirUri = `${FileSystem.documentDirectory}mytoontalk/${id}`;
+  const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
   const [title, setTitle] = useState("");
   const [images, setImages] = useState([]);
   const [selectedPage, setSelectedPage] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [audios, setAudios] = useState([]);
-  const lastRecording = useRef(null);
 
   const loadData = async () => {
     try {
@@ -42,53 +41,36 @@ export default function ComicScreen({ navigation, route }) {
     loadData();
   }, []);
 
-  const handleAudioPress = useCallback(async () => {
-    for (const page of audios) {
-      const filterPage = page.slice(0, 1);
-      setSelectedPage(filterPage);
-      if (page) {
-        const sound = new Audio.Sound();
-        await sound.loadAsync({ uri: `file://${dirUri}/pages/${page}` });
-        await sound.replayAsync();
-        const status = await sound.getStatusAsync();
-        const duration = status.durationMillis;
-        setIsPlaying(true);
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if (status.didJustFinish) {
-            setIsPlaying(false);
-          }
-        });
-        await new Promise((resolve) => setTimeout(resolve, duration + 500));
-      }
-    }
-  }, [audios]);
+  const handleAudioPress = async () => {
+    try {
+      for (const page of audios) {
+        const filterPage = page.slice(0, 1);
+        setSelectedPage(filterPage);
 
-  const handleImagePress = useCallback(
-    async (page) => {
-      const recording = audios[page - 1];
-      try {
-        if (lastRecording.current) {
-          await lastRecording.current.stopAsync();
+        if (page) {
+          await playAudio(`file://${dirUri}/pages/${page}`);
+          const status = await getStatus();
+          const duration = status.durationMillis;
+          await new Promise((resolve) => setTimeout(resolve, duration + 500));
         }
-        if (recording) {
-          const sound = new Audio.Sound();
-          await sound.loadAsync({ uri: `file://${dirUri}/pages/${recording}` });
-          await sound.replayAsync();
-          setIsPlaying(true);
-          sound.setOnPlaybackStatusUpdate((status) => {
-            if (status.didJustFinish) {
-              setIsPlaying(false);
-            }
-          });
-          lastRecording.current = sound;
-        }
-        setSelectedPage(page);
-      } catch (err) {
-        alert("오류가 발생하였습니다. 재시도해주세요");
       }
-    },
-    [audios],
-  );
+    } catch (err) {
+      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
+    }
+  };
+
+  const handleImagePress = async (page) => {
+    const recording = audios[page - 1];
+    try {
+      await stopAudio();
+      if (recording) {
+        await playAudio(`file://${dirUri}/pages/${recording}`);
+      }
+      setSelectedPage(page);
+    } catch (err) {
+      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
+    }
+  };
 
   return (
     <View style={styles.container}>

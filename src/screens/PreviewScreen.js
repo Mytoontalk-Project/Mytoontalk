@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
-import { Audio } from "expo-av";
 import uuid from "react-native-uuid";
 
 import ControlButton from "../components/buttons/ControlButton";
@@ -26,16 +25,16 @@ import {
   saveTitleToDirectory,
 } from "../utils/fileSystem";
 import GeneralModal from "../components/modals/GeneralModal";
+import useAudioPlay from "../hooks/useAudioPaly";
 
 export default function PreviewScreen({ navigation }) {
   const dispatch = useDispatch();
+  const {isPlaying, playAudio, stopAudio} = useAudioPlay();
   const [selectedPage, setSelectedPage] = useState(null);
   const [isShowModal, setIsShowModal] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const title = useSelector(selectTitle);
   const audioPages = useSelector(selectAudioPage);
   const imagePages = useSelector(selectImagePage);
-  const lastRecording = useRef(null);
 
   const [memorySize, setMemorySize] = useState(0);
   const kilobytes = memorySize / 1024;
@@ -73,48 +72,35 @@ export default function PreviewScreen({ navigation }) {
   };
 
   const handleAudioPress = async () => {
-    for (const page in audioPages) {
-      setSelectedPage(page);
-      const recordings = audioPages[page].audioData;
-      const recording = recordings[recordings.length - 1];
-      if (recording) {
-        const sound = new Audio.Sound();
-        await sound.loadAsync({ uri: recording.file });
-        await sound.replayAsync();
-        setIsPlaying(true);
-        sound.setOnPlaybackStatusUpdate((status) => {
-          if (status.didJustFinish) {
-            setIsPlaying(false);
-          }
-        });
-        await new Promise((resolve) =>
-          setTimeout(resolve, recording.duration + 500),
-        );
+    try {
+      for (const page in audioPages) {
+        setSelectedPage(page);
+        const recordings = audioPages[page].audioData;
+        const recording = recordings[recordings.length - 1];
+        if (recording) {
+          await playAudio(recording.file);
+          await new Promise((resolve) =>
+            setTimeout(resolve, recording.duration + 500),
+          );
+        }
       }
+    } catch (err) {
+      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
     }
   };
 
   const handleImagePress = async (page) => {
     const recordings = audioPages[page].audioData;
     const recording = recordings[recordings.length - 1];
-
-    if (lastRecording.current) {
-      await lastRecording.current.stopAsync();
+    try {
+      await stopAudio();
+      if (recording) {
+        await playAudio(recording.file);
+      }
+      setSelectedPage(page);
+    } catch (err) {
+      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
     }
-
-    if (recording) {
-      const sound = new Audio.Sound();
-      await sound.loadAsync({ uri: recording.file });
-      await sound.replayAsync();
-      setIsPlaying(true);
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          setIsPlaying(false);
-        }
-      });
-      lastRecording.current = sound;
-    }
-    setSelectedPage(page);
   };
 
   return (

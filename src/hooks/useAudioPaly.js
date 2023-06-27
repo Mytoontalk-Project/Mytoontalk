@@ -1,0 +1,47 @@
+import { useEffect, useRef, useState } from "react";
+import { Audio } from "expo-av";
+
+export default function useAudioPlay() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const lastRecording = useRef(null);
+
+  const playAudio = async (recordingUri) => {
+    const sound = new Audio.Sound();
+    await sound.loadAsync({ uri: recordingUri });
+    await sound.replayAsync();
+    setIsPlaying(true);
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.didJustFinish) {
+        setIsPlaying(false);
+      }
+    });
+    lastRecording.current = sound;
+  };
+
+  const stopAudio = async () => {
+    if (lastRecording.current) {
+      await lastRecording.current.stopAsync();
+    }
+  };
+
+  const getStatus = async () => {
+    if (lastRecording.current) {
+      const status = await lastRecording.current.getStatusAsync();
+      return status;
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    return () => {
+      stopAudio();
+    };
+  }, []);
+
+  return {
+    isPlaying,
+    playAudio,
+    stopAudio,
+    getStatus
+  };
+};
