@@ -22,7 +22,7 @@
     - [1) FileSystem의 로컬 디바이스 메모리 문제를 어떻게 해결해야할까?](#1-filesystem의-로컬-디바이스-메모리-문제를-어떻게-해결해야할까)
   - [2. 만화 페이지별 이미지와 오디오 상태 관리 및 데이터 구조](#2-만화-페이지별-이미지와-오디오-상태-관리-및-데이터-구조)
   - [3. 만화 페이지별 그림판 undo, redo](#3-만화-페이지별-그림판-undo-redo)
-  - [4. 오디오 관련 중복 함수를 줄이자](#4-오디오-관련-중복-함수를-줄이자)
+  - [4. 오디오 관련 반복 로직을 줄이자](#4-오디오-관련-반복-로직을-줄이자)
   - [5. 사용자 경험 고민들](#5-사용자-경험-고민들)
     - [1) 어떻게 사용자에게 해당 페이지의 오디오가 재생되고 있음을 알려줄 수 있을까?](#1-어떻게-사용자에게-해당-페이지의-오디오가-재생되고-있음을-알려줄-수-있을까)
     - [2) 재생되고 있는 오디오를 멈추고 다른 오디오를 재생시킬 수 있을까?](#2-재생되고-있는-오디오를-멈추고-다른-오디오를-재생시킬-수-있을까)
@@ -101,7 +101,7 @@
 
 저는 사용자의 로컬 디바이스가 **오프라인인 상태**에서도 쉽게 앱을 사용하도록 하는 것을 중점으로 두었기에 로컬 디바이스에 저장하기로 결정했습니다.
 
-그래서 expo에서 제공하는 기능 중에 `expo-file-system`을 사용하여 로컬 디바이스의 파일 서비스를 접근하여 데이터를 저장하였습니다.
+expo에서 제공하는 기능 중에 `expo-file-system`을 사용하여 로컬 디바이스의 파일 서비스를 접근하여 데이터를 저장하였습니다.
 
 <br>
  
@@ -243,11 +243,11 @@ setPathRedo: (state, action) => {
 
 <br><br>
 
-## 4. 오디오 관련 중복 함수를 줄이자
+## 4. 오디오 관련 반복 로직을 줄이자
 #### 문제점
 미리보기 페이지와 완성된 만화 페이지의 각 구성요소마다 오디오를 재생하거나 중지하는 함수가 있습니다.
 ```jsx
- const sound = new Audio.Sound();
+  const sound = new Audio.Sound();
   await sound.loadAsync({ uri: recording.file });
   await sound.replayAsync();
   setIsPlaying(true);
@@ -257,21 +257,35 @@ setPathRedo: (state, action) => {
     }
   });
 ```
-오디오를 불러올때의 넘겨주는 uri만 다를 뿐 로직은 비슷합니다. 미리보기 페이지와 완성된 만화 페이지의 구성요소에 이미지를 클릭했을 때 발생하는 이벤트 핸들러와 오디오 재생 아이콘을 클릭했을 때 발생하는 이벤트 핸드러에서
-이 공통되는 로직을 추출하여 재사용하려고 합니다.
+이미지를 클릭했을 때와 오디오 재생 아이콘을 클릭했을 때 발생하는 이벤트 핸들러에서 사용됩니다. 즉, 구성 요소 하나에 함수가 두번 반복 사용되고 있습니다. 오디오를 불러올때의 넘겨주는 uri만 다를 뿐 로직은 비슷하여
+이 공통되는 부분을 추출하여 재사용하려고 합니다.
 <br><br>
 
 #### 해결방안: Custom hook으로 추출
-[공식문서](https://ko.react.dev/learn/reusing-logic-with-custom-hooks#passing-event-handlers-to-custom-hooks)를 참고하여 커스텀 훅을 구현하였습니다.
+공식문서를 참고하여 커스텀 훅을 구현하였습니다.([링크](https://ko.react.dev/learn/reusing-logic-with-custom-hooks#passing-event-handlers-to-custom-hooks))
 
-Hook의 이름은 항상 use로 시작해야하기때문에 `useAudioPlay`라는 이름의 함수를 정의해주었습니다.<br>
-커스텀 훅에는 각각 오디오 재생, 오디오 재생 중지 및 오디오 상태 검색 기능을 제공하는 playAudio 함수, stopAudio 함수 및 getStatus 함수가 포함되어 있습니다.
+Hook의 이름은 항상 `use`로 시작해야하기때문에 `useAudioPlay`라는 이름의 함수를 정의해주었습니다.<br>
+커스텀 훅에는 각각 오디오 재생, 오디오 재생 중지 및 오디오 상태 검색 기능을 제공하는 `playAudio` 함수, `stopAudio` 함수 및 `getStatus` 함수가 포함되어 있습니다.
 
 ```jsx
 function useAudioPlay() {
   const [isPlaying, setIsPlaying] = useState(false);
   const lastRecording = useRef(null);
 
+  const playAudio = async (recordingUri) => {...};
+  const stopAudio = async () => {...};
+  const getStatus = async () => {...};
+
+  return {
+    isPlaying,
+    playAudio,
+    stopAudio,
+    getStatus
+  };
+};
+```
+- playAudio 함수 : 매개변수를 받은 `recoringUri`을 통해 오디오를 재생시킵니다.
+  ```jsx
   const playAudio = async (recordingUri) => {
     const sound = new Audio.Sound();
     await sound.loadAsync({ uri: recordingUri });
@@ -284,25 +298,34 @@ function useAudioPlay() {
     });
     lastRecording.current = sound;
   };
-
-  const stopAudio = async () => {...};
-  const getStatus = async () => {...};
-
-...
-
-  return {
-    isPlaying,
-    playAudio,
-    stopAudio,
-    getStatus
+  ```
+- stopAudio 함수 : 현재 재생되는 오디오가 있을 경우 오디오 재생을 중지시킵니다.
+  ```jsx
+  const stopAudio = async () => {
+    if (lastRecording.current) {
+      await lastRecording.current.stopAsync();
+    }
   };
-};
-```
-함수의 리턴값으로 isPlaying, playAudio, stopAudio, getStatus을 주어 컴포넌트가 오디오의 재생 기능을 읽을 수 있도록 하였습니다.
+  ```
+- getStatus 함수 : 현재 재생되는 오디오가 있을 경우 오디오 관련 데이터를 반환합니다.
+  ```jsx
+  const getStatus = async () => {
+    if (lastRecording.current) {
+      const status = await lastRecording.current.getStatusAsync();
+      return status;
+    }
+    return null;
+  };
+  ```
+<br>
+
+함수의 리턴값으로 `isPlaying` 함수, `playAudio` 함수, `stopAudio` 함수와 `getStatus` 함수의 반환값을 받은 컴포넌트가 오디오의 재생 기능들을 읽을 수 있도록 하였습니다.
+
 ```jsx
 const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
 ```
-커스텀 훅을 통해 컴포넌트 간의 코드의 중복을 줄임으로써 재사용성을 높이고 유지 보수를 용이하게 하였습니다.
+
+=> 반복 로직을 커스텀 훅으로 추출하여 컴포넌트 간의 코드의 중복을 줄임으로써 재사용성을 높이고 유지 보수를 용이하게 하였습니다.
 
 <br><br>
 
@@ -319,26 +342,15 @@ const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
 공식문서와 인터넷 서치를 하다 `expo-av`의 audio API에 `sound` 개체의 `setOnPlaybackStatusUpdate` 메서드를 사용하면 오디오의 재생 상태를 모니터링 할 수 있다는 것을 알게 되었습니다.
 
 ```jsx
-// 전체 오디오를 재생시키는 함수
-const handleAudioPress = async () => {
-  for (const page in audioPages) {
-    setSelectedPage(page);
-    const recordings = audioPages[page].audioData;
-    const recording = recordings[recordings.length - 1];
-    
-    if (recording) {
-      const sound = new Audio.Sound();
-      await sound.loadAsync({ uri: recording.file });
-      await sound.replayAsync();
-      setIsPlaying(true);
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (status.didJustFinish) {
-          setIsPlaying(false);
-        }
-      });
+  const sound = new Audio.Sound();
+  await sound.loadAsync({ uri: recording.file });
+  await sound.replayAsync();
+  setIsPlaying(true);
+  sound.setOnPlaybackStatusUpdate((status) => {
+    if (status.didJustFinish) {
+      setIsPlaying(false);
     }
-  }
-};
+  });
 ```
 
 오디오의 재생 상태가 업데이트되면 `status` 개체의 `didJustFinish` 속성이 `true`인지 확인합니다. 이 속성은 오디오 재생이 방금 끝났는지 여부를 나타내는 부울 값입니다. `didJustFinish` 속성이 `true`이면 오디오 재생이 종료됐음을 의미하므로 `isPlaying` 상태를 `false`로 설정하여 스타일이 적용이 안되도록 하였습니다.<br>
@@ -371,24 +383,19 @@ await new Promise((resolve) =>
 
 #### 해결방안: `useRef`를 활용하여 오디오 참조
 리렌더링을 최소화하기 위해 구성 요소를 다시 렌더링하지 않고도 액세스하여 수정할 수 있는 `useRef`를 사용하기로 했습니다.
+
 ```jsx
-// handleImagePress() 함수중에
-const lastRecording = useRef(null);
-
-const handleImagePress = () => {
-  const sound = new Audio.Sound();
-  await sound.loadAsync({ uri: recording.file });
-  await sound.replayAsync();
-  setIsPlaying(true);
-  sound.setOnPlaybackStatusUpdate((status) => {
-    if (status.didJustFinish) {
-      setIsPlaying(false);
-    }
-  });
-  lastRecording.current = sound;
-};
-
+  const lastRecording = useRef(null);
+  
+  if (lastRecording.current) {
+    await lastRecording.current.stopAsync();
+  }
+  if (recording) {
+    const sound = new Audio.Sound();
+    lastRecording.current = sound;
+  }
 ```
+
 `useRef` hook을 사용하여 `lastRecording.current`에 `Audio.Sound` 개체를 저장함으로써 구성 요소의 다시 렌더링을 트리거하지 않고 새 오디오가 재생될 때 이전 오디오 재생에 쉽게 액세스하고 중지할 수 있습니다.
 
 <br>
@@ -478,9 +485,9 @@ const drawing = paths?.map((p, i) => (
 
 왜 저하가 되었을까?
 
-UUID를 `<Path>` 요소의 키로 사용하면 구성 요소의 각 렌더링에 대해 새 UUID가 자주 생성됩니다. 결과적으로 React는 내용이 변경되지 않은 경우에도 조정 프로세스 중에 각 요소를 새 것으로 취급하므로 렌더링 성능에 영향을 미칩니다.
+UUID를 `<Path>` 요소의 키로 사용하면 구성 요소의 각 렌더링에 대해 새 UUID가 자주 생성됩니다. 결과적으로 React는 내용이 변경되지 않은 경우에도 조정 프로세스 중에 각 요소를 새 것으로 인식해 렌더링 성능에 영향을 미칩니다.
 
-조정 프로세스는 React가 가상 DOM과 실제 DOM 트리를 동일하게 만드는 데 필요한 최소 변경 수를 결정하는 방법입니다. 여기에는 키를 사용하여 가상 DOM의 요소를 효율적으로 식별하고 추적하는 React의 diffing 알고리즘이 사용됩니다. 요소가 업데이트되면 React는 새 키와 이전 키를 비교하여 요소를 업데이트, 교체 또는 삽입할지 여부를 결정합니다.
+조정 프로세스는 React가 가상 DOM과 실제 DOM을 비교하고 변경 사항을 업데이트하는 것을 말합니다. 요소가 업데이트되면 React는 diffing 알고리즘을 통해 새 키와 이전 키를 비교하여 요소를 업데이트하거나 교체 또는 삽입할지 여부를 결정합니다.
 <br><br>
 
 #### 시도
