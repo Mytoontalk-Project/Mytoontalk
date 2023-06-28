@@ -22,11 +22,12 @@
     - [1) FileSystem의 로컬 디바이스 메모리 문제를 어떻게 해결해야할까?](#1-filesystem의-로컬-디바이스-메모리-문제를-어떻게-해결해야할까)
   - [2. 만화 페이지별 이미지와 오디오 상태 관리 및 데이터 구조](#2-만화-페이지별-이미지와-오디오-상태-관리-및-데이터-구조)
   - [3. 만화 페이지별 그림판 undo, redo](#3-만화-페이지별-그림판-undo-redo)
-  - [4. 사용자 경험 고민들](#4-사용자-경험-고민들)
+  - [4. 오디오 관련 중복 함수를 줄이자](#4-오디오-관련-중복-함수를-줄이자)
+  - [5. 사용자 경험 고민들](#5-사용자-경험-고민들)
     - [1) 어떻게 사용자에게 해당 페이지의 오디오가 재생되고 있음을 알려줄 수 있을까?](#1-어떻게-사용자에게-해당-페이지의-오디오가-재생되고-있음을-알려줄-수-있을까)
     - [2) 재생되고 있는 오디오를 멈추고 다른 오디오를 재생시킬 수 있을까?](#2-재생되고-있는-오디오를-멈추고-다른-오디오를-재생시킬-수-있을까)
     - [3) 그림판 도구들을 사용자 편의성에 맞게 개선하기](#3-그림판-도구들을-사용자-편의성에-맞게-개선하기)
-  - [5. 그림판에 그림 그리는 속도 저하 발생 (트러블 슈팅)](#5-그림판에-그림-그리는-속도-저하-발생-트러블-슈팅)
+  - [6. 그림판에 그림 그리는 속도 저하 발생 (트러블 슈팅)](#6-그림판에-그림-그리는-속도-저하-발생-트러블-슈팅)
 - [스케줄](#스케줄)
 - [기술스택](#기술스택)
 - [만든이](#만든이)
@@ -242,7 +243,70 @@ setPathRedo: (state, action) => {
 
 <br><br>
 
-## 4. 사용자 경험 고민들
+## 4. 오디오 관련 중복 함수를 줄이자
+#### 문제점
+미리보기 페이지와 완성된 만화 페이지의 각 구성요소마다 오디오를 재생하거나 중지하는 함수가 있습니다.
+```jsx
+ const sound = new Audio.Sound();
+  await sound.loadAsync({ uri: recording.file });
+  await sound.replayAsync();
+  setIsPlaying(true);
+  sound.setOnPlaybackStatusUpdate((status) => {
+    if (status.didJustFinish) {
+      setIsPlaying(false);
+    }
+  });
+```
+오디오를 불러올때의 넘겨주는 uri만 다를 뿐 로직은 비슷합니다. 미리보기 페이지와 완성된 만화 페이지의 구성요소에 이미지를 클릭했을 때 발생하는 이벤트 핸들러와 오디오 재생 아이콘을 클릭했을 때 발생하는 이벤트 핸드러에서
+이 공통되는 로직을 추출하여 재사용하려고 합니다.
+<br><br>
+
+#### 해결방안: Custom hook으로 추출
+[공식문서](https://ko.react.dev/learn/reusing-logic-with-custom-hooks#passing-event-handlers-to-custom-hooks)를 참고하여 커스텀 훅을 구현하였습니다.
+
+Hook의 이름은 항상 use로 시작해야하기때문에 `useAudioPlay`라는 이름의 함수를 정의해주었습니다.<br>
+커스텀 훅에는 각각 오디오 재생, 오디오 재생 중지 및 오디오 상태 검색 기능을 제공하는 playAudio 함수, stopAudio 함수 및 getStatus 함수가 포함되어 있습니다.
+
+```jsx
+function useAudioPlay() {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const lastRecording = useRef(null);
+
+  const playAudio = async (recordingUri) => {
+    const sound = new Audio.Sound();
+    await sound.loadAsync({ uri: recordingUri });
+    await sound.replayAsync();
+    setIsPlaying(true);
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.didJustFinish) {
+        setIsPlaying(false);
+      }
+    });
+    lastRecording.current = sound;
+  };
+
+  const stopAudio = async () => {...};
+  const getStatus = async () => {...};
+
+...
+
+  return {
+    isPlaying,
+    playAudio,
+    stopAudio,
+    getStatus
+  };
+};
+```
+함수의 리턴값으로 isPlaying, playAudio, stopAudio, getStatus을 주어 컴포넌트가 오디오의 재생 기능을 읽을 수 있도록 하였습니다.
+```jsx
+const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
+```
+커스텀 훅을 통해 컴포넌트 간의 코드의 중복을 줄임으로써 재사용성을 높이고 유지 보수를 용이하게 하였습니다.
+
+<br><br>
+
+## 5. 사용자 경험 고민들
 
 ### 1) 어떻게 사용자에게 해당 페이지의 오디오가 재생되고 있음을 알려줄 수 있을까? 
 미리보기 페이지나 완성된 만화 페이지에서 전체 오디오 버튼을 눌렀을때나 각각의 페이지들을 클릭했을때 어떤 페이지의 오디오가 나오는지 사용자에게 알려주기 위해서 `border` 스타일을 주려고 했습니다. 
@@ -256,7 +320,7 @@ setPathRedo: (state, action) => {
 
 ```jsx
 // 전체 오디오를 재생시키는 함수
-const handleAudioPress = useCallback(async () => {
+const handleAudioPress = async () => {
   for (const page in audioPages) {
     setSelectedPage(page);
     const recordings = audioPages[page].audioData;
@@ -274,7 +338,7 @@ const handleAudioPress = useCallback(async () => {
       });
     }
   }
-}, [audioPages]);
+};
 ```
 
 오디오의 재생 상태가 업데이트되면 `status` 개체의 `didJustFinish` 속성이 `true`인지 확인합니다. 이 속성은 오디오 재생이 방금 끝났는지 여부를 나타내는 부울 값입니다. `didJustFinish` 속성이 `true`이면 오디오 재생이 종료됐음을 의미하므로 `isPlaying` 상태를 `false`로 설정하여 스타일이 적용이 안되도록 하였습니다.<br>
@@ -333,8 +397,7 @@ const handleImagePress = () => {
 ```jsx
 const lastRecording = useRef(null);
 
-const handleImagePress = useCallback(
-    async (page) => {
+const handleImagePress = async (page) => {
       const recordings = audioPages[page].audioData;
       const recording = recordings[recordings.length - 1];
 
@@ -355,9 +418,7 @@ const handleImagePress = useCallback(
         lastRecording.current = sound;
       }
       setSelectedPage(page);
-    },
-    [audioPages],
-  );
+    };
 ```
 1) 이전에 녹음된 오디오가 있는 경우, `lastRecording.current` 객체에서 `stopAsync()`를 호출하여 오디오 재생을 중지시킵니다.
 2) 사용 가능한 새 오디오가 있는 경우, 새 `Audio.Sound` 객체를 생성하고 `loadAsync()`를 사용하여 recording.file URI에 지정된 오디오 파일을 로드합니다.
@@ -394,7 +455,7 @@ React Native의 `Pressable` 태그를 사용하여 하나의 `icon` 태그에 �
 
 <br><br>
 
-## 5. 그림판에 그림 그리는 속도 저하 발생 (트러블 슈팅)
+## 6. 그림판에 그림 그리는 속도 저하 발생 (트러블 슈팅)
 #### 문제점
 그림판에 그림을 그릴수록 프레임 속도가 저하되는 현상이 발생하였습니다. 그림을 그리는 양이 적을 때는 문제가 없었지만 많은 양의 그림을 그릴수록 프레임 저하가 심해졌습니다.<br><br>
 
