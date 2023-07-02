@@ -257,7 +257,7 @@ setPathRedo: (state, action) => {
     }
   });
 ```
-이미지를 클릭했을 때와 오디오 재생 아이콘을 클릭했을 때 발생하는 이벤트 핸들러에서 사용됩니다. 즉, 구성 요소 하나에 함수가 두번 반복 사용되고 있습니다. 오디오를 불러올때의 넘겨주는 uri만 다를 뿐 로직은 비슷하여
+이미지를 클릭했을 때와 오디오 재생 아이콘을 클릭했을 때 함수가 호출됩니다. 즉, 구성 요소 하나에 함수가 두번 반복 사용되고 있습니다. 오디오를 불러올때의 넘겨주는 uri만 다를 뿐 로직은 비슷하여
 이 공통되는 부분을 추출하여 재사용하려고 합니다.
 <br><br>
 
@@ -339,7 +339,7 @@ const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
 하지만 오디오는 순서대로 재생이 되지만 `border` 스타일은 오디오 시간을 무시한채 빠르게 페이지마다 적용되고 끝나버렸습니다.<br><br>
 
 #### 해결방안: 오디오 재생 상태 모니터링
-공식문서와 인터넷 서치를 하다 `expo-av`의 audio API에 `sound` 개체의 `setOnPlaybackStatusUpdate` 메서드를 사용하면 오디오의 재생 상태를 모니터링 할 수 있다는 것을 알게 되었습니다.
+공식문서와 인터넷 서치를 하다 `expo-av`의 audio API에 `sound` 객체의 `setOnPlaybackStatusUpdate` 메서드를 사용하면 오디오의 재생 상태를 모니터링 할 수 있다는 것을 알게 되었습니다.
 
 ```jsx
   const sound = new Audio.Sound();
@@ -353,7 +353,7 @@ const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
   });
 ```
 
-오디오의 재생 상태가 업데이트되면 `status` 개체의 `didJustFinish` 속성이 `true`인지 확인합니다. 이 속성은 오디오 재생이 방금 끝났는지 여부를 나타내는 부울 값입니다. `didJustFinish` 속성이 `true`이면 오디오 재생이 종료됐음을 의미하므로 `isPlaying` 상태를 `false`로 설정하여 스타일이 적용이 안되도록 하였습니다.<br>
+오디오의 재생 상태가 업데이트되면 `status` 객체의 `didJustFinish` 속성이 `true`인지 확인합니다. 이 속성은 오디오 재생이 방금 끝났는지 여부를 나타내는 부울 값입니다. `didJustFinish` 속성이 `true`이면 오디오 재생이 종료됐음을 의미하므로 `isPlaying` 상태를 `false`로 설정하여 스타일이 적용이 안되도록 하였습니다.<br>
 
 그리고 페이지와 페이지 사이에 재생되는 오디오가 빠르게 넘어가는 느낌을 받아 `setTimeout`을 추가하여 오디오 재생이 끝난후에 0.5초 간격을 주어 바로 재생되지 않도록 하여 자연스럽게 넘어가도록 구현하였습니다
 ```jsx
@@ -382,7 +382,7 @@ await new Promise((resolve) =>
 |1. `useState` hook을 사용하여 선언해야 한다.<br>2. 상태 변수를 변경하면 구성 요소가 재랜더링된다.<br>3. 상태 업데이트는 비동기이기에 후속 코드 실행에 즉시 반영되지 않을 수 있다.|1. `Ref` 값을 변경해도 구성 요소가 리랜더링되지 않는다.<br>2. `Ref` 업데이트는 후속 코드 실행에서 동시에 액세스할 수 있다.|
 
 #### 해결방안: `useRef`를 활용하여 오디오 참조
-리렌더링을 최소화하기 위해 구성 요소를 다시 렌더링하지 않고도 액세스하여 수정할 수 있는 `useRef`를 사용하기로 했습니다.
+리렌더링을 최소화하기 위해 구성 요소를 리렌더링하지 않고도 액세스하여 수정할 수 있는 `useRef`를 사용하기로 했습니다.
 
 ```jsx
   const lastRecording = useRef(null);
@@ -396,7 +396,7 @@ await new Promise((resolve) =>
   }
 ```
 
-`useRef` hook을 사용하여 `lastRecording.current`에 `Audio.Sound` 개체를 저장함으로써 구성 요소의 다시 렌더링을 트리거하지 않고 새 오디오가 재생될 때 이전 오디오 재생에 쉽게 액세스하고 중지할 수 있습니다.
+`useRef` hook을 사용하여 `lastRecording.current`에 `Audio.Sound` 객체를 저장함으로써 구성 요소를 리렌더링 하지 않습니다. 새 오디오가 재생될 때 이전 오디오 재생에 쉽게 액세스하고 중지할 수 있습니다.
 
 <br>
 
@@ -429,7 +429,7 @@ const handleImagePress = async (page) => {
 ```
 1) 이전에 녹음된 오디오가 있는 경우, `lastRecording.current` 객체에서 `stopAsync()`를 호출하여 오디오 재생을 중지시킵니다.
 2) 사용 가능한 새 오디오가 있는 경우, 새 `Audio.Sound` 객체를 생성하고 `loadAsync()`를 사용하여 recording.file URI에 지정된 오디오 파일을 로드합니다.
-3) 오디오를 로드한 후 코드는 사운드 객체에서 `replayAsync()`를 호출하여 오디오 재생을 시작합니다.
+3) 오디오를 로드한 후 코드는 `Audio.Sound`에서 `replayAsync()`를 호출하여 오디오 재생을 시작합니다.
 4) 새 오디오를 `lastRecording.current` 객체에 저장합니다.
 
 <br>
@@ -487,7 +487,7 @@ const drawing = paths?.map((p, i) => (
 
 UUID를 `<Path>` 요소의 키로 사용하면 구성 요소의 각 렌더링에 대해 새 UUID가 자주 생성됩니다. 결과적으로 React는 내용이 변경되지 않은 경우에도 조정 프로세스 중에 각 요소를 새 것으로 인식해 렌더링 성능에 영향을 미칩니다.
 
-조정 프로세스는 React가 가상 DOM과 실제 DOM을 비교하고 변경 사항을 업데이트하는 것을 말합니다. 요소가 업데이트되면 React는 diffing 알고리즘을 통해 새 키와 이전 키를 비교하여 요소를 업데이트하거나 교체 또는 삽입할지 여부를 결정합니다.
+조정 프로세스는 React가 가상 DOM과 실제 DOM을 비교하고 변경 사항을 업데이트하는 것을 말합니다. 요소가 업데이트되면 React는 diffing 알고리즘을 통해 새 키와 이전 키를 비교하여 변경된 요소를 업데이트합니다.
 <br><br>
 
 #### 시도
@@ -503,7 +503,7 @@ key={`page${currentPage}${i}path`}
 - `useMemo hook`을 사용 → 렌더링 최적화
 
 무엇이 캐싱되었을까?<br>
-`useMemo` hook은 `drawing` 변수를 메모합니다. `drawing` 변수는 캔버스에 그려질 경로를 나타내는 JSX 요소입니다. `paths` 배열에서 `map` 함수를 사용하여 생성됩니다.
+`useMemo` hook은 `drawing` 변수를 메모합니다. `drawing` 변수는 캔버스에 그려질 경로를 나타내는 JSX 요소입니다.
 
 그리기 동작 중에 새로운 좌표와 선의 정보로 paths 배열을 업데이트합니다. `useMemo` hook은 paths 배열을 통해 생성된 JSX 요소를 메모하여 불필요한 재연산을 피함으로써 렌더링 성능을 최적합니다. 경로를 나타내는 JSX 요소는 캔버스에서 <Path> 구성 요소로 렌더링됩니다.
 
