@@ -13,7 +13,7 @@ import PreviewScreen from "./src/screens/PreviewScreen";
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+const App: React.FC = () => {
   return (
     <Provider store={store}>
       <SafeAreaView style={styles.container}>
@@ -45,10 +45,12 @@ export default function App() {
       </SafeAreaView>
     </Provider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
 });
+
+export default App;
