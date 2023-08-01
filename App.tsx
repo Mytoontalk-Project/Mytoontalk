@@ -7,7 +7,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "./src/screens/HomeScreen";
 import DrawingScreen from "./src/screens/DrawingScreen";
-import store from "./src/store/configureStore";
+import { store } from "./src/store/configureStore";
 import ComicScreen from "./src/screens/ComicScreen";
 import PreviewScreen from "./src/screens/PreviewScreen";
 

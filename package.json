@@ -26,7 +26,7 @@
   "dependencies": {
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "^1.9.5",
     "@shopify/react-native-skia": "0.1.172",
     "expo": "~48.0.10",
     "expo-av": "~13.2.1",

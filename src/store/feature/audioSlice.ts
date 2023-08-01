@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "../configureStore";
 
-const initialState = {
+import { AudioDataInterface, AudioData } from "../../types/audioType";
+
+const initialState: AudioDataInterface = {
   page: {
     1: {
       audioData: [],
@@ -21,7 +25,13 @@ export const audioSlice = createSlice({
   name: "audio",
   initialState,
   reducers: {
-    setPageRecordings: (state, action) => {
+    setPageRecordings: (
+      state,
+      action: PayloadAction<{
+        currentPage: number;
+        updatedRecordings: AudioData[];
+      }>,
+    ) => {
       const { currentPage, updatedRecordings } = action.payload;
       state.page[currentPage].audioData = updatedRecordings;
     },
@@ -46,6 +56,6 @@ export const audioSlice = createSlice({
 
 export const { setPageRecordings, createNewRecording } = audioSlice.actions;
 
-export const selectAudioPage = (state) => state.audio.page;
+export const selectAudioPage = (state: RootState) => state.audio.page;
 
 export default audioSlice.reducer;
