@@ -1,6 +1,7 @@
 import * as FileSystem from "expo-file-system";
+import { DrawingData } from "../types/drawingType";
 
-export const saveTitleToDirectory = async (title, id) => {
+export const saveTitleToDirectory = async (title: string, id: string) => {
   try {
     const dirUri = `${FileSystem.documentDirectory}mytoontalk/${id}`;
     const dirInfo = await FileSystem.getInfoAsync(dirUri);
@@ -18,7 +19,7 @@ export const saveTitleToDirectory = async (title, id) => {
   }
 };
 
-export const saveImageToDirectory = async (id, pages) => {
+export const saveImageToDirectory = async (id: string, pages: DrawingData) => {
   try {
     const baseDir = `${FileSystem.documentDirectory}mytoontalk/${id}/pages/`;
 
@@ -42,7 +43,7 @@ export const saveImageToDirectory = async (id, pages) => {
   }
 };
 
-export const saveAudioToDirectory = async (id, pages) => {
+export const saveAudioToDirectory = async (id: string, pages: DrawingData) => {
   try {
     const baseDir = `${FileSystem.documentDirectory}mytoontalk/${id}/pages/`;
 
@@ -66,7 +67,7 @@ export const saveAudioToDirectory = async (id, pages) => {
   }
 };
 
-export const deleteDirectory = async (id, titleList) => {
+export const deleteDirectory = async (id: string, titleList: string[]) => {
   try {
     const mytoontalkDir = `${FileSystem.documentDirectory}mytoontalk/`;
     const ids = await FileSystem.readDirectoryAsync(mytoontalkDir);
