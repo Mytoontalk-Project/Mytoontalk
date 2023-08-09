@@ -10,10 +10,11 @@ import DrawingScreen from "./src/screens/DrawingScreen";
 import { store } from "./src/store/configureStore";
 import ComicScreen from "./src/screens/ComicScreen";
 import PreviewScreen from "./src/screens/PreviewScreen";
+import { RootStackParamList } from "./src/types/screensType";
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const App: React.FC = () => {
+const App = (): JSX.Element => {
   return (
     <Provider store={store}>
       <SafeAreaView style={styles.container}>

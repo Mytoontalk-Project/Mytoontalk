@@ -2,56 +2,60 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Pressable, Image } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import * as FileSystem from "expo-file-system";
+import { AVPlaybackStatusSuccess } from "expo-av";
 
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import useAudioPlay from "../hooks/useAudioPaly";
+import { ComicScreenProps } from "../types/screensType";
 
-export default function ComicScreen({ navigation, route }) {
+const ComicScreen = ({ navigation, route }: ComicScreenProps): JSX.Element => {
   const { id } = route.params;
   const dirUri = `${FileSystem.documentDirectory}mytoontalk/${id}`;
   const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
-  const [title, setTitle] = useState("");
-  const [images, setImages] = useState([]);
-  const [selectedPage, setSelectedPage] = useState(null);
-  const [audios, setAudios] = useState([]);
-
-  const loadData = async () => {
-    try {
-      const [titleContent, pagesList] = await Promise.all([
-        FileSystem.readAsStringAsync(`${dirUri}/title.txt`),
-        FileSystem.readDirectoryAsync(`${dirUri}/pages`),
-      ]);
-
-      const imageList = pagesList
-        .filter((page) => page.endsWith(".png"))
-        .sort();
-      const audioList = pagesList
-        .filter((page) => page.endsWith(".wav"))
-        .sort();
-      setTitle(titleContent);
-      setImages(imageList);
-      setAudios(audioList);
-    } catch (err) {
-      alert("오류가 발생하였습니다. 재시도해주세요");
-    }
-  };
+  const [title, setTitle] = useState<string>("");
+  const [images, setImages] = useState<string[]>([]);
+  const [selectedPage, setSelectedPage] = useState<number | null>(null);
+  const [audios, setAudios] = useState<string[]>([]);
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [titleContent, pagesList] = await Promise.all([
+          FileSystem.readAsStringAsync(`${dirUri}/title.txt`),
+          FileSystem.readDirectoryAsync(`${dirUri}/pages`),
+        ]);
+
+        const imageList = pagesList
+          .filter((page) => page.endsWith(".png"))
+          .sort();
+        const audioList = pagesList
+          .filter((page) => page.endsWith(".wav"))
+          .sort();
+        setTitle(titleContent);
+        setImages(imageList);
+        setAudios(audioList);
+      } catch (err) {
+        alert("오류가 발생하였습니다. 재시도해주세요");
+      }
+    };
     loadData();
   }, []);
 
   const handleAudioPress = async () => {
     try {
       for (const page of audios) {
-        const filterPage = page.slice(0, 1);
+        const filterPage = Number(page.slice(0, 1));
         setSelectedPage(filterPage);
 
         if (page) {
           await playAudio(`file://${dirUri}/pages/${page}`);
           const status = await getStatus();
-          const duration = status.durationMillis;
-          await new Promise((resolve) => setTimeout(resolve, duration + 500));
+          const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
+          const duration = playbackStatusSuccess.durationMillis;
+          if (typeof duration === "number") {
+            await new Promise((resolve) => setTimeout(resolve, duration + 500));
+          }
         }
       }
     } catch (err) {
@@ -59,7 +63,7 @@ export default function ComicScreen({ navigation, route }) {
     }
   };
 
-  const handleImagePress = async (page) => {
+  const handleImagePress = async (page: number) => {
     const recording = audios[page - 1];
     try {
       await stopAudio();
@@ -82,7 +86,7 @@ export default function ComicScreen({ navigation, route }) {
       <View style={styles.bodyContainer}>
         <View style={styles.comicbox}>
           {images.map((image) => {
-            const page = image.slice(0, 1);
+            const page = Number(image.slice(0, 1));
             return (
               <Pressable
                 key={page}
@@ -102,7 +106,6 @@ export default function ComicScreen({ navigation, route }) {
         </View>
         <View style={styles.toolbox}>
           <Pressable
-            title="audio"
             style={{
               flex: 1,
               justifyContent: "center",
@@ -123,7 +126,7 @@ export default function ComicScreen({ navigation, route }) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -169,3 +172,5 @@ const styles = StyleSheet.create({
     borderColor: "#77037B",
   },
 });
+
+export default ComicScreen;

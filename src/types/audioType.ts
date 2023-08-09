@@ -1,5 +1,7 @@
+import { Audio } from "expo-av";
+
 export interface AudioData {
-  [key: string]: any;
+  [key: string]: string | number | Audio.Sound;
 }
 
 interface AudioDataByPage {

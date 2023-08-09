@@ -1,8 +1,8 @@
 export interface DrawingData {
-  [key: string]: any;
+  [key: string]: string | number;
 }
 
-interface DrawingPage {
+export interface DrawingPage {
   drawingData: DrawingData[];
   redoData: DrawingData[];
   base64File: string;

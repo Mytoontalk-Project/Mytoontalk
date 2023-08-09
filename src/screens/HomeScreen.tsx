@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   Alert,
   Modal,
@@ -12,6 +11,7 @@ import {
 import Svg, { Path } from "react-native-svg";
 import * as FileSystem from "expo-file-system";
 
+import { useAppSelector, useAppDispatch } from "../hooks/useReduxHooks";
 import Header from "../components/Header";
 import OpenComic from "../components/OpenComic";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
@@ -21,28 +21,30 @@ import {
 } from "../store/feature/drawingBoardSlice";
 import { createNewRecording } from "../store/feature/audioSlice";
 import ComicDeleteCheckModal from "../components/modals/ComicDeleteCheckModal";
+import { HomeScreenProps, LoadedComicsData } from "../types/screensType";
 
-export default function HomeScreen({ navigation }) {
-  const dispatch = useDispatch();
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [currentModal, setCurrentModal] = useState(null);
-  const [input, setInput] = useState("");
-  const [comicData, setComicData] = useState([]);
-  const titleList = useSelector(selectTitleList);
+const HomeScreen = ({ navigation }: HomeScreenProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [currentModal, setCurrentModal] = useState<string | null>(null);
+  const [input, setInput] = useState<string>("");
+  const [comicData, setComicData] = useState<LoadedComicsData[]>([]);
+  const titleList = useAppSelector(selectTitleList);
 
   const loadComics = useCallback(async () => {
     const dirUri = `${FileSystem.documentDirectory}mytoontalk/`;
     const comicList = await FileSystem.readDirectoryAsync(dirUri);
 
-    const newData = await Promise.all(
+    const newData: LoadedComicsData[] = await Promise.all(
       comicList.map(async (id) => {
         const comicUri = `${dirUri}${id}/`;
-        const [title, pageInfo] = await Promise.all([
-          FileSystem.readAsStringAsync(`${comicUri}title.txt`),
-          FileSystem.getInfoAsync(`${comicUri}pages/1.png`),
+        const [titleInfo, pageInfo] = await Promise.all([
+          FileSystem.readAsStringAsync(`${comicUri}/title.txt`),
+          FileSystem.getInfoAsync(`${comicUri}/pages/1.png`),
         ]);
 
         let imageUri = null;
+
         if (pageInfo.exists) {
           const imageBase64 = await FileSystem.readAsStringAsync(
             `${comicUri}pages/1.png`,
@@ -51,12 +53,12 @@ export default function HomeScreen({ navigation }) {
           imageUri = `data:image/png;base64,${imageBase64}`;
         }
 
-        const idInfo = await FileSystem.getInfoAsync(`${comicUri}`);
-        const { modificationTime } = idInfo;
+        const modificationTime: number | null =
+          pageInfo && pageInfo.exists ? pageInfo.modificationTime : null;
 
         return {
           id,
-          title,
+          title: titleInfo,
           hasCover: pageInfo.exists,
           imageUri,
           creationTime: modificationTime || null,
@@ -91,7 +93,7 @@ export default function HomeScreen({ navigation }) {
     setIsShowModal(!isShowModal);
   };
 
-  const handleCurrentModal = (modal) => {
+  const handleCurrentModal = (modal: string) => {
     setCurrentModal(modal);
   };
 
@@ -149,9 +151,8 @@ export default function HomeScreen({ navigation }) {
           comicData={comicData}
         />
       )}
-      <Header style={{ flex: 1 }} />
+      <Header />
       <OpenComic
-        style={{ flex: 1 }}
         isShowModal={toggleModal}
         currentModal={handleCurrentModal}
         navigation={navigation}
@@ -159,7 +160,7 @@ export default function HomeScreen({ navigation }) {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -234,3 +235,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default HomeScreen;

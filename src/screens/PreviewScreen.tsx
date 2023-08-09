@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useDispatch, useSelector } from "react-redux";
 import uuid from "react-native-uuid";
 
+import { useAppDispatch, useAppSelector } from "../hooks/useReduxHooks";
 import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -26,17 +26,19 @@ import {
 } from "../utils/fileSystem";
 import GeneralModal from "../components/modals/GeneralModal";
 import useAudioPlay from "../hooks/useAudioPaly";
+import { PreviewScreenProps } from "../types/screensType";
+import { DrawingData } from "../types/drawingType";
 
-export default function PreviewScreen({ navigation }) {
-  const dispatch = useDispatch();
-  const {isPlaying, playAudio, stopAudio} = useAudioPlay();
-  const [selectedPage, setSelectedPage] = useState(null);
-  const [isShowModal, setIsShowModal] = useState(false);
-  const title = useSelector(selectTitle);
-  const audioPages = useSelector(selectAudioPage);
-  const imagePages = useSelector(selectImagePage);
+export default function PreviewScreen({ navigation }: PreviewScreenProps) {
+  const dispatch = useAppDispatch();
+  const { isPlaying, playAudio, stopAudio } = useAudioPlay();
+  const [selectedPage, setSelectedPage] = useState<number | null>(null);
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const title = useAppSelector(selectTitle);
+  const audioPagesData = useAppSelector(selectAudioPage);
+  const imagePagesData = useAppSelector(selectImagePage);
 
-  const [memorySize, setMemorySize] = useState(0);
+  const [memorySize, setMemorySize] = useState<number>(0);
   const kilobytes = memorySize / 1024;
   const megabytes = kilobytes / 1024;
 
@@ -44,16 +46,20 @@ export default function PreviewScreen({ navigation }) {
     let audioTotalSize = 0;
     let imageTotalSize = 0;
 
-    for (const page in audioPages) {
-      const recordings = audioPages[page].audioData;
+    for (const page in audioPagesData) {
+      const recordings = audioPagesData[page].audioData;
       const recording = recordings[recordings.length - 1];
       const recordingUri = recording.file;
-      const recordingResponse = await fetch(recordingUri);
-      const recordingBlob = await recordingResponse.blob();
-      audioTotalSize += recordingBlob.size;
+
+      if (typeof recordingUri === "string") {
+        const recordingResponse = await fetch(recordingUri);
+        const recordingBlob = await recordingResponse.blob();
+        audioTotalSize += recordingBlob.size;
+      }
     }
-    for (const page in imagePages) {
-      const image = imagePages[page].base64File;
+
+    for (const page in imagePagesData) {
+      const image = imagePagesData[page].base64File;
       const imageUri = `data:image/png;base64,${image}`;
       const imageResponse = await fetch(imageUri);
       const imageBlob = await imageResponse.blob();
@@ -63,24 +69,25 @@ export default function PreviewScreen({ navigation }) {
     setMemorySize(sizeSum);
   };
 
-  const makedirectoryToFileSystem = async (id) => {
+  const makedirectoryToFileSystem = async (id: string) => {
     const displayTitle = title || "제목없음";
     await saveTitleToDirectory(displayTitle, id);
-    await saveImageToDirectory(id, imagePages);
-    await saveAudioToDirectory(id, audioPages);
+    await saveImageToDirectory(id, imagePagesData);
+    await saveAudioToDirectory(id, audioPagesData);
     dispatch(pushTitleList(displayTitle));
   };
 
   const handleAudioPress = async () => {
     try {
-      for (const page in audioPages) {
-        setSelectedPage(page);
-        const recordings = audioPages[page].audioData;
+      for (const page in audioPagesData) {
+        setSelectedPage(Number(page));
+        const recordings = audioPagesData[page].audioData;
         const recording = recordings[recordings.length - 1];
-        if (recording) {
+        if (typeof recording.file === "string" && typeof recording.duration === "number") {
           await playAudio(recording.file);
+          const durationMillis = Number(recording.duration);
           await new Promise((resolve) =>
-            setTimeout(resolve, recording.duration + 500),
+            setTimeout(resolve, durationMillis + 500),
           );
         }
       }
@@ -89,13 +96,13 @@ export default function PreviewScreen({ navigation }) {
     }
   };
 
-  const handleImagePress = async (page) => {
-    const recordings = audioPages[page].audioData;
+  const handleImagePress = async (page: number) => {
+    const recordings = audioPagesData[page].audioData;
     const recording = recordings[recordings.length - 1];
     try {
       await stopAudio();
       if (recording) {
-        await playAudio(recording.file);
+        await playAudio(recording.file as string);
       }
       setSelectedPage(page);
     } catch (err) {
@@ -117,7 +124,7 @@ export default function PreviewScreen({ navigation }) {
           setIsShowModal={setIsShowModal}
           buttonText="저장"
           navigation={navigation}
-          handlePress={() => makedirectoryToFileSystem(uuid.v4())}
+          handlePress={() => makedirectoryToFileSystem(uuid.v4() as string)}
         />
       )}
       <View style={styles.header}>
@@ -127,19 +134,19 @@ export default function PreviewScreen({ navigation }) {
       </View>
       <View style={styles.bodyContainer}>
         <View style={styles.comicbox}>
-          {Object.keys(imagePages).map((page) => (
+          {Object.keys(imagePagesData).map((page) => (
             <Pressable
               key={page}
-              onPress={() => handleImagePress(page)}
+              onPress={() => handleImagePress(Number(page))}
               style={[
                 styles.image,
-                selectedPage === page && isPlaying && styles.selectedImage,
+                selectedPage === Number(page) && isPlaying && styles.selectedImage,
               ]}
             >
               <Image
                 style={{ flex: 1 }}
                 source={{
-                  uri: `data:image/png;base64,${imagePages[page].base64File}`,
+                  uri: `data:image/png;base64,${imagePagesData[Number(page)].base64File}`,
                 }}
               />
             </Pressable>
@@ -147,7 +154,6 @@ export default function PreviewScreen({ navigation }) {
         </View>
         <View style={styles.toolbox}>
           <TouchableOpacity
-            title="audio"
             style={{
               flex: 1,
               justifyContent: "center",

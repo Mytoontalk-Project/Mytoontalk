@@ -1,4 +1,4 @@
-const COLORLIST = [
+export const COLORLIST = [
   "#FFFFFF",
   "#DB7093",
   "#FFC0CB",

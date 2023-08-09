@@ -1,7 +1,16 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function ControlButton({ label, onPress, currentModal }) {
+interface ControlButtonProps {
+  label: string;
+  onPress: () => void;
+  currentModal?: (label: string) => void;
+}
+const ControlButton = ({
+  label,
+  onPress,
+  currentModal,
+}: ControlButtonProps): JSX.Element => {
   return (
     <TouchableOpacity
       style={styles.container}
@@ -17,7 +26,7 @@ export default function ControlButton({ label, onPress, currentModal }) {
       </View>
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -39,3 +48,5 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
 });
+
+export default ControlButton;

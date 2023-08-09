@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import {
   StyleSheet,
   View,
@@ -10,9 +9,10 @@ import {
 } from "react-native";
 import { useCanvasRef } from "@shopify/react-native-skia";
 import Svg, { Path } from "react-native-svg";
-import { Audio } from "expo-av";
+import { Audio, AVPlaybackStatusSuccess } from "expo-av";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+import { useAppDispatch, useAppSelector } from "../hooks/useReduxHooks";
 import DrawingBoard from "../components/DrawingBoard";
 import WorkingTool from "../components/WorkingTool";
 import ControlButton from "../components/buttons/ControlButton";
@@ -24,7 +24,7 @@ import {
   setCurrentPage,
   setPageBase64File,
   setCurrentTool,
-  setPenColor
+  setPenColor,
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import {
@@ -35,40 +35,21 @@ import CircleListModal from "../components/modals/CircleListModal";
 import GeneralModal from "../components/modals/GeneralModal";
 import ColorListModal from "../components/modals/ColorListModal";
 import WidthModal from "../components/modals/WidthModal";
+import { DIAMETER, RADIUSPERCENTAGE, modalContents } from "../constants/info";
+import { DrawingScreenProps } from "../types/screensType";
 
-export default function DrawingScreen({ navigation }) {
-  const dispatch = useDispatch();
-  const [isShowModal, setIsShowModal] = useState(false);
-  const [currentModal, setCurrentModal] = useState(null);
-  const title = useSelector(selectTitle);
-  const [input, setInput] = useState(title);
-  const [modalIndex, setModalIndex] = useState(0);
-  const [recording, setRecording] = useState(null);
-  const currentPage = useSelector(selectCurrentPage);
-  const pageRecordings = useSelector(selectAudioPage)[currentPage].audioData;
+const DrawingScreen = ({ navigation }: DrawingScreenProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const [isShowModal, setIsShowModal] = useState<boolean>(false);
+  const [currentModal, setCurrentModal] = useState<string | null>(null);
+  const title = useAppSelector(selectTitle);
+  const [input, setInput] = useState<string>(title);
+  const [modalIndex, setModalIndex] = useState<number>(0);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const currentPage = useAppSelector(selectCurrentPage);
+  const pageRecordings = useAppSelector(selectAudioPage)[currentPage].audioData;
   const canvasRef = useCanvasRef();
-  const modalContents = [
-    {
-      title: "선 굵기",
-      description: `펜이나 지우개를 꾹~ 누르시면${"\n"}굵기를 조절할 수 있는 창이 나타납니다.`,
-    },
-    {
-      title: "녹음",
-      description: `녹음 버튼을 누르면 바로 녹음이 시작됩니다.${"\n"}재녹음을 원하시면 녹음 버튼을 다시 눌러주세요.`,
-    },
-    {
-      title: "녹음 목록",
-      description: `해당 페이지의 모든 녹음들을 들을 수 있습니다.${"\n"}각 번호를 누르면 녹음이 재생됩니다.`,
-    },
-    {
-      title: "나가기",
-      description: `홈으로 나가는 버튼입니다.${"\n"}버튼을 클릭하실 경우에는${"\n"}지금까지의 모든 내용은 저장되지 않습니다.`,
-    },
-    {
-      title: "*주의사항*",
-      description: `이 앱은 이미지와 오디오를 사용자의 기기에 저장되어 만화를 저장하였을때 메모리를 사용하게 됩니다.${"\n"}메모리 용량에 주의해주세요!!`,
-    },
-  ];
+
   const handlePrevModal = () => {
     setModalIndex(modalIndex - 1);
   };
@@ -81,7 +62,7 @@ export default function DrawingScreen({ navigation }) {
     setIsShowModal(true);
   };
 
-  const handleCurrentModal = (modal) => {
+  const handleCurrentModal = (modal: string) => {
     setCurrentModal(modal);
   };
 
@@ -96,7 +77,7 @@ export default function DrawingScreen({ navigation }) {
         });
 
         const { recording } = await Audio.Recording.createAsync(
-          Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+          Audio.RecordingOptionsPresets.HIGH_QUALITY,
         );
 
         setRecording(recording);
@@ -109,19 +90,33 @@ export default function DrawingScreen({ navigation }) {
   };
 
   const stopRecording = async () => {
-    setRecording(undefined);
+    setRecording(null);
 
-    await recording.stopAndUnloadAsync();
+    if (recording) {
+      await recording.stopAndUnloadAsync();
 
-    const updatedRecordings = [...pageRecordings];
-    const { sound, status } = await recording.createNewLoadedSoundAsync();
-    updatedRecordings.push({
-      sound,
-      duration: status.durationMillis,
-      file: recording.getURI(),
-    });
+      try {
+        const { sound, status } = await recording.createNewLoadedSoundAsync();
+        if (sound) {
+          const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
+          const duration = playbackStatusSuccess.durationMillis;
+          const fileUri = recording.getURI();
+          const updatedRecordings = [...pageRecordings];
 
-    dispatch(setPageRecordings({ currentPage, updatedRecordings }));
+          updatedRecordings.push({
+            sound,
+            duration: duration || 0,
+            file: fileUri || "",
+          });
+
+          dispatch(setPageRecordings({ currentPage, updatedRecordings }));
+        } else {
+          alert("녹음을 종료를 하지 못했습니다");
+        }
+      } catch (err) {
+        alert("녹음중 오류가 발생했습니다. 다시 녹음해주세요.");
+      }
+    }
   };
 
   const convertingUrl = () => {
@@ -132,9 +127,9 @@ export default function DrawingScreen({ navigation }) {
     }
   };
 
-  const handleColorPress = (item) => {
+  const handleColorPress = (item: string) => {
     dispatch(setPenColor(item));
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -175,8 +170,7 @@ export default function DrawingScreen({ navigation }) {
           value={input}
           onChangeText={(text) => setInput(text)}
           placeholder="제목을 입력해주세요."
-          style={styles.title}
-          adjustsFontSizeToFit
+          style={styles.titleInput}
           numberOfLines={1}
         />
       </View>
@@ -221,9 +215,11 @@ export default function DrawingScreen({ navigation }) {
                   color="black"
                 />
                 <View
-                  width={15}
-                  height={15}
-                  style={audioStyle("#FF0000").color}
+                  style={{
+                    width: 15,
+                    height: 15,
+                    ...audioStyle("#FF0000").color,
+                  }}
                 />
               </>
             ) : (
@@ -275,11 +271,11 @@ export default function DrawingScreen({ navigation }) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   page: {
-    borderRadius: "50%",
+    borderRadius: (DIAMETER / 2) * (RADIUSPERCENTAGE / 100),
     width: 50,
     backgroundColor: "#ffffff",
   },
@@ -294,7 +290,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
+  titleInput: {
     fontSize: 40,
   },
   bodyContainer: {
@@ -321,12 +317,14 @@ const styles = StyleSheet.create({
   },
 });
 
-const audioStyle = (color) =>
+const audioStyle = (color: string) =>
   StyleSheet.create({
     color: {
       position: "absolute",
       backgroundColor: color,
-      borderRadius: "50%",
+      borderRadius: (DIAMETER / 2) * (RADIUSPERCENTAGE / 100),
       right: 0,
     },
   });
+
+export default DrawingScreen;
