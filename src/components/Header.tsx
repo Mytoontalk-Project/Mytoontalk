@@ -1,13 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export default function Header() {
+const Header = (): JSX.Element => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>My comic room</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -22,3 +22,5 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
 });
+
+export default Header;

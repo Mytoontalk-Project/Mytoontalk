@@ -27,7 +27,6 @@ import {
 import GeneralModal from "../components/modals/GeneralModal";
 import useAudioPlay from "../hooks/useAudioPaly";
 import { PreviewScreenProps } from "../types/screensType";
-import { DrawingData } from "../types/drawingType";
 
 export default function PreviewScreen({ navigation }: PreviewScreenProps) {
   const dispatch = useAppDispatch();

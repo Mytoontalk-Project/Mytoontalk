@@ -1,16 +1,25 @@
 import React from "react";
 import { StyleSheet, View, FlatList } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import Comic from "./Comic";
 import ControlButton from "./buttons/ControlButton";
 import Empty from "./Empty";
+import { LoadedComicsData, RootStackParamList } from "../types/screensType";
 
-export default function OpenComic({
+interface OptionComicProps {
+  isShowModal: () => void;
+  handleCurrentModal: (modal: string) => void;
+  navigation: NativeStackNavigationProp<RootStackParamList, "Comic">
+  loadedComics: LoadedComicsData[];
+}
+
+const OpenComic = ({
   isShowModal,
-  currentModal,
+  handleCurrentModal,
   navigation,
   loadedComics,
-}) {
+}: OptionComicProps): JSX.Element => {
   const numColumn = 4;
 
   return (
@@ -40,17 +49,17 @@ export default function OpenComic({
         <ControlButton
           label="생성"
           onPress={isShowModal}
-          currentModal={currentModal}
+          handleCurrentModal={handleCurrentModal}
         />
         <ControlButton
           label="삭제"
           onPress={isShowModal}
-          currentModal={currentModal}
+          handleCurrentModal={handleCurrentModal}
         />
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -66,3 +75,5 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
 });
+
+export default OpenComic;

@@ -1,7 +1,21 @@
 import React from "react";
 import { StyleSheet, View, Text, Image, Pressable } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../types/screensType";
 
-export default function Comic({ id, label, imageUri, navigation }) {
+interface comicStateProps {
+  id: string;
+  label: string;
+  imageUri: string | null;
+  navigation: NativeStackNavigationProp<RootStackParamList, "Comic">;
+}
+
+const Comic = ({
+  id,
+  label,
+  imageUri,
+  navigation,
+}: comicStateProps): JSX.Element => {
   return (
     <View style={styles.container}>
       <Pressable
@@ -12,19 +26,23 @@ export default function Comic({ id, label, imageUri, navigation }) {
           });
         }}
       >
-        <Image
-          source={{
-            uri: imageUri,
-          }}
-          style={styles.image}
-        />
+        {imageUri ? (
+          <Image
+            source={{
+              uri: imageUri,
+            }}
+            style={styles.image}
+          />
+        ) : (
+          <View style={styles.imagePlaceholder} />
+        )}
         <Text numberOfLines={2} style={styles.label}>
           {label}
         </Text>
       </Pressable>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -44,9 +62,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#ffffff",
   },
+  imagePlaceholder: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+    backgroundColor: "#dddddd",
+  },
   label: {
     fontSize: 25,
     margin: 10,
     textAlign: "center",
   },
 });
+
+export default Comic;

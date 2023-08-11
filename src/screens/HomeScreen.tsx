@@ -154,7 +154,7 @@ const HomeScreen = ({ navigation }: HomeScreenProps): JSX.Element => {
       <Header />
       <OpenComic
         isShowModal={toggleModal}
-        currentModal={handleCurrentModal}
+        handleCurrentModal={handleCurrentModal}
         navigation={navigation}
         loadedComics={comicData}
       />

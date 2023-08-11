@@ -1,7 +1,12 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
-export default function AudioButton({ label, onPress }) {
+interface AudioButtonProps {
+  label: string;
+  onPress: () => void;
+}
+
+const AudioButton = ({ label, onPress }: AudioButtonProps): JSX.Element => {
   return (
     <View style={styles.container}>
       <Pressable style={styles.button} onPress={onPress}>
@@ -9,7 +14,7 @@ export default function AudioButton({ label, onPress }) {
       </Pressable>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -27,3 +32,5 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
 });
+
+export default AudioButton;

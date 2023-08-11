@@ -1,13 +1,13 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 
-export default function Empty() {
+const Empty = (): JSX.Element => {
   return (
     <View style={styles.container}>
       <Text style={styles.description}>네컷만화가 없습니다.</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -20,3 +20,5 @@ const styles = StyleSheet.create({
     color: "#769FCD",
   },
 });
+
+export default Empty;

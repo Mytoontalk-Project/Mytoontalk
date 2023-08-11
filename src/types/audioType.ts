@@ -1,15 +1,15 @@
 import { Audio } from "expo-av";
 
 export interface AudioData {
-  [key: string]: string | number | Audio.Sound;
+  [key: string]: string | number | Audio.Sound | string[];
 }
 
-interface AudioDataByPage {
-  audioData: AudioData[];
+export interface Recording {
+  sound: Audio.Sound;
+  duration: number;
+  file: string;
 }
 
 export interface AudioDataInterface {
-  page: {
-    [pageNumber: number]: AudioDataByPage;
-  };
+  page: Record<number, { audioData: Recording[] }>;
 }

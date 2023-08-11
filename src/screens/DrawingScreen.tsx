@@ -181,7 +181,7 @@ const DrawingScreen = ({ navigation }: DrawingScreenProps): JSX.Element => {
         <View style={{ flex: 1 / 4 }}>
           <WorkingTool
             isShowModal={toggleModal}
-            currentModal={handleCurrentModal}
+            handleCurrentModal={handleCurrentModal}
           />
         </View>
       </View>

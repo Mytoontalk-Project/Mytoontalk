@@ -1,10 +1,12 @@
-export interface DrawingData {
-  [key: string]: string | number;
-}
+export interface DrawingSegment {
+  color: string;
+  penWidth: number;
+  segments: string[];
+};
 
 export interface DrawingPage {
-  drawingData: DrawingData[];
-  redoData: DrawingData[];
+  drawingData: DrawingSegment[];
+  redoData: DrawingSegment[];
   base64File: string;
 }
 
@@ -21,7 +23,5 @@ export interface DrawingBoardData {
     width: number;
     color: string;
   };
-  page: {
-    [pageNumber: number]: DrawingPage;
-  };
+  page: Record<number, DrawingPage>
 }

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { Canvas, Path } from "@shopify/react-native-skia";
+import { Canvas, Path, useCanvasRef } from "@shopify/react-native-skia";
 import {
   Gesture,
   GestureDetector,
   GestureHandlerRootView,
 } from "react-native-gesture-handler";
-import { useDispatch, useSelector } from "react-redux";
 
+import { useAppDispatch, useAppSelector } from "../hooks/useReduxHooks";
 import {
   selectCurrentPage,
   selectCurrentTool,
@@ -18,17 +18,22 @@ import {
   selectPenWidth,
   setPagePath,
 } from "../store/feature/drawingBoardSlice";
+import { DrawingSegment } from "../types/drawingType";
 
-export default function DrawingBoard({ canvasRef }) {
-  const dispatch = useDispatch();
-  const currentPage = useSelector(selectCurrentPage);
-  const pagePaths = useSelector(selectImagePage)[currentPage].drawingData;
-  const [paths, setPaths] = useState(pagePaths);
-  const currentTool = useSelector(selectCurrentTool);
-  const penColor = useSelector(selectPenColor);
-  const penWidth = useSelector(selectPenWidth);
-  const eraserColor = useSelector(selectEraserColor);
-  const eraserWidth = useSelector(selectEraserWidth);
+type DrawingBoardPropsCanvasRef = {
+  canvasRef: ReturnType<typeof useCanvasRef>;
+};
+
+const DrawingBoard = ({ canvasRef }: DrawingBoardPropsCanvasRef): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const currentPage = useAppSelector(selectCurrentPage);
+  const pagePaths = useAppSelector(selectImagePage)[currentPage].drawingData;
+  const [paths, setPaths] = useState<DrawingSegment[]>(pagePaths);
+  const currentTool = useAppSelector(selectCurrentTool);
+  const penColor = useAppSelector(selectPenColor);
+  const penWidth = useAppSelector(selectPenWidth);
+  const eraserColor = useAppSelector(selectEraserColor);
+  const eraserWidth = useAppSelector(selectEraserWidth);
 
   useEffect(() => {
     setPaths(pagePaths);
@@ -41,17 +46,17 @@ export default function DrawingBoard({ canvasRef }) {
           ? { currentColor: penColor, currentWidth: penWidth }
           : { currentColor: eraserColor, currentWidth: eraserWidth };
 
-      setPaths(prevPaths => [
+      setPaths((prevPaths) => [
         ...prevPaths,
         {
           segments: [`M ${g.x} ${g.y}`],
           color: currentColor,
           penWidth: currentWidth,
-        }
+        },
       ]);
     })
     .onUpdate((g) => {
-      setPaths(prevPaths => {
+      setPaths((prevPaths) => {
         const updatedPaths = [...prevPaths];
         const lastIndex = updatedPaths.length - 1;
         if (updatedPaths[lastIndex]?.segments) {
@@ -84,7 +89,7 @@ export default function DrawingBoard({ canvasRef }) {
       </GestureDetector>
     </GestureHandlerRootView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   canvas: {
@@ -94,3 +99,5 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
 });
+
+export default DrawingBoard;

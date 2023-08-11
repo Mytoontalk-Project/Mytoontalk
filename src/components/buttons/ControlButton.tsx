@@ -4,20 +4,20 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 interface ControlButtonProps {
   label: string;
   onPress: () => void;
-  currentModal?: (label: string) => void;
+  handleCurrentModal?: (label: string) => void;
 }
 const ControlButton = ({
   label,
   onPress,
-  currentModal,
+  handleCurrentModal,
 }: ControlButtonProps): JSX.Element => {
   return (
     <TouchableOpacity
       style={styles.container}
       onPress={() => {
         onPress();
-        if (currentModal) {
-          currentModal(label);
+        if (handleCurrentModal) {
+          handleCurrentModal(label);
         }
       }}
     >

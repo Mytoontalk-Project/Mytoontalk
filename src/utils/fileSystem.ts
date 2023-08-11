@@ -1,5 +1,6 @@
 import * as FileSystem from "expo-file-system";
-import { DrawingData } from "../types/drawingType";
+import { DrawingPage } from "../types/drawingType";
+import { AudioDataInterface } from "../types/audioType";
 
 export const saveTitleToDirectory = async (title: string, id: string) => {
   try {
@@ -19,7 +20,7 @@ export const saveTitleToDirectory = async (title: string, id: string) => {
   }
 };
 
-export const saveImageToDirectory = async (id: string, pages: DrawingData) => {
+export const saveImageToDirectory = async (id: string, pages: Record<number, DrawingPage>) => {
   try {
     const baseDir = `${FileSystem.documentDirectory}mytoontalk/${id}/pages/`;
 
@@ -43,7 +44,7 @@ export const saveImageToDirectory = async (id: string, pages: DrawingData) => {
   }
 };
 
-export const saveAudioToDirectory = async (id: string, pages: DrawingData) => {
+export const saveAudioToDirectory = async (id: string, pages: AudioDataInterface) => {
   try {
     const baseDir = `${FileSystem.documentDirectory}mytoontalk/${id}/pages/`;
 

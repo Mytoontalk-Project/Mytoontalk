@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../configureStore";
 
-import { DrawingBoardData, DrawingData } from "../../types/drawingType";
+import { DrawingBoardData, DrawingSegment } from "../../types/drawingType";
 
 const initialState: DrawingBoardData = {
   title: "",
@@ -65,7 +65,7 @@ export const drawingBoardSlice = createSlice({
     },
     setPagePath: (
       state,
-      action: PayloadAction<{ currentPage: number; paths: DrawingData[] }>,
+      action: PayloadAction<{ currentPage: number; paths: DrawingSegment[] }>,
     ) => {
       const { currentPage, paths } = action.payload;
       state.page[currentPage].drawingData = paths;
@@ -81,8 +81,8 @@ export const drawingBoardSlice = createSlice({
       state,
       action: PayloadAction<{
         currentPage: number;
-        restPaths: DrawingData[];
-        lastPath: DrawingData[];
+        restPaths: DrawingSegment[];
+        lastPath: DrawingSegment;
       }>,
     ) => {
       const { currentPage, restPaths, lastPath } = action.payload;
@@ -96,8 +96,8 @@ export const drawingBoardSlice = createSlice({
       state,
       action: PayloadAction<{
         currentPage: number;
-        restPaths: DrawingData[];
-        lastPath: DrawingData[];
+        restPaths: DrawingSegment[];
+        lastPath: DrawingSegment;
       }>,
     ) => {
       const { currentPage, restPaths, lastPath } = action.payload;

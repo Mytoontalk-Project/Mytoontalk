@@ -3,6 +3,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../configureStore";
 
 import { AudioDataInterface, AudioData } from "../../types/audioType";
+import { Recording } from "expo-av/build/Audio";
 
 const initialState: AudioDataInterface = {
   page: {
@@ -29,7 +30,7 @@ export const audioSlice = createSlice({
       state,
       action: PayloadAction<{
         currentPage: number;
-        updatedRecordings: AudioData[];
+        updatedRecordings: Recording[];
       }>,
     ) => {
       const { currentPage, updatedRecordings } = action.payload;

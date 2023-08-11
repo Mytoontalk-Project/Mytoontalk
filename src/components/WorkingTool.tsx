@@ -1,8 +1,9 @@
 import React from "react";
 import { Pressable, StyleSheet, View, TouchableOpacity } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useSelector, useDispatch } from "react-redux";
+import { Audio, AVPlaybackStatus, AVPlaybackStatusSuccess } from "expo-av";
 
+import { useAppSelector, useAppDispatch } from "../hooks/useReduxHooks";
 import {
   selectCurrentPage,
   selectCurrentTool,
@@ -14,16 +15,25 @@ import {
 } from "../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { selectAudioPage } from "../store/feature/audioSlice";
+import { DIAMETER, RADIUSPERCENTAGE } from "../constants/info";
 
-export default function WorkingTool({ isShowModal, currentModal }) {
-  const dispatch = useDispatch();
-  const penColor = useSelector(selectPenColor);
-  const currentPage = useSelector(selectCurrentPage);
-  const recordings = useSelector(selectAudioPage)[currentPage].audioData;
+interface WorkingToolProps {
+  isShowModal: () => void;
+  handleCurrentModal: (modal: string) => void;
+}
+
+const WorkingTool = ({
+  isShowModal,
+  handleCurrentModal,
+}: WorkingToolProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const penColor = useAppSelector(selectPenColor);
+  const currentPage = useAppSelector(selectCurrentPage);
+  const recordings = useAppSelector(selectAudioPage)[currentPage].audioData;
   const currentRecording = recordings[recordings.length - 1];
-  const currentTool = useSelector(selectCurrentTool);
-  const pagePaths = useSelector(selectImagePage)[currentPage].drawingData;
-  const redoPaths = useSelector(selectImagePage)[currentPage].redoData;
+  const currentTool = useAppSelector(selectCurrentTool);
+  const pagePaths = useAppSelector(selectImagePage)[currentPage].drawingData;
+  const redoPaths = useAppSelector(selectImagePage)[currentPage].redoData;
 
   const movePathUndo = () => {
     if (pagePaths.length) {
@@ -47,14 +57,14 @@ export default function WorkingTool({ isShowModal, currentModal }) {
     <View style={styles.container}>
       <View style={styles.icons}>
         <Pressable
-          name="pen"
+          data-name="pen"
           onPress={() => {
-            currentModal("width");
+            handleCurrentModal("width");
             dispatch(setCurrentTool("pen"));
           }}
           onLongPress={() => {
             isShowModal();
-            currentModal("width");
+            handleCurrentModal("width");
             dispatch(setCurrentTool("pen"));
           }}
         >
@@ -66,28 +76,28 @@ export default function WorkingTool({ isShowModal, currentModal }) {
           </Svg>
         </Pressable>
         <Pressable
-          name="color"
+          data-name="color"
           onPress={() => {
             isShowModal();
             dispatch(setCurrentTool("pen"));
-            currentModal("color");
+            handleCurrentModal("color");
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.PALETTE} fill={ICONCOLOR.general} />
-            <View width={30} height={30} style={colorStyle(penColor).color} />
+            <View style={colorStyle(penColor).color} />
           </Svg>
         </Pressable>
-        <TouchableOpacity name="undo" onPress={movePathUndo}>
+        <TouchableOpacity data-name="undo" onPress={movePathUndo}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.UNDO} fill={ICONCOLOR.general} />
           </Svg>
         </TouchableOpacity>
         <Pressable
-          name="home"
+          data-name="home"
           onPress={() => {
             isShowModal();
-            currentModal("home");
+            handleCurrentModal("home");
             dispatch(setCurrentTool("home"));
           }}
         >
@@ -101,14 +111,14 @@ export default function WorkingTool({ isShowModal, currentModal }) {
       </View>
       <View style={styles.icons}>
         <Pressable
-          name="eraser"
+          data-name="eraser"
           onPress={() => {
-            currentModal("width");
+            handleCurrentModal("width");
             dispatch(setCurrentTool("eraser"));
           }}
           onLongPress={() => {
             isShowModal();
-            currentModal("width");
+            handleCurrentModal("width");
             dispatch(setCurrentTool("eraser"));
           }}
         >
@@ -122,15 +132,18 @@ export default function WorkingTool({ isShowModal, currentModal }) {
           </Svg>
         </Pressable>
         <Pressable
-          name="sound"
+          data-name="sound"
           onPress={async () => {
             if (currentRecording) dispatch(setCurrentTool("sound"));
             await currentRecording?.sound.replayAsync();
-            currentRecording?.sound.setOnPlaybackStatusUpdate((status) => {
-              if (status.didJustFinish) {
-                dispatch(setCurrentTool("pen"));
-              }
-            });
+            currentRecording?.sound.setOnPlaybackStatusUpdate(
+              (status: AVPlaybackStatus) => {
+                const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
+                if (playbackStatusSuccess.didJustFinish && playbackStatusSuccess.isLoaded) {
+                  dispatch(setCurrentTool("pen"));
+                }
+              },
+            );
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 640 512">
@@ -142,16 +155,16 @@ export default function WorkingTool({ isShowModal, currentModal }) {
             />
           </Svg>
         </Pressable>
-        <TouchableOpacity name="redo" onPress={movePathRedo}>
+        <TouchableOpacity data-name="redo" onPress={movePathRedo}>
           <Svg width={70} height={70} viewBox="0 0 512 512">
             <Path d={ICONPATH.REDO} fill={ICONCOLOR.general} />
           </Svg>
         </TouchableOpacity>
         <Pressable
-          name="audioList"
+          data-name="audioList"
           onPress={() => {
             isShowModal();
-            currentModal("list");
+            handleCurrentModal("list");
             dispatch(setCurrentTool("audioList"));
           }}
         >
@@ -167,7 +180,7 @@ export default function WorkingTool({ isShowModal, currentModal }) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -187,14 +200,18 @@ const styles = StyleSheet.create({
   },
 });
 
-const colorStyle = (color) =>
+const colorStyle = (color: string) =>
   StyleSheet.create({
     color: {
       position: "absolute",
       right: 0,
       top: 50,
+      width: 30,
+      height: 30,
       backgroundColor: color,
-      borderRadius: "50%",
+      borderRadius: (DIAMETER / 2) * (RADIUSPERCENTAGE / 100),
       borderWidth: 4,
     },
   });
+
+export default WorkingTool;
