@@ -11,7 +11,7 @@ interface GeneralModalProps {
   description: string;
   isShowModal: boolean;
   setIsShowModal: (isShowModal: boolean) => void;
-  navigation: NativeStackNavigationProp<RootStackParamList, "Home">
+  navigation: NativeStackNavigationProp<RootStackParamList, "Home" | "Comic" | "Drawing" | "Preview">
   buttonText: string;
   handlePress: () => void;
 }
