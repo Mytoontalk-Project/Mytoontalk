@@ -4,15 +4,15 @@ import ControlButton from "./ControlButton";
 
 describe("ControlButton test", () => {
   it("calls onPress and currentModal functions when button is pressed with label argument", () => {
-    const label = "Test Label";
+    const label: string = "Test Label";
     const onPressMock = jest.fn();
-    const currentModalMock = jest.fn();
+    const currentModalMock = jest.fn<void, [string]>();
 
     const { getByText } = render(
       <ControlButton
         label={label}
         onPress={onPressMock}
-        currentModal={currentModalMock}
+        handleCurrentModal={currentModalMock}
       />,
     );
 

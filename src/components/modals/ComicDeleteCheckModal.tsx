@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useReduxHooks";
 import {
   Alert,
   Modal,
@@ -19,18 +19,25 @@ import {
   setTitleList,
 } from "../../store/feature/drawingBoardSlice";
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
+import { LoadedComicsData } from "../../types/screensType";
 
-export default function ComicDeleteCheckModal({
+interface ComicDeleteCheckModalProps {
+  isShowModal: boolean;
+  setIsShowModal: (isShowModal: boolean) => void;
+  comicData: LoadedComicsData[];
+}
+
+const ComicDeleteCheckModal = ({
   isShowModal,
   setIsShowModal,
   comicData,
-}) {
-  const dispatch = useDispatch();
-  const [showDeleteComic, setShowDeleteComic] = useState(false);
-  const [selectedComicId, setSelectedComicId] = useState(null);
-  const titleList = useSelector(selectTitleList);
+}: ComicDeleteCheckModalProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const [showDeleteComic, setShowDeleteComic] = useState<boolean>(false);
+  const [selectedComicId, setSelectedComicId] = useState<string | null>(null);
+  const titleList = useAppSelector(selectTitleList);
 
-  const handleDeleteDirectory = async (id) => {
+  const handleDeleteDirectory = async (id: string | null) => {
     const deletedTitleList = await deleteDirectory(id, titleList);
     dispatch(setTitleList(deletedTitleList));
   };
@@ -118,7 +125,7 @@ export default function ComicDeleteCheckModal({
       </Modal>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   deleteCenteredView: {
@@ -207,3 +214,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export default ComicDeleteCheckModal;

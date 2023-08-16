@@ -43,6 +43,6 @@ export default function useAudioPlay() {
     isPlaying,
     playAudio,
     stopAudio,
-    getStatus
+    getStatus,
   };
-};
+}

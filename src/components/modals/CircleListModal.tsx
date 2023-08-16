@@ -9,7 +9,7 @@ import {
   Pressable,
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
-import { useDispatch, useSelector } from "react-redux";
+import { Audio, AVPlaybackStatus, AVPlaybackStatusSuccess } from "expo-av";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 import AudioButton from "../buttons/AudioButton";
@@ -18,22 +18,30 @@ import {
   setCurrentTool,
   selectCurrentPage,
 } from "../../store/feature/drawingBoardSlice";
+import { useAppDispatch, useAppSelector } from "../../hooks/useReduxHooks";
 
-export default function CircleListModal({
+interface CircleListModalProps {
+  title: string;
+  isShowModal: boolean;
+  setIsShowModal: (isShowModal: boolean) => void;
+}
+
+const CircleListModal = ({
   title,
   isShowModal,
   setIsShowModal,
-}) {
-  const dispatch = useDispatch();
-  const [playingIndex, setPlayingIndex] = useState(null);
-  const currentPage = useSelector(selectCurrentPage);
-  const recordings = useSelector(selectAudioPage)[currentPage].audioData;
+}: CircleListModalProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const [playingIndex, setPlayingIndex] = useState<number | null>(null);
+  const currentPage = useAppSelector(selectCurrentPage);
+  const recordings = useAppSelector(selectAudioPage)[currentPage].audioData;
 
-  const handlePlayAudio = (index, sound) => {
+  const handlePlayAudio = (index: number, sound: Audio.Sound) => {
     sound.replayAsync();
     setPlayingIndex(index);
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (status.didJustFinish) {
+    sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
+      const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
+      if (playbackStatusSuccess.didJustFinish) {
         setPlayingIndex(null);
       }
     });
@@ -46,7 +54,7 @@ export default function CircleListModal({
       visible={isShowModal}
       onRequestClose={async () => {
         Alert.alert("closed.");
-        setIsShowModal(!setIsShowModal);
+        setIsShowModal(!isShowModal);
       }}
     >
       <View style={styles.centeredView}>
@@ -70,20 +78,9 @@ export default function CircleListModal({
             <FlatList
               data={recordings}
               renderItem={({ item, index }) => (
-                <View
-                  style={{
-                    borderWidth: playingIndex === index ? 2 : 1,
-                    borderRadius: "50%",
-                    borderColor: playingIndex === index ? "#77037B" : null,
-                    width: "14%",
-                    aspectRatio: 1,
-                    marginHorizontal: 7,
-                    marginVertical: 11,
-                    backgroundColor: "#ffffff",
-                  }}
-                >
+                <View style={changingStyle(playingIndex, index).circleColor}>
                   <AudioButton
-                    label={index + 1}
+                    buttonIndex={index + 1}
                     onPress={() => handlePlayAudio(index, item.sound)}
                   />
                 </View>
@@ -96,7 +93,7 @@ export default function CircleListModal({
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -150,3 +147,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+const changingStyle = (playingIndex: number | null, index: number) =>
+  StyleSheet.create({
+    circleColor: {
+      borderWidth: playingIndex === index ? 2 : 1,
+      borderRadius: 50,
+      borderColor: playingIndex === index ? "#77037B" : undefined,
+      width: "14%",
+      aspectRatio: 1,
+      marginHorizontal: 7,
+      marginVertical: 11,
+      backgroundColor: "#ffffff",
+    },
+  });
+
+export default CircleListModal;

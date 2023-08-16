@@ -137,11 +137,13 @@ export const drawingBoardSlice = createSlice({
         },
       };
     },
-    setTitleList: (state, action: PayloadAction<string[]>) => {
+    setTitleList: (state, action: PayloadAction<string[] | undefined>) => {
       state.titleList = action.payload;
     },
     pushTitleList: (state, action: PayloadAction<string>) => {
-      state.titleList = [...state.titleList, action.payload];
+      if (state.titleList) {
+        state.titleList = [...state.titleList, action.payload];
+      }
     },
   },
 });
