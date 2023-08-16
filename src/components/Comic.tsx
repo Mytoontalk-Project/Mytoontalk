@@ -7,7 +7,7 @@ interface comicStateProps {
   id: string;
   label: string;
   imageUri: string | null;
-  navigation: NativeStackNavigationProp<RootStackParamList, "Comic">;
+  navigation: NativeStackNavigationProp<RootStackParamList, "Comic" | "Home">;
 }
 
 const Comic = ({
