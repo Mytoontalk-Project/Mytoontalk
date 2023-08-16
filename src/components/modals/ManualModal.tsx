@@ -11,13 +11,21 @@ import Svg, { Path } from "react-native-svg";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 
-export default function ManualModal({
+interface ManualModalProps {
+  title: string;
+  description: string;
+  setNextModal: () => void;
+  setPrevModal: () => void;
+  modalIndex: number;
+}
+
+const ManualModal = ({
   title,
   description,
   setNextModal,
   setPrevModal,
   modalIndex,
-}) {
+}: ManualModalProps): JSX.Element => {
   const [isShowModal, setIsShowModal] = useState(true);
 
   return (
@@ -66,7 +74,7 @@ export default function ManualModal({
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   manualView: {
@@ -154,3 +162,5 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+export default ManualModal;

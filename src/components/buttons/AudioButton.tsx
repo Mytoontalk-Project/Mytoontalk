@@ -2,15 +2,18 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
 interface AudioButtonProps {
-  label: string;
+  buttonIndex: number;
   onPress: () => void;
 }
 
-const AudioButton = ({ label, onPress }: AudioButtonProps): JSX.Element => {
+const AudioButton = ({
+  buttonIndex,
+  onPress,
+}: AudioButtonProps): JSX.Element => {
   return (
     <View style={styles.container}>
       <Pressable style={styles.button} onPress={onPress}>
-        <Text style={styles.buttonLabel}>{label}</Text>
+        <Text style={styles.buttonLabel}>{buttonIndex}</Text>
       </Pressable>
     </View>
   );

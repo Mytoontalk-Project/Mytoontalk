@@ -11,11 +11,17 @@ import {
 
 import COLORLIST from "../../constants/color";
 
-export default function ColorListModal({
+interface ColorListModalProps {
+  isShowModal: boolean;
+  setIsShowModal: (isShowModal: boolean) => void;
+  handlePress: (item: string) => void;
+}
+
+const ColorListModal = ({
   isShowModal,
   setIsShowModal,
   handlePress,
-}) {
+}: ColorListModalProps): JSX.Element => {
   return (
     <Modal
       animationType="slide"
@@ -57,7 +63,7 @@ export default function ColorListModal({
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   colors: {
@@ -81,3 +87,5 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
 });
+
+export default ColorListModal;

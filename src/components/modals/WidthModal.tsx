@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/useReduxHooks";
 import {
   Modal,
   Alert,
@@ -17,11 +17,19 @@ import {
   setPenWidth,
 } from "../../store/feature/drawingBoardSlice";
 
-export default function WidthModal({ isShowModal, setIsShowModal }) {
-  const dispatch = useDispatch();
-  const currentTool = useSelector(selectCurrentTool);
-  const penColor = useSelector(selectPenColor);
-  const eraserColor = useSelector(selectEraserColor);
+interface WidthModalProps {
+  isShowModal: boolean;
+  setIsShowModal: (isShowModal: boolean) => void;
+}
+
+const WidthModal = ({
+  isShowModal,
+  setIsShowModal,
+}: WidthModalProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+  const currentTool = useAppSelector(selectCurrentTool);
+  const penColor = useAppSelector(selectPenColor);
+  const eraserColor = useAppSelector(selectEraserColor);
   const penWidth = [3, 6, 9, 12, 15, 18, 21, 24, 27];
   const eraserWidth = [5, 9, 15, 19, 23, 27, 31, 35, 39];
   const widths = currentTool === "pen" ? penWidth : eraserWidth;
@@ -63,7 +71,7 @@ export default function WidthModal({ isShowModal, setIsShowModal }) {
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   widths: {
@@ -96,18 +104,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const penWidthStyle = (y, color) =>
+const penWidthStyle = (y: number, color: string) =>
   StyleSheet.create({
     pen: {
       backgroundColor: "#000000",
       width: y + 20,
       height: y,
-      borderRadius: "50%",
+      borderRadius: 50,
     },
     eraser: {
       backgroundColor: color,
       width: y,
       height: y,
-      borderRadius: "50%",
+      borderRadius: 50,
     },
   });
+
+export default WidthModal;

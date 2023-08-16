@@ -1,10 +1,22 @@
 import React from "react";
 import { Modal, Alert, StyleSheet, View, Text, Pressable } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+import { RootStackParamList } from "../../types/screensType";
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 
-export default function GeneralModal({
+interface GeneralModalProps {
+  title: string;
+  description: string;
+  isShowModal: boolean;
+  setIsShowModal: (isShowModal: boolean) => void;
+  navigation: NativeStackNavigationProp<RootStackParamList, "Home">
+  buttonText: string;
+  handlePress: () => void;
+}
+
+const GeneralModal = ({
   title,
   description,
   isShowModal,
@@ -12,8 +24,7 @@ export default function GeneralModal({
   navigation,
   buttonText,
   handlePress,
-}) {
-
+}: GeneralModalProps): JSX.Element => {
   return (
     <Modal
       animationType="fade"
@@ -61,7 +72,7 @@ export default function GeneralModal({
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   centeredView: {
@@ -135,3 +146,5 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
 });
+
+export default GeneralModal;

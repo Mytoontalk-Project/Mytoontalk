@@ -2,7 +2,7 @@ export interface DrawingSegment {
   color: string;
   penWidth: number;
   segments: string[];
-};
+}
 
 export interface DrawingPage {
   drawingData: DrawingSegment[];
@@ -12,7 +12,7 @@ export interface DrawingPage {
 
 export interface DrawingBoardData {
   title: string;
-  titleList: string[];
+  titleList: string[] | undefined;
   currentPage: number;
   currentTool: string;
   pen: {
@@ -23,5 +23,5 @@ export interface DrawingBoardData {
     width: number;
     color: string;
   };
-  page: Record<number, DrawingPage>
+  page: Record<number, DrawingPage>;
 }

@@ -10,7 +10,7 @@ import { LoadedComicsData, RootStackParamList } from "../types/screensType";
 interface OptionComicProps {
   isShowModal: () => void;
   handleCurrentModal: (modal: string) => void;
-  navigation: NativeStackNavigationProp<RootStackParamList, "Comic">
+  navigation: NativeStackNavigationProp<RootStackParamList, "Comic">;
   loadedComics: LoadedComicsData[];
 }
 

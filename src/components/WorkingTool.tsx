@@ -139,7 +139,10 @@ const WorkingTool = ({
             currentRecording?.sound.setOnPlaybackStatusUpdate(
               (status: AVPlaybackStatus) => {
                 const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
-                if (playbackStatusSuccess.didJustFinish && playbackStatusSuccess.isLoaded) {
+                if (
+                  playbackStatusSuccess.didJustFinish &&
+                  playbackStatusSuccess.isLoaded
+                ) {
                   dispatch(setCurrentTool("pen"));
                 }
               },

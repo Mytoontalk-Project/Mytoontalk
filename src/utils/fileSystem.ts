@@ -1,6 +1,7 @@
 import * as FileSystem from "expo-file-system";
+
 import { DrawingPage } from "../types/drawingType";
-import { AudioDataInterface } from "../types/audioType";
+import { AudioPage } from "../types/audioType";
 
 export const saveTitleToDirectory = async (title: string, id: string) => {
   try {
@@ -20,21 +21,29 @@ export const saveTitleToDirectory = async (title: string, id: string) => {
   }
 };
 
-export const saveImageToDirectory = async (id: string, pages: Record<number, DrawingPage>) => {
+export const saveImageToDirectory = async (
+  id: string,
+  pages: Record<number, DrawingPage>,
+) => {
   try {
     const baseDir = `${FileSystem.documentDirectory}mytoontalk/${id}/pages/`;
 
     for (const page of Object.keys(pages)) {
       const imageUri = `${baseDir}${page}.png`;
       const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      const pageNumber = Number(page);
 
       if (!fileInfo.exists) {
         await FileSystem.makeDirectoryAsync(baseDir, {
           intermediates: true,
         });
-        await FileSystem.writeAsStringAsync(imageUri, pages[page].base64File, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+        await FileSystem.writeAsStringAsync(
+          imageUri,
+          pages[pageNumber].base64File,
+          {
+            encoding: FileSystem.EncodingType.Base64,
+          },
+        );
       } else {
         alert("이미 파일이 존재합니다.");
       }
@@ -44,11 +53,14 @@ export const saveImageToDirectory = async (id: string, pages: Record<number, Dra
   }
 };
 
-export const saveAudioToDirectory = async (id: string, pages: AudioDataInterface) => {
+export const saveAudioToDirectory = async (
+  id: string,
+  pages: Record<number, AudioPage>,
+) => {
   try {
     const baseDir = `${FileSystem.documentDirectory}mytoontalk/${id}/pages/`;
 
-    for (const page of Object.keys(pages)) {
+    for (const page of Object.keys(pages).map(Number)) {
       const audioUri = `${baseDir}${page}.wav`;
       const fileInfo = await FileSystem.getInfoAsync(audioUri);
       const recordings = pages[page].audioData;
@@ -68,15 +80,18 @@ export const saveAudioToDirectory = async (id: string, pages: AudioDataInterface
   }
 };
 
-export const deleteDirectory = async (id: string, titleList: string[]) => {
+export const deleteDirectory = async (
+  id: string | null,
+  titleList: string[] | undefined,
+) => {
   try {
     const mytoontalkDir = `${FileSystem.documentDirectory}mytoontalk/`;
     const ids = await FileSystem.readDirectoryAsync(mytoontalkDir);
-    const idIndex = ids.indexOf(id);
+    const idIndex = id && ids.indexOf(id);
     const dirPath = `${mytoontalkDir}${id}/`;
 
     await FileSystem.deleteAsync(dirPath, { idempotent: true });
-    const updatedTitles = titleList.filter((_, i) => i !== idIndex);
+    const updatedTitles = titleList?.filter((_, i) => i !== idIndex);
 
     return updatedTitles;
   } catch (err) {

@@ -24,7 +24,9 @@ type DrawingBoardPropsCanvasRef = {
   canvasRef: ReturnType<typeof useCanvasRef>;
 };
 
-const DrawingBoard = ({ canvasRef }: DrawingBoardPropsCanvasRef): JSX.Element => {
+const DrawingBoard = ({
+  canvasRef,
+}: DrawingBoardPropsCanvasRef): JSX.Element => {
   const dispatch = useAppDispatch();
   const currentPage = useAppSelector(selectCurrentPage);
   const pagePaths = useAppSelector(selectImagePage)[currentPage].drawingData;

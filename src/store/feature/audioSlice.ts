@@ -1,9 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../configureStore";
 
-import { AudioDataInterface, AudioData } from "../../types/audioType";
-import { Recording } from "expo-av/build/Audio";
+import type { RootState } from "../configureStore";
+import { AudioDataInterface, Recording } from "../../types/audioType";
 
 const initialState: AudioDataInterface = {
   page: {

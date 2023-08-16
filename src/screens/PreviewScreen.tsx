@@ -82,7 +82,10 @@ export default function PreviewScreen({ navigation }: PreviewScreenProps) {
         setSelectedPage(Number(page));
         const recordings = audioPagesData[page].audioData;
         const recording = recordings[recordings.length - 1];
-        if (typeof recording.file === "string" && typeof recording.duration === "number") {
+        if (
+          typeof recording.file === "string" &&
+          typeof recording.duration === "number"
+        ) {
           await playAudio(recording.file);
           const durationMillis = Number(recording.duration);
           await new Promise((resolve) =>
@@ -139,13 +142,17 @@ export default function PreviewScreen({ navigation }: PreviewScreenProps) {
               onPress={() => handleImagePress(Number(page))}
               style={[
                 styles.image,
-                selectedPage === Number(page) && isPlaying && styles.selectedImage,
+                selectedPage === Number(page) &&
+                  isPlaying &&
+                  styles.selectedImage,
               ]}
             >
               <Image
                 style={{ flex: 1 }}
                 source={{
-                  uri: `data:image/png;base64,${imagePagesData[Number(page)].base64File}`,
+                  uri: `data:image/png;base64,${
+                    imagePagesData[Number(page)].base64File
+                  }`,
                 }}
               />
             </Pressable>
