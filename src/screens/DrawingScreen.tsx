@@ -104,7 +104,6 @@ const DrawingScreen: React.FC<DrawingScreenProps> = ({ navigation }) => {
           const updatedRecordings = [...pageRecordings];
 
           updatedRecordings.push({
-            sound,
             duration: duration || 0,
             file: fileUri || "",
           });

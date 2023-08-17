@@ -135,18 +135,15 @@ const WorkingTool: React.FC<OwnProps> = ({
           data-name="sound"
           onPress={async () => {
             if (currentRecording) dispatch(setCurrentTool("sound"));
-            await currentRecording?.sound.replayAsync();
-            currentRecording?.sound.setOnPlaybackStatusUpdate(
-              (status: AVPlaybackStatus) => {
-                const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
-                if (
-                  playbackStatusSuccess.didJustFinish &&
-                  playbackStatusSuccess.isLoaded
-                ) {
-                  dispatch(setCurrentTool("pen"));
-                }
-              },
-            );
+            const sound = new Audio.Sound();
+            await sound.loadAsync({ uri: currentRecording.file });
+            await sound.replayAsync();
+            sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
+              const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
+              if (playbackStatusSuccess.didJustFinish) {
+                dispatch(setCurrentTool("pen"));
+              }
+            });
           }}
         >
           <Svg width={70} height={70} viewBox="0 0 640 512">
