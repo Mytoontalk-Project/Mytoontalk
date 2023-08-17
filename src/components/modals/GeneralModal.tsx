@@ -6,17 +6,20 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../types/screensType";
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 
-interface GeneralModalProps {
+interface OwnProps {
   title: string;
   description: string;
   isShowModal: boolean;
-  setIsShowModal: (isShowModal: boolean) => void;
-  navigation: NativeStackNavigationProp<RootStackParamList, "Home" | "Comic" | "Drawing" | "Preview">
+  setIsShowModal(isShowModal: boolean): void;
+  navigation: NativeStackNavigationProp<
+    RootStackParamList,
+    "Home" | "Comic" | "Drawing" | "Preview"
+  >;
   buttonText: string;
-  handlePress: () => void;
+  handlePress(): void;
 }
 
-const GeneralModal = ({
+const GeneralModal: React.FC<OwnProps> = ({
   title,
   description,
   isShowModal,
@@ -24,7 +27,7 @@ const GeneralModal = ({
   navigation,
   buttonText,
   handlePress,
-}: GeneralModalProps): JSX.Element => {
+}) => {
   return (
     <Modal
       animationType="fade"

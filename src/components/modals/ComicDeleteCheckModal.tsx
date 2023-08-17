@@ -21,17 +21,17 @@ import {
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 import { LoadedComicsData } from "../../types/screensType";
 
-interface ComicDeleteCheckModalProps {
+interface OwnProps {
   isShowModal: boolean;
-  setIsShowModal: (isShowModal: boolean) => void;
+  setIsShowModal(isShowModal: boolean): void;
   comicData: LoadedComicsData[];
 }
 
-const ComicDeleteCheckModal = ({
+const ComicDeleteCheckModal: React.FC<OwnProps> = ({
   isShowModal,
   setIsShowModal,
   comicData,
-}: ComicDeleteCheckModalProps): JSX.Element => {
+}) => {
   const dispatch = useAppDispatch();
   const [showDeleteComic, setShowDeleteComic] = useState<boolean>(false);
   const [selectedComicId, setSelectedComicId] = useState<string | null>(null);

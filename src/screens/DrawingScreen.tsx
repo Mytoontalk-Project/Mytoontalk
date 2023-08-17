@@ -38,7 +38,7 @@ import WidthModal from "../components/modals/WidthModal";
 import { DIAMETER, RADIUSPERCENTAGE, modalContents } from "../constants/info";
 import { DrawingScreenProps } from "../types/screensType";
 
-const DrawingScreen = ({ navigation }: DrawingScreenProps): JSX.Element => {
+const DrawingScreen: React.FC<DrawingScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
   const [currentModal, setCurrentModal] = useState<string | null>(null);

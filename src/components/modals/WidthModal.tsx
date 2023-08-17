@@ -17,15 +17,12 @@ import {
   setPenWidth,
 } from "../../store/feature/drawingBoardSlice";
 
-interface WidthModalProps {
+interface OwnProps {
   isShowModal: boolean;
-  setIsShowModal: (isShowModal: boolean) => void;
+  setIsShowModal(isShowModal: boolean): void;
 }
 
-const WidthModal = ({
-  isShowModal,
-  setIsShowModal,
-}: WidthModalProps): JSX.Element => {
+const WidthModal: React.FC<OwnProps> = ({ isShowModal, setIsShowModal }) => {
   const dispatch = useAppDispatch();
   const currentTool = useAppSelector(selectCurrentTool);
   const penColor = useAppSelector(selectPenColor);

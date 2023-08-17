@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const Header = (): JSX.Element => {
+const Header: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>My comic room</Text>

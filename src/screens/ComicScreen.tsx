@@ -9,14 +9,14 @@ import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import useAudioPlay from "../hooks/useAudioPaly";
 import { ComicScreenProps } from "../types/screensType";
 
-const ComicScreen = ({ navigation, route }: ComicScreenProps): JSX.Element => {
+const ComicScreen: React.FC<ComicScreenProps> = ({ navigation, route }) => {
   const { id } = route.params;
-  const dirUri = `${FileSystem.documentDirectory}mytoontalk/${id}`;
   const { isPlaying, playAudio, stopAudio, getStatus } = useAudioPlay();
   const [title, setTitle] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
   const [selectedPage, setSelectedPage] = useState<number | null>(null);
   const [audios, setAudios] = useState<string[]>([]);
+  const dirUri = `${FileSystem.documentDirectory}mytoontalk/${id}`;
 
   useEffect(() => {
     const loadData = async () => {

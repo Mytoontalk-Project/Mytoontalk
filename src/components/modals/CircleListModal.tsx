@@ -20,17 +20,17 @@ import {
 } from "../../store/feature/drawingBoardSlice";
 import { useAppDispatch, useAppSelector } from "../../hooks/useReduxHooks";
 
-interface CircleListModalProps {
+interface OwnProps {
   title: string;
   isShowModal: boolean;
-  setIsShowModal: (isShowModal: boolean) => void;
+  setIsShowModal(isShowModal: boolean): void;
 }
 
-const CircleListModal = ({
+const CircleListModal: React.FC<OwnProps> = ({
   title,
   isShowModal,
   setIsShowModal,
-}: CircleListModalProps): JSX.Element => {
+}) => {
   const dispatch = useAppDispatch();
   const [playingIndex, setPlayingIndex] = useState<number | null>(null);
   const currentPage = useAppSelector(selectCurrentPage);

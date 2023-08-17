@@ -17,15 +17,15 @@ import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import { selectAudioPage } from "../store/feature/audioSlice";
 import { DIAMETER, RADIUSPERCENTAGE } from "../constants/info";
 
-interface WorkingToolProps {
-  isShowModal: () => void;
-  handleCurrentModal: (modal: string) => void;
+interface OwnProps {
+  isShowModal(): void;
+  handleCurrentModal(modal: string): void;
 }
 
-const WorkingTool = ({
+const WorkingTool: React.FC<OwnProps> = ({
   isShowModal,
   handleCurrentModal,
-}: WorkingToolProps): JSX.Element => {
+}) => {
   const dispatch = useAppDispatch();
   const penColor = useAppSelector(selectPenColor);
   const currentPage = useAppSelector(selectCurrentPage);
