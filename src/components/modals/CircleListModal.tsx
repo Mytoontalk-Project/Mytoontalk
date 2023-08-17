@@ -36,9 +36,11 @@ const CircleListModal: React.FC<OwnProps> = ({
   const currentPage = useAppSelector(selectCurrentPage);
   const recordings = useAppSelector(selectAudioPage)[currentPage].audioData;
 
-  const handlePlayAudio = (index: number, sound: Audio.Sound) => {
-    sound.replayAsync();
+  const handlePlayAudio = async (index: number, recordingUri: string) => {
     setPlayingIndex(index);
+    const sound = new Audio.Sound();
+    await sound.loadAsync({ uri: recordingUri });
+    await sound.replayAsync();
     sound.setOnPlaybackStatusUpdate((status: AVPlaybackStatus) => {
       const playbackStatusSuccess = status as AVPlaybackStatusSuccess;
       if (playbackStatusSuccess.didJustFinish) {
@@ -81,7 +83,7 @@ const CircleListModal: React.FC<OwnProps> = ({
                 <View style={changingStyle(playingIndex, index).circleColor}>
                   <AudioButton
                     buttonIndex={index + 1}
-                    onPress={() => handlePlayAudio(index, item.sound)}
+                    onPress={() => handlePlayAudio(index, item.file)}
                   />
                 </View>
               )}

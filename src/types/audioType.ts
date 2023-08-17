@@ -1,7 +1,6 @@
 import { Audio } from "expo-av";
 
 export interface Recording {
-  sound: Audio.Sound;
   duration: number;
   file: string;
 }
