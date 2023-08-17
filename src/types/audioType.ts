@@ -1,5 +1,3 @@
-import { Audio } from "expo-av";
-
 export interface Recording {
   duration: number;
   file: string;
