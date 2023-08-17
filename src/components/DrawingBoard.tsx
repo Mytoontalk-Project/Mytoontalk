@@ -20,13 +20,11 @@ import {
 } from "../store/feature/drawingBoardSlice";
 import { DrawingSegment } from "../types/drawingType";
 
-type DrawingBoardPropsCanvasRef = {
+type OwnProps = {
   canvasRef: ReturnType<typeof useCanvasRef>;
 };
 
-const DrawingBoard = ({
-  canvasRef,
-}: DrawingBoardPropsCanvasRef): JSX.Element => {
+const DrawingBoard: React.FC<OwnProps> = ({ canvasRef }) => {
   const dispatch = useAppDispatch();
   const currentPage = useAppSelector(selectCurrentPage);
   const pagePaths = useAppSelector(selectImagePage)[currentPage].drawingData;

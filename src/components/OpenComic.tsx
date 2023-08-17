@@ -7,19 +7,19 @@ import ControlButton from "./buttons/ControlButton";
 import Empty from "./Empty";
 import { LoadedComicsData, RootStackParamList } from "../types/screensType";
 
-interface OptionComicProps {
-  isShowModal: () => void;
-  handleCurrentModal: (modal: string) => void;
+interface OwnProps {
+  isShowModal(): void;
+  handleCurrentModal(modal: string): void;
   navigation: NativeStackNavigationProp<RootStackParamList, "Comic" | "Home">;
   loadedComics: LoadedComicsData[];
 }
 
-const OpenComic = ({
+const OpenComic: React.FC<OwnProps> = ({
   isShowModal,
   handleCurrentModal,
   navigation,
   loadedComics,
-}: OptionComicProps): JSX.Element => {
+}) => {
   const numColumn = 4;
 
   return (

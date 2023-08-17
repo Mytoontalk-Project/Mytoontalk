@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 
-const Empty = (): JSX.Element => {
+const Empty: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.description}>네컷만화가 없습니다.</Text>

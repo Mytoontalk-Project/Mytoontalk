@@ -11,21 +11,21 @@ import Svg, { Path } from "react-native-svg";
 
 import { ICONPATH, ICONCOLOR } from "../../constants/icon";
 
-interface ManualModalProps {
+interface OwnProps {
   title: string;
   description: string;
-  setNextModal: () => void;
-  setPrevModal: () => void;
+  setNextModal(): void;
+  setPrevModal(): void;
   modalIndex: number;
 }
 
-const ManualModal = ({
+const ManualModal: React.FC<OwnProps> = ({
   title,
   description,
   setNextModal,
   setPrevModal,
   modalIndex,
-}: ManualModalProps): JSX.Element => {
+}) => {
   const [isShowModal, setIsShowModal] = useState(true);
 
   return (

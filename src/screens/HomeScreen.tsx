@@ -23,7 +23,7 @@ import { createNewRecording } from "../store/feature/audioSlice";
 import ComicDeleteCheckModal from "../components/modals/ComicDeleteCheckModal";
 import { HomeScreenProps, LoadedComicsData } from "../types/screensType";
 
-const HomeScreen = ({ navigation }: HomeScreenProps): JSX.Element => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const [isShowModal, setIsShowModal] = useState<boolean>(false);
   const [currentModal, setCurrentModal] = useState<string | null>(null);

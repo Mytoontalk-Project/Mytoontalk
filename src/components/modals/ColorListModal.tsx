@@ -11,17 +11,17 @@ import {
 
 import COLORLIST from "../../constants/color";
 
-interface ColorListModalProps {
+interface OwnProps {
   isShowModal: boolean;
-  setIsShowModal: (isShowModal: boolean) => void;
-  handlePress: (item: string) => void;
+  setIsShowModal(isShowModal: boolean): void;
+  handlePress(item: string): void;
 }
 
-const ColorListModal = ({
+const ColorListModal: React.FC<OwnProps> = ({
   isShowModal,
   setIsShowModal,
   handlePress,
-}: ColorListModalProps): JSX.Element => {
+}) => {
   return (
     <Modal
       animationType="slide"

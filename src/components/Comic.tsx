@@ -3,19 +3,14 @@ import { StyleSheet, View, Text, Image, Pressable } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/screensType";
 
-interface comicStateProps {
+interface OwnProps {
   id: string;
   label: string;
   imageUri: string | null;
   navigation: NativeStackNavigationProp<RootStackParamList, "Comic" | "Home">;
 }
 
-const Comic = ({
-  id,
-  label,
-  imageUri,
-  navigation,
-}: comicStateProps): JSX.Element => {
+const Comic: React.FC<OwnProps> = ({ id, label, imageUri, navigation }) => {
   return (
     <View style={styles.container}>
       <Pressable

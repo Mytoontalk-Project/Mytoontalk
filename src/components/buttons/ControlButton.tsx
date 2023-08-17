@@ -1,16 +1,16 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-interface ControlButtonProps {
+interface OwnProps {
   label: string;
-  onPress: () => void;
-  handleCurrentModal?: (label: string) => void;
+  onPress(): void;
+  handleCurrentModal?(label: string): void;
 }
-const ControlButton = ({
+const ControlButton: React.FC<OwnProps> = ({
   label,
   onPress,
   handleCurrentModal,
-}: ControlButtonProps): JSX.Element => {
+}) => {
   return (
     <TouchableOpacity
       style={styles.container}

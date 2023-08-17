@@ -28,7 +28,7 @@ import GeneralModal from "../components/modals/GeneralModal";
 import useAudioPlay from "../hooks/useAudioPaly";
 import { PreviewScreenProps } from "../types/screensType";
 
-export default function PreviewScreen({ navigation }: PreviewScreenProps) {
+const PreviewScreen: React.FC<PreviewScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const { isPlaying, playAudio, stopAudio } = useAudioPlay();
   const [selectedPage, setSelectedPage] = useState<number | null>(null);
@@ -187,7 +187,7 @@ export default function PreviewScreen({ navigation }: PreviewScreenProps) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -233,3 +233,5 @@ const styles = StyleSheet.create({
     borderColor: "#77037B",
   },
 });
+
+export default PreviewScreen;
