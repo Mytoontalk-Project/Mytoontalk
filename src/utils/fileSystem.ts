@@ -2,14 +2,9 @@ import * as FileSystem from "expo-file-system";
 
 import { DrawingPage } from "../types/drawingType";
 import { AudioPage } from "../types/audioType";
+import { alertMessages } from "../constants/alertMessages";
 
-const MYTOONTALK_DIR = `${FileSystem.documentDirectory}mytoontalk/`;
-
-const alertMessages = {
-  fileSaveError: "파일에 저장할 수 없습니다.",
-  fileExistError: "이미 파일이 존재합니다.",
-  fileDeleteError: "파일을 삭제할 수 없습니다.",
-};
+export const MYTOONTALK_DIR = `${FileSystem.documentDirectory}mytoontalk/`;
 
 export const saveTitleToDirectory = async (title: string, id: string) => {
   try {

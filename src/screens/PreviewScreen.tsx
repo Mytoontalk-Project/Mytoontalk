@@ -27,6 +27,7 @@ import {
 import GeneralModal from "../components/modals/GeneralModal";
 import useAudioPlay from "../hooks/useAudioPaly";
 import { PreviewScreenProps } from "../types/screensType";
+import { ALERTMESSAGES } from "../constants/alertMessages";
 
 const PreviewScreen: React.FC<PreviewScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -94,7 +95,7 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ navigation }) => {
         }
       }
     } catch (err) {
-      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
+      alert(ALERTMESSAGES.AUDIOLOAD_ERROR);
     }
   };
 
@@ -108,7 +109,7 @@ const PreviewScreen: React.FC<PreviewScreenProps> = ({ navigation }) => {
       }
       setSelectedPage(page);
     } catch (err) {
-      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
+      alert(ALERTMESSAGES.AUDIOLOAD_ERROR);
     }
   };
 
