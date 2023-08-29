@@ -37,6 +37,7 @@ import ColorListModal from "../components/modals/ColorListModal";
 import WidthModal from "../components/modals/WidthModal";
 import { DIAMETER, RADIUSPERCENTAGE, modalContents } from "../constants/info";
 import { DrawingScreenProps } from "../types/screensType";
+import { ALERTMESSAGES } from "../constants/alertMessages";
 
 const DrawingScreen: React.FC<DrawingScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -82,10 +83,10 @@ const DrawingScreen: React.FC<DrawingScreenProps> = ({ navigation }) => {
 
         setRecording(recording);
       } else {
-        alert("앱에서 마이크에 액세스할 수 있는 권한을 부여하십시오.");
+        alert(ALERTMESSAGES.MICROPHONE_RIGHTS_ERROR);
       }
     } catch (err) {
-      alert("녹음을 시작하지 못했습니다");
+      alert(ALERTMESSAGES.RECORDING_FAILED_ERROR);
     }
   };
 
@@ -110,10 +111,10 @@ const DrawingScreen: React.FC<DrawingScreenProps> = ({ navigation }) => {
 
           dispatch(setPageRecordings({ currentPage, updatedRecordings }));
         } else {
-          alert("녹음을 종료를 하지 못했습니다");
+          alert(ALERTMESSAGES.RECORDING_END_ERROR);
         }
       } catch (err) {
-        alert("녹음중 오류가 발생했습니다. 다시 녹음해주세요.");
+        alert(ALERTMESSAGES.RECORDING_ERROR);
       }
     }
   };

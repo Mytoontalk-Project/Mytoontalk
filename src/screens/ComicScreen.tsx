@@ -8,6 +8,7 @@ import ControlButton from "../components/buttons/ControlButton";
 import { ICONPATH, ICONCOLOR } from "../constants/icon";
 import useAudioPlay from "../hooks/useAudioPaly";
 import { ComicScreenProps } from "../types/screensType";
+import { ALERTMESSAGES } from "../constants/alertMessages";
 
 const ComicScreen: React.FC<ComicScreenProps> = ({ navigation, route }) => {
   const { id } = route.params;
@@ -36,7 +37,7 @@ const ComicScreen: React.FC<ComicScreenProps> = ({ navigation, route }) => {
         setImages(imageList);
         setAudios(audioList);
       } catch (err) {
-        alert("오류가 발생하였습니다. 재시도해주세요");
+        alert(ALERTMESSAGES.FILELOAD_ERROR);
       }
     };
     loadData();
@@ -59,7 +60,7 @@ const ComicScreen: React.FC<ComicScreenProps> = ({ navigation, route }) => {
         }
       }
     } catch (err) {
-      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
+      alert(ALERTMESSAGES.AUDIOLOAD_ERROR);
     }
   };
 
@@ -72,7 +73,7 @@ const ComicScreen: React.FC<ComicScreenProps> = ({ navigation, route }) => {
       }
       setSelectedPage(page);
     } catch (err) {
-      alert("오디오를 불러오는 중 오류가 발생하였습니다. 재시도해주세요.");
+      alert(ALERTMESSAGES.AUDIOLOAD_ERROR);
     }
   };
 

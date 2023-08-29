@@ -22,6 +22,7 @@ import {
 import { createNewRecording } from "../store/feature/audioSlice";
 import ComicDeleteCheckModal from "../components/modals/ComicDeleteCheckModal";
 import { HomeScreenProps, LoadedComicsData } from "../types/screensType";
+import { MYTOONTALK_DIR } from "../utils/fileSystem";
 
 const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -32,12 +33,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const titleList = useAppSelector(selectTitleList);
 
   const loadComics = useCallback(async () => {
-    const dirUri = `${FileSystem.documentDirectory}mytoontalk/`;
-    const comicList = await FileSystem.readDirectoryAsync(dirUri);
+    const comicList = await FileSystem.readDirectoryAsync(MYTOONTALK_DIR);
 
     const newData: LoadedComicsData[] = await Promise.all(
       comicList.map(async (id) => {
-        const comicUri = `${dirUri}${id}/`;
+        const comicUri = `${MYTOONTALK_DIR}${id}/`;
         const [titleInfo, pageInfo] = await Promise.all([
           FileSystem.readAsStringAsync(`${comicUri}/title.txt`),
           FileSystem.getInfoAsync(`${comicUri}/pages/1.png`),
@@ -84,6 +84,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
     setComicData(newData);
   }, []);
+
+  const dateTimeSort = (dateArray: Array<LoadedComicsData>) => {
+    dateArray.sort((a, b) => {
+      if (a.creationTime && b.creationTime) {
+        return (
+          new Date(a.creationTime).getTime() -
+          new Date(b.creationTime).getTime()
+        );
+      }
+      if (!a.creationTime && b.creationTime) {
+        return 1;
+      }
+      if (a.creationTime && !b.creationTime) {
+        return -1;
+      }
+      return 0;
+    });
+  }
 
   useEffect(() => {
     loadComics();
